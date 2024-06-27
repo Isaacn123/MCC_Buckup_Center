@@ -34,7 +34,7 @@ user_model = api.model('User',{
 folder_name = api.model('Folder',{
     'folder_name': fields.String(required=True,description="Name of the folder to create")
 })
-@app.route('/login')
+@app.route('/')
 def read_root():
     # return {"message": "It works! Am testing now again"}
     return render_template("signin.html")
@@ -169,10 +169,10 @@ class GETALLBUCKET2FOLDERS(Resource):
             
         # return folders
 
-@app.route('/')
-def read_main():
+# @app.route('/')
+# def main():
     # return {"message": "It works! Am testing now again"}
-    return render_template("dashboard.html")
+    # return render_template("dashboard.html")
 
 
     
