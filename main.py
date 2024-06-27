@@ -128,15 +128,15 @@ class GETALLBUCKET2FOLDERS(Resource):
     def get(self):
         file_version = bucket.ls()
         folders = []
-        for file_version in file_version:
-            file_info = file_version.as_dict()
-            file_name = file_info['fileName']
+        for file_version, _ in file_version:
+            file_name = file_version.file_name
             if file_name.endswith('/'):
                 folders.append(file_name)
         
         for folder in folders:
             print(f"Folders : {folder}")
-            return folder
+            
+        return folders
 
 
     
