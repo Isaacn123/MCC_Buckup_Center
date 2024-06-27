@@ -128,6 +128,7 @@ class GETALLBUCKET2FOLDERS(Resource):
     def get(self):
         try:
             file_version = bucket.ls()
+            
             # folders = []
         # for file_version, _ in file_version:
         #     file_name = file_version.file_name
@@ -135,11 +136,12 @@ class GETALLBUCKET2FOLDERS(Resource):
         #     if file_name.endswith('/'):
         #         folders.append(file_name)
 
-            folders = [file_version.file_name for file_version, _ in file_version if file_version.file_name.endswith('/')]
+            folders = [file_version.file_name for file_version, _ in file_version]
+            
             return jsonify({"folders": folders})
         
         except Exception as e:
-            
+
             return jsonify({"error:": str(e)})
 
         print("Folders in the bucket:")
