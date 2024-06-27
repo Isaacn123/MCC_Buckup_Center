@@ -134,7 +134,9 @@ class GETALLBUCKET2FOLDERS(Resource):
             if file_name.endswith('/'):
                 folders.append(file_name)
         
-        return folders
+        for folder in folders:
+            print(f"Folders : {folder}")
+            return folder
 
 
     
