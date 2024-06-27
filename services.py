@@ -13,8 +13,6 @@ from b2sdk.v1 import B2Api
 
 JWT_SECRET = ""
 SessionLocal = _database.SessionLocal
-b2_api = B2Api()
-b2_api.authorize_account("production", "account_id", 'aapplication_key')
 
 def _create_database():
     return _database.Base.metadata.create_all(bind=_database.engine)
@@ -124,10 +122,3 @@ def generate_token():
         return token
     
 
-def create_folder_bucket(folder_name:str):
-    bucket_name = "your_buck"
-    bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
-
-    bucket.upload_bytes(b'',folder_name)
-
-    return bucket

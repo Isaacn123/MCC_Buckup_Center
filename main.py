@@ -98,8 +98,22 @@ class UploadFiles(Resource):
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
-    
 
+class CreateB2BucketFolder(Resource):
+    def post(self):
+            data = request.get_json()
+            folder_name = data.get('folder_name')
+
+            if not folder_name:
+                return {"message": "folder_name is required"}
+            
+            bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
+
+            bucket.upload_bytes(b'',folder_name)
+
+            return {"message": f"Folder '{folder_name}' created successfully in bucket '{bucket_name}'"}
+    
+api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
 api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
