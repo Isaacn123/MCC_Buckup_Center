@@ -196,6 +196,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+fetch("/get_all_buckets", {
+  method:"GET",
+  headers:{
+    "Accept":"application/json"
+  }
+}).then((response)=>{
+  if (response.status == 200){
+    return response.json()
+  }
+  
+}).then((resp) => {
+  console.log("FOLDERS", resp)
+}).catch((error)=>{
+  console.log("Error", error)
+})
+
 </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

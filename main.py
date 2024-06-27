@@ -22,7 +22,7 @@ def generate_secret_key():
     return secrets.token_hex(16)
 
 app.secret_key = os.getenv('SECRET_KEY') or generate_secret_key()
-api = Api(app=app)
+api = Api(app=app, doc='/api/v2')
 
 
 
