@@ -143,10 +143,12 @@ class GETALLBUCKET2FOLDERS(Resource):
                 folders.append(folder_name)
             
 
+            
 
-            print("List of Files")
-            for file_name in folders:
-                print(file_name)
+
+            # print("List of Files")
+            # for file_name in folders:
+            #     print(file_name)
             
             return jsonify({"folders": folders})
         
@@ -154,13 +156,13 @@ class GETALLBUCKET2FOLDERS(Resource):
 
             return jsonify({"error:": str(e)})
 
-        print("Folders in the bucket:")
-        if folders:
-            print("Folders in the BUCKT")
-            for folder in folders:
-                print(f"Folders : {folder}")
-        else :
-            print("No FOLDERS")
+        # print("Folders in the bucket:")
+        # if folders:
+        #     print("Folders in the BUCKT")
+        #     for folder in folders:
+        #         print(f"Folders : {folder}")
+        # else :
+        #     print("No FOLDERS")
             
         # return folders
 
