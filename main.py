@@ -170,7 +170,7 @@ class GETALLBUCKET2FOLDERS(Resource):
         # return folders
 
 @app.route('/')
-def read_root():
+def read_main():
     # return {"message": "It works! Am testing now again"}
     return render_template("dashboard.html")
 
