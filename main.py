@@ -142,7 +142,8 @@ class GETALLBUCKET2FOLDERS(Resource):
                 print(file_version.file_name,file_version.upload_timestamp,folder_name)
                 file_name = file_version.file_name
                 if file_name.endswith('/'):
-                    folders.append({file_name:folder_name})
+                    folders.append(file_name,folder_name)
+                    print(f"folders: {folders}")
                 else:
                     print("no match FOund.")
 
