@@ -1,9 +1,8 @@
 from flask import Flask,request,jsonify,abort, render_template,redirect,session
 from flask_restx import Api, Resource,fields
 
-
-from . import services as _service
-from . import  schemas as  _sechma
+import services as _service
+import  schemas as  _sechma
 import os
 import secrets
 

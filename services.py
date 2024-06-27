@@ -4,9 +4,9 @@ import sqlalchemy.orm as _orm
 import passlib.hash as _hash
 import jwt as _jwt
 import email_validator as _email_valid
-from . import database as _database
-from . import  models as _models
-from . import schemas as _schema
+import database as _database
+import  models as _models
+import schemas as _schema
 from flask import abort,request,jsonify,session
 from b2sdk.v1 import B2Api
 
