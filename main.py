@@ -143,12 +143,14 @@ class GETALLBUCKET2FOLDERS(Resource):
                 file_name = file_version.file_name
                 if file_name.endswith('/'):
                     folders.append({file_name:folder_name})
+                else:
+                    print("no match FOund.")
 
             # print("List of Files")
             # for file_name in folders:
             #     print(file_name)
             
-            return jsonify({"folders": folders})
+            # return jsonify({"folders": folders})
         
         except Exception as e:
 
