@@ -1,7 +1,7 @@
 import sqlalchemy as _sql
 import sqlalchemy.orm as _orm
 import passlib.hash as _hash
-from .import database as _database
+import database as _database
 from datetime import datetime as _dt
 class User(_database.Base):
     __tablename__ = "users"
