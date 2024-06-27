@@ -5,10 +5,15 @@ import services as _service
 import  schemas as  _sechma
 import os
 import secrets
+from b2sdk.v2 import InMemoryAccountInfo,B2Api
+from config.util import *
+# from flask_cors import CORS
 
 app = Flask(__name__)
 app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list' #'full'
-
+info = InMemoryAccountInfo()
+b2_api = B2Api(info)
+b2_api.authorize_account('production', application_key=app_key, application_key_id=app_key_ID)
 # Generate or load secret key
 def generate_secret_key():
     return secrets.token_hex(16)
@@ -73,11 +78,32 @@ class GetUser(Resource):
     def get(self):
         user = _service.get_current_user()
         return jsonify(user)
+
+# @app.route("/upload", methods=['POST'])
+class UploadFiles(Resource):
+    def post(self):
+        try:
+            file = request.files['file']
+            file_Content = file.read()
+            file_stream = io.BytesIO(file_Content)
+            print(f"File to be : {file.filename}")
+
+            bucket = b2_api.get_bucket_by_name(bucket_name)
+            bucket.upload_bytes(
+                data_bytes=file_stream.getvalue(),
+                file_name=file.filename
+            )
+
+            return jsonify({"message": f"File {file.filename} uploaded successfully"})
+
+        except Exception as e:
+            return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
     
 
 api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
+api.add_resource(UploadFiles,'/upload')
 # api.add_resource(MainPage,'/login')
 
 
