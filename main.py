@@ -28,6 +28,9 @@ user_model = api.model('User',{
 "password": fields.String(required=True, description="Password can not be blank")
 })
 
+folder_name = api.model('Folder',{
+    'folder_name': fields.String(required=True,description="Name of the folder to create")
+})
 @app.route('/login')
 def read_root():
     # return {"message": "It works! Am testing now again"}
@@ -100,6 +103,8 @@ class UploadFiles(Resource):
             return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
 
 class CreateB2BucketFolder(Resource):
+    @api.doc(description='Create A Folder in the Bucket')
+    @api.expect(folder_name)
     def post(self):
             data = request.get_json()
             folder_name = data.get('folder_name')
