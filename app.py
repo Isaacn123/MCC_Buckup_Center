@@ -54,10 +54,10 @@ def upload():
         return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
 
 
-@app.route('/')
-def read_root():
+# @app.route('/')
+# def read_root():
     # return {"message": "It works! Am testing now again"}
-    return render_template("index.html")
+    # return render_template("index.html")
 
 # application = ASGIMiddleware(app)
 if __name__ == "__main__":
