@@ -127,7 +127,7 @@ class CreateB2BucketFolder(Resource):
 class GETALLBUCKET2FOLDERS(Resource):
     def get(self):
         try:
-            file_version = bucket.ls()
+            file_versions = bucket.ls()
             
             # folders = []
         # for file_version, _ in file_version:
@@ -136,7 +136,11 @@ class GETALLBUCKET2FOLDERS(Resource):
         #     if file_name.endswith('/'):
         #         folders.append(file_name)
 
-            folders = [file_version.file_name for file_version, _ in file_version]
+            folders = [file_version.file_name for file_version, _ in file_versions]
+
+            print("List of Files")
+            for file_name in folders:
+                print(file_name)
             
             return jsonify({"folders": folders})
         
