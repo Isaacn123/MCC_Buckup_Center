@@ -112,6 +112,9 @@ class CreateB2BucketFolder(Resource):
             if not folder_name:
                 return {"message": "folder_name is required"}
             
+            if not folder_name.endswith('/'):
+                folder_name +='/'
+            
             bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
 
             bucket.upload_bytes(b'',folder_name)
