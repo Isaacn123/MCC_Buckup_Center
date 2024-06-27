@@ -130,12 +130,17 @@ class GETALLBUCKET2FOLDERS(Resource):
         folders = []
         for file_version, _ in file_version:
             file_name = file_version.file_name
+            print(f"Checking file: {file_name}")
             if file_name.endswith('/'):
                 folders.append(file_name)
-                
+
         print("Folders in the bucket:")
-        for folder in folders:
-            print(f"Folders : {folder}")
+        if folders:
+            print("Folders in the BUCKT")
+            for folder in folders:
+                print(f"Folders : {folder}")
+        else :
+            print("No FOLDERS")
             
         # return folders
 
