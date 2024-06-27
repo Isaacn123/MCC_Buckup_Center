@@ -7,6 +7,7 @@ import os
 import secrets
 from b2sdk.v2 import InMemoryAccountInfo,B2Api
 from config.util import *
+import io
 # from flask_cors import CORS
 
 app = Flask(__name__)
@@ -14,6 +15,8 @@ app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list' #'full'
 info = InMemoryAccountInfo()
 b2_api = B2Api(info)
 b2_api.authorize_account('production', application_key=app_key, application_key_id=app_key_ID)
+bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
+
 # Generate or load secret key
 def generate_secret_key():
     return secrets.token_hex(16)
@@ -91,7 +94,6 @@ class UploadFiles(Resource):
             file_stream = io.BytesIO(file_Content)
             print(f"File to be : {file.filename}")
 
-            bucket = b2_api.get_bucket_by_name(bucket_name)
             bucket.upload_bytes(
                 data_bytes=file_stream.getvalue(),
                 file_name=file.filename
@@ -114,17 +116,30 @@ class CreateB2BucketFolder(Resource):
             
             if not folder_name.endswith('/'):
                 folder_name +='/'
-            
-            bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
-            
+
             # Add a placeholder file name within the "folder" 
             placeholder_file = folder_name + 'folder.txt'
 
             bucket.upload_bytes(b'',placeholder_file)
 
             return {"message": f"Folder '{folder_name}' created successfully in bucket '{bucket_name}'"}
+
+class GETALLBUCKET2FOLDERS(Resource):
+    def get(self):
+        file_version = bucket.ls()
+        folders = []
+        for file_version in file_version:
+            file_info = file_version.as_dict()
+            file_name = file_info['fileName']
+            if file_name.endswith('/'):
+                folders.append(file_name)
+        
+        return folders
+
+
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
+api.add_resource(GETALLBUCKET2FOLDERS,'/get_all_buckets')
 api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
