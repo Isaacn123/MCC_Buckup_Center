@@ -126,13 +126,21 @@ class CreateB2BucketFolder(Resource):
 
 class GETALLBUCKET2FOLDERS(Resource):
     def get(self):
-        file_version = bucket.ls()
-        folders = []
-        for file_version, _ in file_version:
-            file_name = file_version.file_name
-            print(f"Checking file: {file_name}")
-            if file_name.endswith('/'):
-                folders.append(file_name)
+        try:
+            file_version = bucket.ls()
+            # folders = []
+        # for file_version, _ in file_version:
+        #     file_name = file_version.file_name
+        #     print(f"Checking file: {file_name}")
+        #     if file_name.endswith('/'):
+        #         folders.append(file_name)
+
+            folders = [file_version.file_name for file_version, _ in file_version if file_version.file_name.endswith('/')]
+            return jsonify({"folders": folders})
+        
+        except Exception as e:
+            
+            return jsonify({"error:": str(e)})
 
         print("Folders in the bucket:")
         if folders:
