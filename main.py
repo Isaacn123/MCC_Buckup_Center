@@ -116,8 +116,11 @@ class CreateB2BucketFolder(Resource):
                 folder_name +='/'
             
             bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
+            
+            # Add a placeholder file name within the "folder" 
+            placeholder_file = folder_name + 'folder.txt'
 
-            bucket.upload_bytes(b'',folder_name)
+            bucket.upload_bytes(b'',placeholder_file)
 
             return {"message": f"Folder '{folder_name}' created successfully in bucket '{bucket_name}'"}
     
