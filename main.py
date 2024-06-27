@@ -138,10 +138,12 @@ class GETALLBUCKET2FOLDERS(Resource):
 
             # folders = [file_version.file_name for file_version, _ in file_versions]
             folders = []
-            for file_version,folder_name in file_versions:
+            for file_version, _ in file_versions:
                 print(file_version.file_name,file_version.upload_timestamp,folder_name)
-                if folder_name.endswith('/'):
-                    folders.append(folder_name)
+                file_name = file_version.file_name
+                if file_name.endswith('/'):
+                    folders.append(file_name)
+
             
 
             
