@@ -169,6 +169,11 @@ class GETALLBUCKET2FOLDERS(Resource):
             
         # return folders
 
+@app.route('/')
+def read_root():
+    # return {"message": "It works! Am testing now again"}
+    return render_template("dashboard.html")
+
 
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
