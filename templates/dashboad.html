@@ -311,15 +311,15 @@ const creatFolderBtn = document.getElementById("createFolder").addEventListener(
 
 })
 
-function fetchallFiles(folder_name){
-  console.log(`Sending folder name: ${folder_name}`);
+function fetchallFiles(folderName){
+  console.log(`Sending folder name: ${folderName}`);
 
   fetch('/list_all_files',{
     method:"POST",
     headers:{
       "Content-Type":"application/json"
     },
-    body:JSON.stringify(folder_name)
+    body:JSON.stringify({folder_name: folderName})
   })
   .then((response) =>{
     if (response.status == 200){
