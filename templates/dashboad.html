@@ -207,7 +207,7 @@ fetch("/get_all_buckets", {
 // creating folder HTML 
 const folderContainer = document.getElementById('tabDashboardContent');
 
-if( data.length > 0){
+if(data.folders && data.length > 0){
   data.folders.forEach((folder,index) =>{
 
     const folderDiv = document.createElement('Div');
