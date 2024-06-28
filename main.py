@@ -34,7 +34,7 @@ user_model = api.model('User',{
 folder_name = api.model('Folder',{
     'folder_name': fields.String(required=True,description="Name of the folder to create")
 })
-@app.route('/')
+@app.route('/login')
 def read_root():
     # return {"message": "It works! Am testing now again"}
     return render_template("signin.html")
