@@ -165,7 +165,8 @@ class GETALLFILES(Resource):
     def post(self):
         
         try:
-            folder_name = request.args.get('folder_name','').strip()
+            data = request.json
+            folder_name = data.get('folder_name','').strip()
             print(f"FOLDER: {folder_name}")
             if not folder_name:
                 return jsonify({"error": "Folder name is required"})
