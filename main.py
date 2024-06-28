@@ -161,6 +161,7 @@ class GETALLBUCKET2FOLDERS(Resource):
             return jsonify({"error:": str(e)})
 
 class GETALLFILES(Resource):
+    @api.expect(folder_name)
     def get(self):
         
         try:
