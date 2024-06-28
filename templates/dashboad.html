@@ -330,7 +330,35 @@ function fetchallFiles(folderName){
     console.log(data);
 
     const foldercontainer = document.getElementById("tabDashboardContent");
+    const fileListContainer = document.getElementById('fileListContainer');
+    const filelist = document.createElement('ul')
+    filelist.className = 'list-group';
+    fileListContainer.innerHTML = '<button id="backButton" class="btn btn-primary mb-3">Back to Folders</button><h2>Files</h2>';
+
+    if(data.files && data.files.length > 0){
+
+      data.files.forEach(file => {
+       const fileItem = document.createElement('li');
+       fileItem.className = 'list-group-item';
+       fileItem.textContent = file;
+       filelist.appendChild(fileItem);
+      });
+    } else {
+
+      const noFilesItem = document.createElement('li');
+      noFilesItem.className = 'list-group-item';
+      noFilesItem.textContent = 'No files found';
+      filelist.appendChild(noFilesItem);
+    }
    // if ()
+   fileListContainer.appendChild(filelist);
+   fileListContainer.style.display = 'block'
+   folderContainer.style.display = 'none';
+
+   document.getElementById('backButton').addEventListener('click', function(){
+    fileListContainer.style.display = 'none';
+    folderContainer.style.display = 'block';
+   })
 
   })
   .catch((error) => console.error("Error fetching file list:", error));
