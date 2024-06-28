@@ -212,48 +212,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-fetch("/get_all_buckets", {
-  method:"GET",
-  headers:{
-    "Accept":"application/json"
-  }
-}).then((response)=>{
-  if (response.status == 200){
-    return response.json()
-  }
+function get_all_folders(){
+  fetch("/get_all_buckets", {
+    method:"GET", 
+    headers:{
+      "Accept":"application/json"
+    }
+  }).then((response)=>{
+    if (response.status == 200){
+      return response.json()
+    }
+    
+  }).then((data) => {
+    console.log("FOLDERS",data.length)
+  // creating folder HTML 
+  const folderContainer = document.getElementById('tabDashboardContent');
   
-}).then((data) => {
-  console.log("FOLDERS",data.length)
-// creating folder HTML 
-const folderContainer = document.getElementById('tabDashboardContent');
-
-if(data.length > 0){
-  data.forEach((folder,index) =>{
-
-    const folderDiv = document.createElement('Div');
-    folderDiv.className = 'top-droppable folder tooltiper tooltiper-up';
-    folderDiv.dataset.tooltip = '0 file';
-    folderDiv.id =`folder${index + 1}`;
-
-    folderDiv.innerHTML = `
-    <i class="fa fa-folder" aria-hidden="true"></i>
-    <i class="fa fa-check" aria-hidden="true"></i>
-    <p>${folder}</p>
-    `;
-
-    folderContainer.appendChild(folderDiv);
-  });
-} else {
-
-  const noFoldersDiv = document.createElement('div');
-  noFoldersDiv.className = 'alert alert-warning';
-  noFoldersDiv.textContent = 'No folders found';
-  folderContainer.appendChild(noFoldersDiv);
+  if(data.length > 0){
+    data.forEach((folder,index) =>{
+  
+      const folderDiv = document.createElement('Div');
+      folderDiv.className = 'top-droppable folder tooltiper tooltiper-up';
+      folderDiv.dataset.tooltip = '0 file';
+      folderDiv.id =`folder${index + 1}`;
+  
+      folderDiv.innerHTML = `
+      <i class="fa fa-folder" aria-hidden="true"></i>
+      <i class="fa fa-check" aria-hidden="true"></i>
+      <p>${folder}</p>
+      `;
+  
+      folderContainer.appendChild(folderDiv);
+    });
+  } else {
+  
+    const noFoldersDiv = document.createElement('div');
+    noFoldersDiv.className = 'alert alert-warning';
+    noFoldersDiv.textContent = 'No folders found';
+    folderContainer.appendChild(noFoldersDiv);
+  }
+    
+  }).catch((error)=> console.error('Error fetch folder list:', error))
 }
-  
-}).catch((error)=> console.error('Error fetch folder list:', error))
 
-
+get_all_folders();
 // Model create Folder MOdel 
 
 document.getElementById("createFolder").addEventListener("click", function(event){
@@ -276,7 +278,9 @@ document.getElementById("createFolder").addEventListener("click", function(event
         return response.json()
       }
     }).then((data)=>{
-      console.log("success")
+      console.log("success");
+      alert(data.message);
+      get_all_folders();
     }).catch((error)=> console.error(error));
      modal.hide();
 
