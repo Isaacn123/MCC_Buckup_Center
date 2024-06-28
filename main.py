@@ -28,6 +28,7 @@ api = Api(app=app, doc='/api/v2')
 
 user_model = api.model('User',{
 "email": fields.String(required=True, description="Username can not be blank"),
+"name": fields.String(required=True,description="User name can not be blank"),
 "password": fields.String(required=True, description="Password can not be blank")
 })
 
