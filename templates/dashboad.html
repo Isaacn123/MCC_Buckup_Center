@@ -327,7 +327,12 @@ function fetchallFiles(folderName){
     }
   })
   .then((data) => {
-    console.log(data);
+    console.log(data.files);
+    var files_ = []
+
+    files_.append(data.files)
+
+    console.log(files_)
 
     const foldercontainer = document.getElementById("tabDashboardContent");
     const fileListContainer = document.getElementById('fileListContainer');
@@ -336,8 +341,8 @@ function fetchallFiles(folderName){
     fileListContainer.innerHTML = '<button id="backButton" class="btn btn-primary mb-3">Back to Folders</button><h2>Files</h2>';
 
     if(data.files && data.files.length > 0){
-
-      data.files.forEach(file => {
+       console.log("LO...:",data.files)
+       data.files.forEach(file => {
        const fileItem = document.createElement('li');
        fileItem.className = 'list-group-item';
        fileItem.textContent = file;
