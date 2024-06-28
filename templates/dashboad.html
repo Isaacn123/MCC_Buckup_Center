@@ -331,14 +331,14 @@ function fetchallFiles(folderName){
     console.log(data);
     var files_ = []
     
-    if(typeof data.files == 'string'){
+    //if(typeof data.files == 'string'){
      
       files_ = [data.files];
    
-      }else if (Array.isArray(data.files)) {
+    //  }else if (Array.isArray(data.files)) {
      
-        files_ = data.files;  // If it's already an array, use it directly
-  }
+      //  files_ = data.files;  // If it's already an array, use it directly
+  //}
 
   
 
