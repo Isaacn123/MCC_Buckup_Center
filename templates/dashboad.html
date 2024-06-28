@@ -71,13 +71,9 @@
         <p>This is the help section.</p>
     </div>
     
-    <div id="tabDashboardContent" class="tab-content">
-      <!--<div class="top-droppable folder tooltiper tooltiper-up" data-tooltip="0 file" id="folder1"><i class="fa fa-folder" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i><p>Folder 1</p></div>
-      <div class="top-droppable folder tooltiper tooltiper-up" data-tooltip="0 file" id="folder2"><i class="fa fa-folder" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i><p>Folder 2</p></div> -->
-      <div class="top-droppable folder tooltiper tooltiper-up" data-tooltip="0 file" id="folder3"><i class="fa fa-folder" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i><p>Folder 3</p></div>
-     <!-- <div class="top-droppable folder tooltiper tooltiper-up" data-tooltip="0 file" id="folder4"><i class="fa fa-folder" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i><p>Folder 4</p></div>
-      <div class="top-droppable folder tooltiper tooltiper-up" data-tooltip="0 file" id="folder5"><i class="fa fa-folder" aria-hidden="true"></i><i class="fa fa-check" aria-hidden="true"></i><p>Folder 5</p></div>-->
-    </div>
+<div id="tabDashboardContent" class="tab-content">
+
+ </div>
     
     <div id="tabProfileContent" class="tab-content" style="display: none;">
         <h3>My Profile Content</h3>
@@ -206,11 +202,35 @@ fetch("/get_all_buckets", {
     return response.json()
   }
   
-}).then((resp) => {
-  console.log("FOLDERS", resp)
-}).catch((error)=>{
-  console.log("Error", error)
-})
+}).then((data) => {
+  console.log("FOLDERS",data)
+// creating folder HTML 
+const folderContainer = document.getElementById('')
+if(data.folders && data.folders.length > 0){
+  data.folders.forEach((folder,index) =>{
+
+    const folderDiv = document.createElement('Div');
+    folderDiv.className = 'top-droppable folder tooltiper tooltiper-up';
+    folderDiv.dataset.tooltip = '0 file';
+    folderDiv.id =`folder${index + 1}`;
+
+    folderDiv.innerHTML = `
+    <i class="fa fa-folder" aria-hidden="true"></i>
+    <i class="fa fa-check" aria-hidden="true"></i>
+    <p>${folder}</p>
+    `;
+
+    folderContainer.appendChild(folderDiv);
+  });
+} else {
+
+  const noFoldersDiv = document.createElement('div');
+  noFoldersDiv.className = 'alert alert-warning';
+  noFoldersDiv.textContent = 'No folders found';
+  folderContainer.appendChild(noFoldersDiv);
+}
+  
+}).catch((error)=> console.error('Error fetch folder list:', error))
 
 </script>
 
