@@ -280,7 +280,7 @@ document.getElementById("createFolder").addEventListener("click", function(event
     }).then((data)=>{
       console.log("success");
       alert(data.message);
-      get_all_folders();
+     location.reload();
     }).catch((error)=> console.error(error));
      modal.hide();
 
