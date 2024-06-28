@@ -166,6 +166,7 @@ class GETALLFILES(Resource):
         
         try:
             data = request.json
+            print(data)
             folder_name = data.get('folder_name','').strip()
             print(f"FOLDER: {folder_name}")
             if not folder_name:
