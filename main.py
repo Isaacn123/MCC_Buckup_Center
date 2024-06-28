@@ -194,6 +194,7 @@ class GETALLFILES(Resource):
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
 api.add_resource(GETALLBUCKET2FOLDERS,'/get_all_buckets')
+api.add_resource(GETALLFILES,'/list_all_files')
 api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
