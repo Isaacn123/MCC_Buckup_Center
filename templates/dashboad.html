@@ -208,7 +208,7 @@ fetch("/get_all_buckets", {
 const folderContainer = document.getElementById('tabDashboardContent');
 
 if(data.length > 0){
-  data.folders.forEach((folder,index) =>{
+  data.forEach((folder,index) =>{
 
     const folderDiv = document.createElement('Div');
     folderDiv.className = 'top-droppable folder tooltiper tooltiper-up';
