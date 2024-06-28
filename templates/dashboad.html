@@ -268,7 +268,7 @@ document.getElementById("createFolder").addEventListener("click", function(event
     fetch('/create_b2_folder',{
       method:"POST",
       header:{
-        "Accept":"application/json"
+        "Content-Type":"application/json"
       },
       body:JSON.stringify(content)
     }).then((response) =>{
