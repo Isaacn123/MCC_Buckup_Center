@@ -330,9 +330,9 @@ function fetchallFiles(folderName){
     console.log(data.files);
     var files_ = []
 
-    files_.append(data.files)
+    files_.push(...data.files);
 
-    console.log(files_)
+    console.log(files_);
 
     const foldercontainer = document.getElementById("tabDashboardContent");
     const fileListContainer = document.getElementById('fileListContainer');
