@@ -327,10 +327,20 @@ function fetchallFiles(folderName){
     }
   })
   .then((data) => {
-    console.log(data.files);
-    var files_ = []
 
-    files_.push(...data.files);
+    console.log(data);
+    var files_ = []
+    
+    if(typeof data.files == 'string'){
+     
+      files_ = [data.files];
+   
+      }else if (Array.isArray(data.files)) {
+     
+        files_ = data.files;  // If it's already an array, use it directly
+  }
+
+  
 
     console.log(files_);
 
