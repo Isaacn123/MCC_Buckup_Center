@@ -171,7 +171,7 @@ class GETALLFILES(Resource):
             print(f"FOLDER: {folder_name}")
             if not folder_name:
                 return jsonify({"error": "Folder name is required"})
-            file_versions = bucket.ls(prefix=folder_name,latest_only=True)
+            file_versions = bucket.ls(folder_to_list=folder_name,latest_only=True)
             files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
 
             return jsonify({"files":files})
