@@ -160,6 +160,21 @@ class GETALLBUCKET2FOLDERS(Resource):
 
             return jsonify({"error:": str(e)})
 
+class GETALLFILES(Resource):
+    def get(self):
+        
+        try:
+            folder_name = request.args.get('folder_name','').strip()
+            if not folder_name:
+                return jsonify({"error": "Folder name is required"})
+            file_versions = bucket.ls(prefix=folder_name,latest_only=True)
+            files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
+
+            return jsonify({"files":files})
+
+        except Exception as e:
+            return jsonify({"error": str(e)})
+
         # print("Folders in the bucket:")
         # if folders:
         #     print("Folders in the BUCKT")
