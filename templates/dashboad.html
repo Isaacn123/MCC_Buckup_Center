@@ -352,7 +352,7 @@ function fetchallFiles(folderName){
 
     if(data.files && data.files.length > 0){
        console.log("LO...:",data.files)
-       data.files.forEach(file => {
+       files_.forEach(file => {
        const fileItem = document.createElement('li');
        fileItem.className = 'list-group-item';
        fileItem.textContent = file;
