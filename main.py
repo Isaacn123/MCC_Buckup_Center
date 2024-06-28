@@ -162,7 +162,7 @@ class GETALLBUCKET2FOLDERS(Resource):
 
 class GETALLFILES(Resource):
     @api.expect(folder_name)
-    def get(self):
+    def post(self):
         
         try:
             folder_name = request.args.get('folder_name','').strip()
