@@ -247,6 +247,7 @@ function get_all_folders(){
       `;
   
       folderContainer.appendChild(folderDiv);
+      fetchallFiles(FoldersDiv);
     });
   } else {
   
@@ -254,6 +255,7 @@ function get_all_folders(){
     noFoldersDiv.className = 'alert alert-warning';
     noFoldersDiv.textContent = 'No folders found';
     folderContainer.appendChild(noFoldersDiv);
+   
   }
     
   }).catch((error)=> console.error('Error fetch folder list:', error))
