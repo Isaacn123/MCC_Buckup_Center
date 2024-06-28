@@ -76,11 +76,11 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <input type="text" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2"> 
+            <input type="text" id="folderInput" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2"> 
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary" id="createFolder" >Create</button>
           </div>
         </div>
       </div>
@@ -252,6 +252,51 @@ if(data.length > 0){
 }
   
 }).catch((error)=> console.error('Error fetch folder list:', error))
+
+
+// Model create Folder MOdel 
+
+document.getElementById("createFolder").addEventListener("click", function(event){
+  //event.preventDefault();
+  var folderInput =  document.getElementById("folderInput").value;
+  console.log("submitting");
+  if (folderInput){
+    var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+    var content = {
+      "folder_name":folderInput
+    }
+    fetch('/create_b2_folder',{
+      method:"POST",
+      header:{
+        "Accept":"application/json"
+      },
+      body:JSON.stringify(content)
+    }).then((response) =>{
+      if (response.status == 200){
+        return response.json()
+      }
+    }).then((data)=>{
+      console.log("success")
+    }).catch((error)=> console.error(error));
+     modal.hide();
+
+  }else{
+    alert("Enter FOlder name");
+  }
+
+})
+
+const creatFolderBtn = document.getElementById("createFolder").addEventListener("click", function(event){
+  //event.preventDefault();
+  var folderInput =  document.getElementById("folderInput").value;
+  if (folderInput){
+    var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+    
+     modal.hide();
+  }
+
+})
+
 
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
