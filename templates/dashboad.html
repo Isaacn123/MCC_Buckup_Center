@@ -245,9 +245,13 @@ function get_all_folders(){
       <i class="fa fa-check" aria-hidden="true"></i>
       <p>${folder}</p>
       `;
+
+      folderDiv.addEventListener("click", function(){
+       fetchallFiles(folder);
+      });
   
       folderContainer.appendChild(folderDiv);
-      fetchallFiles(folderDiv);
+      
     });
   } else {
   
