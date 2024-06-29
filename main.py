@@ -52,6 +52,16 @@ def dashboard():
         return render_template("dashboad.html",token=token)
     else:
         return redirect('/login')
+
+
+@app.route('/uploadfiles')
+def uploadfiles():
+    if 'logged_in' in session and session['logged_in']:
+         # Access the token from the session
+        token = session.get('token_ms', None)
+        return render_template("index.html",token=token)
+    else:
+        return redirect('/login')
     
 class CreateUser(Resource):
     @api.doc(description='Create current user information')

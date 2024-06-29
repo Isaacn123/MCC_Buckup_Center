@@ -123,14 +123,16 @@
             status.textContent = "Please wait, uploading in progress...";
 
                     console.log("Sending FormData:", formdata);
+                    
                     xhr.onreadystatechange = function () {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-            console.log('File uploaded successfully');
-        } else {
-            console.error('Error uploading file: ' + xhr.status);
-        }
-    }
+
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                  console.log('File uploaded successfully');
+              } else {
+                  console.error('Error uploading file: ' + xhr.status);
+              }
+          }
 };
                     xhr.send(formdata);
             
