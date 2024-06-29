@@ -364,18 +364,22 @@ function fetchallFiles(folderName){
 
        const fileText = document.createTextNode(file);
        fileItem.appendChild(fileText);
+
+       const divContainer = document.createElement('div');
+       divContainer.className = "d-flex justify-content-between align-items-center"
+       fileItem.appendChild(divContainer)
        
        const successbtn = document.createElement("button");
        successbtn.type = 'button';
        successbtn.className = 'btn btn-outline-success';
        successbtn.textContent = 'Download';
-       fileItem.appendChild(successbtn);
+       divContainer.appendChild(successbtn);
 
        const dangerButton = document.createElement('button');
        dangerButton.type = 'button';
        dangerButton.className = 'btn btn-outline-danger';
        dangerButton.textContent = 'Delete';
-       fileItem.appendChild(dangerButton);
+       divContainer.appendChild(dangerButton);
 
       // fileItem.textContent = file;
        filelist.appendChild(fileItem);
