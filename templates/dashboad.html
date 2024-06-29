@@ -361,13 +361,23 @@ function fetchallFiles(folderName){
        const fileItem = document.createElement('li');
        fileItem.className = 'list-group-item';
        //fileItem.innerHTML = '<button type="button" class="btn btn-outline-success">Success</button><button type="button" class="btn btn-outline-danger">Danger</button>'
+
+       const fileText = document.createTextNode(file);
+       fileItem.appendChild(fileText);
+       
        const successbtn = document.createElement("button");
        successbtn.type = 'button';
-       successbtn.className = 'btn btn-outline-success'
-       successbtn.textContent = 'Download'
+       successbtn.className = 'btn btn-outline-success';
+       successbtn.textContent = 'Download';
        fileItem.appendChild(successbtn);
 
-       fileItem.textContent = file;
+       const dangerButton = document.createElement('button');
+       dangerButton.type = 'button';
+       dangerButton.className = 'btn btn-outline-danger';
+       dangerButton.textContent = 'Danger';
+       fileItem.appendChild(dangerButton);
+
+      // fileItem.textContent = file;
        filelist.appendChild(fileItem);
       });
     } else {
