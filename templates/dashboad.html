@@ -161,6 +161,12 @@
     const clickedTab = document.getElementById(tabId);
     clickedTab.classList.add('active')
 
+    if (tabId === 'tabDashboardContent'){
+      document.getElementById('fileListContainer').style.display = 'block'
+    }else{
+      document.getElementById('fileListContainer').style.display = 'none'
+    }
+
     const contentId = `${tabId}Content`;
     const clickedContent = document.getElementById(contentId);
     clickedContent.classList.add('active')
