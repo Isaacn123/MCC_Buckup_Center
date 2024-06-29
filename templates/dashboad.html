@@ -373,7 +373,9 @@ function fetchallFiles(folderName){
        successbtn.type = 'button';
        successbtn.className = 'btn btn-outline-success';
        successbtn.textContent = 'Download';
-       successbtn.setAttribute("download",'');
+       successbtn.href ="#"
+       successbtn.setAttribute('download','');
+       
        divContainer.appendChild(successbtn);
 
        successbtn.addEventListener('click', function(){
