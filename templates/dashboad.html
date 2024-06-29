@@ -369,11 +369,16 @@ function fetchallFiles(folderName){
        divContainer.className = "d-flex justify-content-between align-items-center"
        fileItem.appendChild(divContainer)
        
-       const successbtn = document.createElement("button");
+       const successbtn = document.createElement("a");
        successbtn.type = 'button';
        successbtn.className = 'btn btn-outline-success';
        successbtn.textContent = 'Download';
+       successbtn.setAttributes("download",'')
        divContainer.appendChild(successbtn);
+
+       successbtn.addEventListener('click', function(){
+        
+       })
 
        const dangerButton = document.createElement('button');
        dangerButton.type = 'button';
