@@ -8,7 +8,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css"> -->
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="static/css/theme.css">
@@ -29,136 +28,459 @@
         margin-top: 0; /* Adjust the margin as needed */
     }
 
+    .gradient-custom {
+      /* fallback for old browsers */
+      background: #f6d365;
+      
+      /* Chrome 10-25, Safari 5.1-6 */
+      background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1));
+      
+      /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))
+      }
+
+    @media screen and (max-width: 746px) {
+      .menu-items{
+        font-size: 11px;
+      }
+      h1{
+        display: none;
+      }
+      h5{
+        font-size: 8px;
+      }
+      .ms-2{
+        font-size: 8px;
+      }
+     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center">
+  <header>
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <a class="nav-link" rel="canonical" href="#">
-                <img src="{{ url_for('static', filename='/images/logo.png') }}" alt="Robert Kayanja Ministries" width="54" height="50">
-            </a>
-          <span class="ms-2">RKM Backup Center</span>      
+          <a class="nav-link" rel="canonical" href="#">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Robert Kayanja Ministries" width="54" height="50">
+          </a>
+          <span class="ms-2">RKM Backup Center</span>
         </div>
         <div class="d-flex align-items-center">
-            <div class="me-3" style="line-height:1 !important;">
-              <h5 id="name-profile" title="">Nsamb Isaac</h5>
-              <small class="text-muted" id="date-ms" >
-                Someone famous in
-              </small> 
-        </div>
-            <button type="button" class="btn btn-info">LogOut</button>
-        </div>
-    </div>
-</div>
-  <ul class="nav nav-tabs">
-    <li id="tabHelp"  class="nav-item"><a class="nav-link" href="#" onclick="switchTab('tabHelp'); return false;"><i class="fa fa-question-circle-o fa-lg"></i> Help</a></li>
-    <li id="tabDashboard" class="nav-item"><a class="nav-link" href="#" onclick="switchTab('tabDashboard'); return false;" ><i class="fa fa-tachometer fa-lg"></i>Dashboard</a></li>
-    <li id="tabProfile" class="nav-item"> <a class="nav-link" href="#" onclick="switchTab('tabProfile'); return false;"><i class="fa fa-user fa-lg"></i> My Profile</a></li>
-  </ul>
-</header>
-
-<section id="wrapper">
-
-  <div class="main">
-    <h1>My documents</h1>
-    <div class="input-wrap"><input id="searchbar" type="search" placeholder="Search a file..." /><i class="fa fa-search" aria-hidden="true"></i></div>
-    <div class="d-flex"><button type="button" class="btn btn-info" data-toggle="modal" data-target="#staticBackdrop">Add Folder</button></div>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
-      Launch static backdrop modal
-    </button>
-
-    <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Create new Folder</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+          <div class="me-3" style="line-height: 1 !important;">
+            <h5 id="name-profile" title="">Nsamb Isaac</h5>
+            <small class="text-muted" id="date-ms">Someone famous in</small>
           </div>
-          <div class="modal-body">
-            <input type="text" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2"> 
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary" >Create</button>
-          </div>
+          <button type="button" class="btn btn-info">LogOut</button>
         </div>
       </div>
     </div>
-    
-  <div class="left">
-
-    <div id="tabHelpContent" class="tab-content">
-        <h3>Help Content</h3>
-        <p>This is the help section.</p>
-    </div>
-    
-<div id="tabDashboardContent" class="tab-content">
- </div>
-    
-    <div id="tabProfileContent" class="tab-content" style="display: none;">
-        <h3>My Profile Content</h3>
-        <p>This is the profile section.</p>
-    </div>
-    
-    </div>
-  </div>
-
-  <div class="right">
-    <div class="input-select-wrap">
-      <div class="fileUpload">
-        <span>+</span><p>Add your files</p>
+    <ul class="nav nav-tabs">
+      <li id="tabHelp" class="nav-item">
+        <a class="nav-link" href="#" onclick="switchTab('tabHelp'); return false;"><i class="fa fa-question-circle-o fa-lg"></i> Help</a>
+      </li>
+      <li id="tabDashboard" class="nav-item">
+        <a class="nav-link" href="#" onclick="switchTab('tabDashboard'); return false;"><i class="fa fa-tachometer fa-lg"></i> Dashboard</a>
+      </li>
+      <li id="tabProfile" class="nav-item">
+        <a class="nav-link" href="#" onclick="switchTab('tabProfile'); return false;"><i class="fa fa-user fa-lg"></i> My Profile</a>
+      </li>
+    </ul>
+  </header>
+  
+  <section id="wrapper">
+    <div class="main">
+      <h1>My documents</h1>
+      <div class="input-wrap">
+        <input id="searchbar" type="search" placeholder="Search a file..." />
+        <i class="fa fa-search" aria-hidden="true"></i>
       </div>
-      <input id='fileSelect' multiple name='fileSelect' type='file'>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Add new Folder
+      </button>
+  
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">Create new Folder</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <input type="text" id="folderInput" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" id="createFolder">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="left">
+        <div id="tabHelpContent" class="tab-content">
+          <h3>Help Content</h3>
+          <p>This is the help section.</p>
+        </div>
+  
+        <div id="tabDashboardContent" class="tab-content"></div>
+  
+        <div id="fileListContainer" class="mt-3" style="display: none;">
+          <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
+          <h2>Files</h2>
+        </div>
+  
+        <div id="tabProfileContent" class="tab-content">
+          <h3>My Profile Content</h3>
+          {% include "partial.html" %}
+        </div>
+      </div>
     </div>
-    <div id='draggableFile'>
-      <span>Drop your files here<br/><span>You can drop your files here to add them to your documents</span></span>
+  
+    <div class="right">
+      <div class="input-select-wrap">
+        <div class="fileUpload">
+          <a href="/uploadfiles">
+            <span>+</span>
+            <p>Add your files</p>
+          </a>
+        </div>
+      </div>
+      <div id="draggableFile">
+        <span>Drop your files here<br /><span>You can drop your files here to add them to your documents</span></span>
+      </div>
+      <div id="result"></div>
     </div>
-    <div id='result'></div>
-  </div>
   
-  <div class="top-droppable folder-content easeout2 closed" id="folder1-content">
-    <div class="close-folder-content"><i class="fa fa-times" aria-hidden="true"></i></div>
-    <h2><i class="fa fa-folder" aria-hidden="true"></i><span>Folder 1</span></h2>
-  </div>
+    <div class="top-droppable folder-content easeout2 closed" id="folder1-content">
+      <div class="close-folder-content">
+        <i class="fa fa-times" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>Folder 1</span>
+      </h2>
+    </div>
   
-  <div class="top-droppable folder-content easeout2 closed" id="folder2-content">
-    <div class="close-folder-content"><i class="fa fa-times" aria-hidden="true"></i></div>
-    <h2><i class="fa fa-folder" aria-hidden="true"></i><span>Folder 2</span></h2>
-  </div>
+    <div class="top-droppable folder-content easeout2 closed" id="folder2-content">
+      <div class="close-folder-content">
+        <i class="fa fa-times" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>Folder 2</span>
+      </h2>
+    </div>
   
-  <div class="top-droppable folder-content easeout2 closed" id="folder3-content">
-    <div class="close-folder-content"><i class="fa fa-times" aria-hidden="true"></i></div>
-    <h2><i class="fa fa-folder" aria-hidden="true"></i><span>Folder 3</span></h2>
-  </div>
+    <div class="top-droppable folder-content easeout2 closed" id="folder3-content">
+      <div class="close-folder-content">
+        <i class="fa fa-times" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>Folder 3</span>
+      </h2>
+    </div>
   
-  <div class="top-droppable folder-content easeout2 closed" id="folder4-content">
-    <div class="close-folder-content"><i class="fa fa-times" aria-hidden="true"></i></div>
-    <h2><i class="fa fa-folder" aria-hidden="true"></i><span>Folder 4</span></h2>
-  </div>
+    <div class="top-droppable folder-content easeout2 closed" id="folder4-content">
+      <div class="close-folder-content">
+        <i class="fa fa-times" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>Folder 4</span>
+      </h2>
+    </div>
   
-  <div class="top-droppable folder-content easeout2 closed" id="folder5-content">
-    <div class="close-folder-content"><i class="fa fa-times" aria-hidden="true"></i></div>
-    <h2><i class="fa fa-folder" aria-hidden="true"></i><span>Folder 5</span></h2>
-  </div>
-</section>
-
+    <div class="top-droppable folder-content easeout2 closed" id="folder5-content">
+      <div class="close-folder-content">
+        <i class="fa fa-times" aria-hidden="true"></i>
+      </div>
+      <h2>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>Folder 5</span>
+      </h2>
+    </div>
+  </section>
 
 <script>
 
 //document.addEventListener("DOMContentLoaded", function(){
- 
+ console.log("main Log.....");
+  function switchTab(tabId) {
+    console.log("function clicked");
+    const tabs = document.querySelectorAll('.nav-item');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    const tabContent = document.querySelectorAll('.tab-content');
+    tabContent.forEach(content => content.classList.remove('active'));
+
+    // adding 'active' class to the clicked tab and content
+    const clickedTab = document.getElementById(tabId);
+    clickedTab.classList.add('active')
+
+    if (tabId === 'tabDashboardContent'){
+      document.getElementById('fileListContainer').style.display = 'block'
+    }else{
+      document.getElementById('fileListContainer').style.display = 'none'
+    }
+
+    const contentId = `${tabId}Content`;
+    const clickedContent = document.getElementById(contentId);
+    clickedContent.classList.add('active')
+  //}
+};
+
+// Set the default active tab on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const defaultTab = "tabDashboard"
+  const token = "{{ token }}";
+  const profile_name = document.getElementById("name-profile");
+  const user_profileEmail = document.getElementById("user_profile_email");
+  const user_profileName = document.getElementById("user_profile_name");
+  const profile_user_date = document.getElementById("profile_date");
+  
+  const date_created = document.getElementById("date-ms")
+ // console.log("Token:", token);
+
+  switchTab(defaultTab)
+
+  fetch('/api/user/me',{
+    method:"GET",
+    headers:{ 
+      "Content-Type": "application/json",
+      "Authorization":`Bearer ${token}`
+    },
+    }).then((response) =>{
+
+      if (response.status === 200) {
+       return response.json();
+      }else{
+
+        throw new Error("Something went wrong on API!");
+
+      }
+    }).then((resp)=>{
+     profile_name.innerText= `${resp.name}`;
+     user_profile_name.innerText =  `${resp.name}`;
+     user_profileEmail.innerText =  `${resp.email}`;
+     const dateOn = `${resp.date_created}`
+     const dateObject = new Date(dateOn);
+     //date_created.innerText= `${dateObject.toLocaleString()}`;
+     const formattedDate = dateObject.toLocaleDateString('en-US', {
+      weekday: 'short', // Abbreviated day of the week (e.g., Wed)
+      year: 'numeric',  // Full year (e.g., 2024)
+      month: 'short',   // Abbreviated month name (e.g., Jun)
+      day: 'numeric'    // Day of the month (e.g., 24)
+  });
+
+  date_created.innerText= `${formattedDate}`;
+  profile_user_date.innerText = `${formattedDate}`;
+
+    // console.log("Rsult:",formattedDate);
+
+    }).catch((error)=>{
+
+      console.error(error);
+
+    })
+
+});
+
+function get_all_folders(){
+  fetch("/get_all_buckets", {
+    method:"GET", 
+    headers:{
+      "Accept":"application/json"
+    }
+  }).then((response)=>{
+    if (response.status == 200){
+      return response.json()
+    }
+    
+  }).then((data) => {
+    console.log("FOLDERS",data.length)
+  // creating folder HTML 
+  const folderContainer = document.getElementById('tabDashboardContent');
+  
+  if(data.length > 0){
+    data.forEach((folder,index) =>{
+  
+      const folderDiv = document.createElement('Div');
+      folderDiv.className = 'top-droppable folder tooltiper tooltiper-up';
+      folderDiv.dataset.tooltip = '0 file';
+      folderDiv.id =`folder${index + 1}`;
+  
+      folderDiv.innerHTML = `
+      <i class="fa fa-folder" aria-hidden="true"></i>
+      <i class="fa fa-check" aria-hidden="true"></i>
+      <p>${folder}</p>
+      `;
+
+      folderDiv.addEventListener("click", function(){
+       fetchallFiles(folder);
+      });
+  
+      folderContainer.appendChild(folderDiv);
+      
+    });
+  } else {
+  
+    const noFoldersDiv = document.createElement('div');
+    noFoldersDiv.className = 'alert alert-warning';
+    noFoldersDiv.textContent = 'No folders found';
+    folderContainer.appendChild(noFoldersDiv);
+   
+  }
+    
+  }).catch((error)=> console.error('Error fetch folder list:', error))
+}
+
+get_all_folders();
+// Model create Folder MOdel 
+
+document.getElementById("createFolder").addEventListener("click", function(event){
+  //event.preventDefault();
+  var folderInput =  document.getElementById("folderInput").value;
+  console.log("submitting");
+  if (folderInput){
+    var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+    var content = {
+      "folder_name":folderInput
+    }
+    fetch('/create_b2_folder',{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(content)
+    }).then((response) =>{
+      if (response.status == 200){
+        return response.json()
+      }
+    }).then((data)=>{
+      console.log("success");
+      alert(data.message);
+     location.reload();
+    }).catch((error)=> console.error(error));
+     modal.hide();
+
+  }else{
+    alert("Enter FOlder name");
+  }
+
+});
+
+const creatFolderBtn = document.getElementById("createFolder").addEventListener("click", function(event){
+  //event.preventDefault();
+  var folderInput =  document.getElementById("folderInput").value;
+  if (folderInput){
+    var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+    
+     modal.hide();
+  }
+
+})
+
+function fetchallFiles(folderName){
+  console.log(`Sending folder name: ${folderName}`);
+
+  fetch('/list_all_files',{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({folder_name: folderName})
+  })
+  .then((response) =>{
+    if (response.status == 200){
+      return response.json();
+    }
+  })
+  .then((data) => {
+
+    console.log(data);
+    var files_ = []
+    
+    //if(typeof data.files == 'string'){
+     
+      files_ = [data.files];
+   
+    //  }else if (Array.isArray(data.files)) {
+     
+      //  files_ = data.files;  // If it's already an array, use it directly
+  //}
+
+  
+
+    console.log(files_);
+
+    const foldercontainer = document.getElementById("tabDashboardContent");
+    const fileListContainer = document.getElementById('fileListContainer');
+    const filelist = document.createElement('ul')
+    filelist.className = 'list-group';
+    fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+
+    if(data.files.length > 0){
+       data.files.forEach(file => {
+       const fileItem = document.createElement('li');
+       fileItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+       //fileItem.innerHTML = '<button type="button" class="btn btn-outline-success">Success</button><button type="button" class="btn btn-outline-danger">Danger</button>'
+
+       const fileText = document.createTextNode(file);
+       fileItem.appendChild(fileText);
+
+       const divContainer = document.createElement('div');
+       divContainer.className = "d-flex justify-content-between align-items-center"
+       fileItem.appendChild(divContainer)
+       
+       const successbtn = document.createElement("a");
+       successbtn.type = 'button';
+       successbtn.className = 'btn btn-outline-success';
+       successbtn.textContent = 'Download';
+       successbtn.href ="#"
+       successbtn.setAttribute('download','');
+       
+       divContainer.appendChild(successbtn);
+
+       successbtn.addEventListener('click', function(){
+        
+       })
+
+       const dangerButton = document.createElement('button');
+       dangerButton.type = 'button';
+       dangerButton.className = 'btn btn-outline-danger';
+       dangerButton.textContent = 'Delete';
+       divContainer.appendChild(dangerButton);
+
+      // fileItem.textContent = file;
+       filelist.appendChild(fileItem);
+      });
+    } else {
+
+      const noFilesItem = document.createElement('li');
+
+      noFilesItem.className = 'list-group-item';
+      noFilesItem.textContent = 'No files found';
+      filelist.appendChild(noFilesItem);
+    }
+   // if ()
+   fileListContainer.appendChild(filelist);
+   fileListContainer.style.display = 'block'
+   foldercontainer.style.display = 'none';
+
+   document.getElementById('backButton').addEventListener('click', function(){
+    fileListContainer.style.display = 'none';
+    foldercontainer.style.display = 'block';
+   })
+
+  })
+  .catch((error) => console.error("Error fetching file list:", error));
+}
+
 
 </script>
-
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" defer></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
