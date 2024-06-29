@@ -359,7 +359,7 @@ function fetchallFiles(folderName){
     if(data.files.length > 0){
        data.files.forEach(file => {
        const fileItem = document.createElement('li');
-       fileItem.className = 'list-group-item';
+       fileItem.className = 'list-group-item d-flex justify-content-between align-items-center';
        //fileItem.innerHTML = '<button type="button" class="btn btn-outline-success">Success</button><button type="button" class="btn btn-outline-danger">Danger</button>'
 
        const fileText = document.createTextNode(file);
@@ -374,7 +374,7 @@ function fetchallFiles(folderName){
        const dangerButton = document.createElement('button');
        dangerButton.type = 'button';
        dangerButton.className = 'btn btn-outline-danger';
-       dangerButton.textContent = 'Danger';
+       dangerButton.textContent = 'Delete';
        fileItem.appendChild(dangerButton);
 
       // fileItem.textContent = file;
