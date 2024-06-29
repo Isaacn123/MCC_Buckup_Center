@@ -91,18 +91,13 @@
         <h3>Help Content</h3>
         <p>This is the help section.</p>
     </div>
-
-<div id="tabDashboardContent" class="tab-content">
-  <div id="tabDashboardContentFolder">
-  </div>
-  <div id="fileListContainer" class="mt-3" style="display:none;">
-   <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
-   <h2>Files</h2>
- </div>
-  
-</div>
     
-
+<div id="tabDashboardContent" class="tab-content">
+ </div>
+ <div id="fileListContainer" class="mt-3" style="display:none;">
+  <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
+  <h2>Files</h2>
+</div>
     
     <div id="tabProfileContent" class="tab-content" style="display: none;">
         <h3>My Profile Content</h3>
@@ -349,7 +344,7 @@ function fetchallFiles(folderName){
 
     console.log(files_);
 
-    const foldercontainer = document.getElementById("tabDashboardContentFolder");
+    const foldercontainer = document.getElementById("tabDashboardContent");
     const fileListContainer = document.getElementById('fileListContainer');
     const filelist = document.createElement('ul')
     filelist.className = 'list-group';
