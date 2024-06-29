@@ -11,6 +11,7 @@
 </head>
 <body>
     <main class="main min-vh-100" id="top">
+      <a href="/dashboard" class="btn btn-secondary">back</a>
     <section class="py-0">
         <div class="container-fluid">
           <div class="row">
@@ -123,7 +124,7 @@
             status.textContent = "Please wait, uploading in progress...";
 
                     console.log("Sending FormData:", formdata);
-                    
+
                     xhr.onreadystatechange = function () {
 
           if (xhr.readyState === XMLHttpRequest.DONE) {
