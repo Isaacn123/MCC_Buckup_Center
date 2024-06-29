@@ -188,6 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const defaultTab = "tabDashboard"
   const token = "{{ token }}";
   const profile_name = document.getElementById("name-profile");
+  const user_profileEmail = document.getElementById("user_profile_email");
+  const user_profileName = document.getElementById("user_profile_name");
+  
   const date_created = document.getElementById("date-ms")
  // console.log("Token:", token);
 
@@ -210,6 +213,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }).then((resp)=>{
      profile_name.innerText= `${resp.name}`;
+     user_profile_name.innerText =  `${resp.name}`;
+     user_profile_email.innerText =  `${resp.email}`;
      const dateOn = `${resp.date_created}`
      const dateObject = new Date(dateOn);
      //date_created.innerText= `${dateObject.toLocaleString()}`;
