@@ -360,12 +360,20 @@ function fetchallFiles(folderName){
        data.files.forEach(file => {
        const fileItem = document.createElement('li');
        fileItem.className = 'list-group-item';
+       //fileItem.innerHTML = '<button type="button" class="btn btn-outline-success">Success</button><button type="button" class="btn btn-outline-danger">Danger</button>'
+       const successbtn = document.createElement("button");
+       successbtn.type = 'button';
+       successbtn.className = 'btn btn-outline-success'
+       successbtn.textContent = 'Download'
+       fileItem.appendChild(successbtn);
+
        fileItem.textContent = file;
        filelist.appendChild(fileItem);
       });
     } else {
 
       const noFilesItem = document.createElement('li');
+
       noFilesItem.className = 'list-group-item';
       noFilesItem.textContent = 'No files found';
       filelist.appendChild(noFilesItem);
