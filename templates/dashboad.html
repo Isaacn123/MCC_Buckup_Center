@@ -93,7 +93,7 @@
     </div>
 
 <div id="tabDashboardContent" class="tab-content">
-  <div id="tabDashboardContent">
+  <div id="tabDashboardContentFolder">
   </div>
   <div id="fileListContainer" class="mt-3" style="display:none;">
    <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
@@ -349,7 +349,7 @@ function fetchallFiles(folderName){
 
     console.log(files_);
 
-    const foldercontainer = document.getElementById("tabDashboardContent");
+    const foldercontainer = document.getElementById("tabDashboardContentFolder");
     const fileListContainer = document.getElementById('fileListContainer');
     const filelist = document.createElement('ul')
     filelist.className = 'list-group';
