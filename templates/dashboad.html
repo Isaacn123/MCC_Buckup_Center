@@ -190,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const profile_name = document.getElementById("name-profile");
   const user_profileEmail = document.getElementById("user_profile_email");
   const user_profileName = document.getElementById("user_profile_name");
+  const profile_user_date = document.getElementById("profile_date");
   
   const date_created = document.getElementById("date-ms")
  // console.log("Token:", token);
@@ -226,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   date_created.innerText= `${formattedDate}`;
+  profile_user_date.innerText = `${formattedDate}`;
 
     // console.log("Rsult:",formattedDate);
 
