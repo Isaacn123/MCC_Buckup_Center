@@ -350,9 +350,8 @@ function fetchallFiles(folderName){
     filelist.className = 'list-group';
     fileListContainer.innerHTML = '<button id="backButton" class="btn btn-primary mb-3">Back to Folders</button><h2>Files</h2>';
 
-    if(data.files && data.files.length > 0){
-       console.log("LO...:",data.files)
-       files_.forEach(file => {
+    if(data.files.length > 0){
+       data.files.forEach(file => {
        const fileItem = document.createElement('li');
        fileItem.className = 'list-group-item';
        fileItem.textContent = file;
