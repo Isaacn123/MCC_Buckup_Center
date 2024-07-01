@@ -118,8 +118,8 @@ class UploadFiles(Resource):
 
             folder_name = request.form.get('folder_name', '').strip()
 
-            logger.info(f"fold: {request.files['folder_name']}")
-            logger.info(f"Folder: {folder_name}")
+            print(f"fold: {request.files['folder_name']}")
+            print(f"Folder: {folder_name}")
             
             if folder_name:
                  file_name = f"{folder_name}{file.filename}"
@@ -129,7 +129,7 @@ class UploadFiles(Resource):
             #     folder_name = folder_name.rstrip('/') + '/'
             
             # file_path = folder_name + file.filename
-            logger.info(f"PATH: {folder_name}")
+            print(f"PATH: {folder_name}")
 
             # bucket.upload_bytes(
             #     data_bytes=file_stream.getvalue(),
@@ -138,12 +138,12 @@ class UploadFiles(Resource):
             # )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
-            logger.info(f"Uploading file {file_name} to bucket {bucket_name}")
+            # logger.info(f"Uploading file {file_name} to bucket {bucket_name}")
             success_message = f"File '{file.filename}' uploaded successfully to '{folder_name}'"
             return jsonify({"message": success_message})
 
         except Exception as e:
-            return jsonify({"message": f"Failed to upload file: {str(e)}{file_name} "})
+            return jsonify({"message": f"Failed to upload file: {str(e)}"})
 
 class CreateB2BucketFolder(Resource):
     @api.doc(description='Create A Folder in the Bucket')
