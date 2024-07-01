@@ -181,6 +181,7 @@
 
             const itemElement = document.createElement('li');
             const a_list = document.createElement("a");
+            const buttonDropdown = document.getElementById("dropdownMenuButton1")
 
             a_list.className = "dropdown-item";
             a_list.href = "#";
@@ -189,6 +190,9 @@
             itemElement.appendChild(a_list); // Append the anchor to the list item
             ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
     
+            a_list.addEventListener("click",function(){
+              buttonDropdown.textContent = bucketName
+            })
             console.log("HHL:",bucketName);
            });
         }else{
@@ -200,6 +204,8 @@
 
           noItemsElement.appendChild(noItemsText);
           dropdownMenu.appendChild(noItemsElement);
+
+
 
         }
 
