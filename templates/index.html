@@ -171,17 +171,16 @@
         }
         }).then((dataresponse)=>{
           console.log("RESUL:",dataresponse)
+          const ItemList = document.getElementById("myDropdownMenu");
+          ItemList.innerHTML = '';
     
         if(dataresponse.length >0){
 
           dataresponse.forEach((bucketName,index) => {
 
-            const ItemList = document.getElementById("myDropdownMenu");
-
             const itemElement = document.createElement('li');
             const a_list = document.createElement("a");
-            ItemList.appendChild(itemElement);
-
+            
             a_list.className = "dropdown-item";
             a_list.href = "#";
             a_list.textContent = bucketName;
