@@ -8,6 +8,8 @@ import secrets
 from b2sdk.v2 import InMemoryAccountInfo,B2Api
 from config.util import *
 import io
+import logging
+
 # from flask_cors import CORS
 
 app = Flask(__name__)
@@ -16,6 +18,8 @@ info = InMemoryAccountInfo()
 b2_api = B2Api(info)
 b2_api.authorize_account('production', application_key=app_key, application_key_id=app_key_ID)
 bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
+
+logger = logging.getLogger(__name__)
 
 # Generate or load secret key
 def generate_secret_key():
@@ -113,8 +117,8 @@ class UploadFiles(Resource):
            
 
             folder_name = request.form.get('folder_name', '').strip()
-            print(f"fold: {request.files['folder_name']}")
-            print(f"Folder: {folder_name}")
+            logger.info(f"fold: {request.files['folder_name']}")
+            logger.info(f"Folder: {folder_name}")
             
             if folder_name:
                  file_name = f"{folder_name}{file.filename}"
@@ -124,7 +128,7 @@ class UploadFiles(Resource):
             #     folder_name = folder_name.rstrip('/') + '/'
             
             # file_path = folder_name + file.filename
-            print(f"PATH: {folder_name}")
+            logger.info(f"PATH: {folder_name}")
 
             # bucket.upload_bytes(
             #     data_bytes=file_stream.getvalue(),
@@ -133,6 +137,7 @@ class UploadFiles(Resource):
             # )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
+            logger.info(f"Uploading file {file_name} to bucket {bucket_name}")
             success_message = f"File '{file.filename}' uploaded successfully to '{folder_name}'"
             return jsonify({"message": success_message})
 
