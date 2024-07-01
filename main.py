@@ -142,6 +142,9 @@ class UploadFiles(Resource):
             return jsonify({"message": success_message})
 
         except Exception as e:
+            folder_name = request.form.get('folder_name', '').strip()
+            logger.info(f"fold: {request.files['folder_name']}")
+            logger.info(f"Folder: {folder_name}")
             return jsonify({"message": f"Failed to upload file: {str(e)} "})
 
 class CreateB2BucketFolder(Resource):
