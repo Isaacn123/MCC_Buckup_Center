@@ -113,6 +113,7 @@ class UploadFiles(Resource):
            
 
             folder_name = request.form.get('folder_name', '').strip()
+            print(f"Folder: {folder_name}")
             
             if folder_name:
                  file_name = f"{folder_name}/{file.filename}"
