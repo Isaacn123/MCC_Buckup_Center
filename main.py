@@ -131,11 +131,11 @@ class UploadFiles(Resource):
             # file_path = folder_name + file.filename
             print(f"PATH: {file_name}")
 
-            # bucket.upload_bytes(
-            #     data_bytes=file_stream.getvalue(),
-            #     # file_name=file.filename
-            #     file_name=file_name
-            # )
+            bucket.upload_bytes(
+                data_bytes=file_stream.getvalue(),
+                # file_name=file.filename
+                file_name=file_name
+            )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
             # logger.info(f"Uploading file {file_name} to bucket {bucket_name}")
