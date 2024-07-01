@@ -169,17 +169,20 @@
           }
         }).then((dataresponse)=>{
           console.log("RESUL:",dataresponse)
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          const ItemList = document.getElementById("myDropdownMenu");
-          const itemElement = document.createElement('li');
-          const a_list = document.createElement("a");
-          ItemList.appendChild(itemElement);
-          a_list.className = "dropdown-item";
-          a_list.href = item.href;
-         dataresponse.forEach(res,index){
-          a_list.textContent = res;
-          console.log("HHL:",res);
-         }
+    
+        if(dataresponse.length >0){
+
+          dataresponse.forEach(res,index){
+            const ItemList = document.getElementById("myDropdownMenu");
+            const itemElement = document.createElement('li');
+            const a_list = document.createElement("a");
+            ItemList.appendChild(itemElement);
+            a_list.className = "dropdown-item";
+            a_list.href = item.href;
+            a_list.textContent = res;
+            console.log("HHL:",res);
+           }
+        }
 
         }).catch((error)=>{
           console.error(error)
