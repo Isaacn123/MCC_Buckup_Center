@@ -106,13 +106,16 @@ class GetUser(Resource):
 class UploadFiles(Resource):
     def post(self):
         try:
-            print(f"File to be : {request.folder_name}")
+            # print(f"File to be : {request.folder_name}")
             file = request.files['file']
             file_Content = file.read()
             file_stream = io.BytesIO(file_Content)
            
 
             folder_name = request.form.get('folder_name', '').strip()
+            
+            if folder_name:
+                 file_name = f"{folder_name}/{file.filename}"
             # folder_name = request.form.get('folder_name','')
             # if folder_name:
             #     folder_name = folder_name.rstrip('/') + '/'
@@ -120,11 +123,11 @@ class UploadFiles(Resource):
             # file_path = folder_name + file.filename
             print(f"PATH: {folder_name}")
 
-            # bucket.upload_bytes(
-            #     data_bytes=file_stream.getvalue(),
-            #     # file_name=file.filename
-            #     file_name=file_path
-            # )
+            bucket.upload_bytes(
+                data_bytes=file_stream.getvalue(),
+                # file_name=file.filename
+                file_name=file_name
+            )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
             success_message = f"File '{file.filename}' uploaded successfully to '{folder_name}'"
