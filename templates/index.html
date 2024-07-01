@@ -37,11 +37,7 @@
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                           Select the Folder 
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
-                          <li><a class="dropdown-item" href="#">Another action</a></li>
-                          <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="myDropdownMenu"></ul>
                       </div>
                         <label for="formFileLg" class="form-label">Select File</label>
                         <input class="form-control form-control-lg" id="formFileLg" type="file">
@@ -173,6 +169,18 @@
           }
         }).then((dataresponse)=>{
           console.log("RESUL:",dataresponse)
+          <li><a class="dropdown-item" href="#">Action</a></li>
+          const ItemList = document.getElementById("myDropdownMenu");
+          const itemElement = document.createElement('li');
+          const a_list = document.createElement("a");
+          ItemList.appendChild(itemElement);
+          a_list.className = "dropdown-item";
+          a_list.href = item.href;
+         dataresponse.forEach(res,index){
+          a_list.textContent = res;
+          console.log("HHL:",res);
+         }
+
         }).catch((error)=>{
           console.error(error)
         }) 
