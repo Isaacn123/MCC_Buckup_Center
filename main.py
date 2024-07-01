@@ -118,7 +118,7 @@ class UploadFiles(Resource):
 
             folder_name = request.form.get('folder_name', '').strip()
 
-            print(f"fold: {request.files['folder_name']}")
+            # print(f"fold: {request.files['folder_name']}")
             print(f"Folder: {folder_name}")
             
             if folder_name:
@@ -129,7 +129,7 @@ class UploadFiles(Resource):
             #     folder_name = folder_name.rstrip('/') + '/'
             
             # file_path = folder_name + file.filename
-            print(f"PATH: {folder_name}")
+            print(f"PATH: {file_name}")
 
             # bucket.upload_bytes(
             #     data_bytes=file_stream.getvalue(),
@@ -139,7 +139,7 @@ class UploadFiles(Resource):
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
             # logger.info(f"Uploading file {file_name} to bucket {bucket_name}")
-            success_message = f"File '{file.filename}' uploaded successfully to '{folder_name}'"
+            success_message = f"File '{file.filename}' uploaded successfully to '{file_name}'"
             return jsonify({"message": success_message})
 
         except Exception as e:
