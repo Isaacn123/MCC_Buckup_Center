@@ -113,12 +113,12 @@ class UploadFiles(Resource):
            
 
 
-            folder_name = request.form.get('folder_name','')
-            if folder_name:
-                folder_name = folder_name.rstrip('/') + '/'
+            # folder_name = request.form.get('folder_name','')
+            # if folder_name:
+            #     folder_name = folder_name.rstrip('/') + '/'
             
-            file_path = folder_name + file.filename
-            print(f"PATH: {file_path}")
+            # file_path = folder_name + file.filename
+            print(f"PATH: {request.files}")
 
             # bucket.upload_bytes(
             #     data_bytes=file_stream.getvalue(),
