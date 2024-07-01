@@ -192,8 +192,11 @@
 
 //document.addEventListener("DOMContentLoaded", function(){
  console.log("main Log.....");
+
   function switchTab(tabId) {
+
     console.log("function clicked");
+
     const tabs = document.querySelectorAll('.nav-item');
     tabs.forEach(tab => tab.classList.remove('active'));
     const tabContent = document.querySelectorAll('.tab-content');
@@ -217,6 +220,7 @@
 
 // Set the default active tab on page load
 document.addEventListener('DOMContentLoaded', function() {
+  
   const defaultTab = "tabDashboard"
   const token = "{{ token }}";
   const profile_name = document.getElementById("name-profile");

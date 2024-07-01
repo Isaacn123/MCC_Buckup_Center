@@ -33,6 +33,16 @@
                   
                   <form id="uploadmcForm" enctype="multipart/form-data"  class="mt-5">
                     <div class="mb-3">
+                      <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                          Select the Folder 
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                          <li><a class="dropdown-item" href="#">Action</a></li>
+                          <li><a class="dropdown-item" href="#">Another action</a></li>
+                          <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                      </div>
                         <label for="formFileLg" class="form-label">Select File</label>
                         <input class="form-control form-control-lg" id="formFileLg" type="file">
                     </div>
@@ -148,7 +158,25 @@
             }
 
 
+        });
+
+     document.getElementById("dropdownMenuButton1").addEventListener('click', function(){
+         
+          fetch("/get_all_buckets", {
+              method:"GET", 
+              headers:{
+              "Accept":"application/json"
+                }
+        }).then((response)=>{
+          if (response.status == 200){
+            return response.json()
+          }
+        }).then((dataresponse)=>{
+          console.log("RESUL:",dataresponse)
+        }).catch((error)=>{
+          console.error(error)
         })
+       
     </script>
 </body>
 </html>
