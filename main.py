@@ -113,6 +113,7 @@ class UploadFiles(Resource):
            
 
             folder_name = request.form.get('folder_name', '').strip()
+            print(f"fold: {request.files['folder_name']}")
             print(f"Folder: {folder_name}")
             
             if folder_name:
