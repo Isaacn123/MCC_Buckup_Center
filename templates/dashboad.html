@@ -220,7 +220,7 @@
 
 // Set the default active tab on page load
 document.addEventListener('DOMContentLoaded', function() {
-  
+
   const defaultTab = "tabDashboard"
   const token = "{{ token }}";
   const profile_name = document.getElementById("name-profile");
@@ -458,6 +458,7 @@ function fetchallFiles(folderName){
    foldercontainer.style.display = 'none';
 
    document.getElementById('backButton').addEventListener('click', function(){
+    location.reload();
     fileListContainer.style.display = 'none';
     foldercontainer.style.display = 'block';
    })

@@ -208,7 +208,7 @@ class GETALLFILES(Resource):
             data = request.json
             print(data)
             folder_name = data.get('folder_name','').strip()
-            print(f"FOLDER: {folder_name}")
+            # print(f"FOLDER: {folder_name}")
             if not folder_name:
                 return jsonify({"error": "Folder name is required"})
             file_versions = bucket.ls(folder_to_list=folder_name,latest_only=True)
