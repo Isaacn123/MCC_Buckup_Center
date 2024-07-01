@@ -166,15 +166,18 @@
         }).then((response)=>{
           if (response.status == 200){
             return response.json()
-          }
+          } else {
+            throw new Error('Failed to fetch data');
+        }
         }).then((dataresponse)=>{
           console.log("RESUL:",dataresponse)
     
         if(dataresponse.length >0){
 
-          dataresponse.forEach(res,index){
+            dataresponse.forEach(res,index){
+              
             const ItemList = document.getElementById("myDropdownMenu");
-            
+
             const itemElement = document.createElement('li');
             const a_list = document.createElement("a");
             ItemList.appendChild(itemElement);
@@ -189,6 +192,14 @@
             console.log("HHL:",res);
            }
         }else{
+
+          const noItemsElement = document.createElement('li');
+          const noItemsText = document.createElement('span');
+          noItemsText.className = "dropdown-item";
+          noItemsText.textContent = "No buckets found";
+
+          noItemsElement.appendChild(noItemsText);
+          dropdownMenu.appendChild(noItemsElement);
 
         }
 
