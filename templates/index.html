@@ -82,17 +82,19 @@
             const file = fileInput.files[0];
             // console.log("FILE:", file)
 
-            if(!file){
-                alert("Please select a file")
-                return
-            }
-
             const selectedFolder = document.querySelector('.dropdown-menu .dropdown-item.active');
 
             if(!selectedFolder){
               alert("Select a folder to upload to!");
               return;
             }
+
+            if(!file){
+                alert("Please select a file")
+                return
+            }
+
+           
 
             const folderName = selectedFolder.textContext;
             
