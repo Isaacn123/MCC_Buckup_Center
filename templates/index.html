@@ -174,8 +174,8 @@
     
         if(dataresponse.length >0){
 
-            dataresponse.forEach(res,index){
-              
+          dataresponse.forEach((bucketName,index) => {
+
             const ItemList = document.getElementById("myDropdownMenu");
 
             const itemElement = document.createElement('li');
@@ -184,13 +184,13 @@
 
             a_list.className = "dropdown-item";
             a_list.href = "#";
-            a_list.textContent = res;
+            a_list.textContent = bucketName;
 
             itemElement.appendChild(a_list); // Append the anchor to the list item
             ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
     
-            console.log("HHL:",res);
-           }
+            console.log("HHL:",bucketName);
+           });
         }else{
 
           const noItemsElement = document.createElement('li');
