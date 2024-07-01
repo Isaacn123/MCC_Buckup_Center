@@ -118,19 +118,20 @@ class UploadFiles(Resource):
                 folder_name = folder_name.rstrip('/') + '/'
             
             file_path = folder_name + file.filename
+            print(f"PATH: {file_path}")
 
-            bucket.upload_bytes(
-                data_bytes=file_stream.getvalue(),
-                # file_name=file.filename
-                file_name=file_path
-            )
+            # bucket.upload_bytes(
+            #     data_bytes=file_stream.getvalue(),
+            #     # file_name=file.filename
+            #     file_name=file_path
+            # )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
             success_message = f"File '{file.filename}' uploaded successfully to '{file_path}'"
-            return jsonify({"message": success_message}), 200
+            return jsonify({"message": success_message})
 
         except Exception as e:
-            return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
+            return jsonify({"message": f"Failed to upload file: {str(e)} "})
 
 class CreateB2BucketFolder(Resource):
     @api.doc(description='Create A Folder in the Bucket')
