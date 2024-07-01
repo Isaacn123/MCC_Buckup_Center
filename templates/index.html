@@ -174,19 +174,27 @@
 
           dataresponse.forEach(res,index){
             const ItemList = document.getElementById("myDropdownMenu");
+            
             const itemElement = document.createElement('li');
             const a_list = document.createElement("a");
             ItemList.appendChild(itemElement);
+
             a_list.className = "dropdown-item";
-            a_list.href = item.href;
+            a_list.href = "#";
             a_list.textContent = res;
+
+            itemElement.appendChild(a_list); // Append the anchor to the list item
+            ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
+    
             console.log("HHL:",res);
            }
+        }else{
+
         }
 
         }).catch((error)=>{
           console.error(error)
-        }) 
+        }); 
       
       });
        
