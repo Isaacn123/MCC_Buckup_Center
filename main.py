@@ -117,8 +117,8 @@ class UploadFiles(Resource):
             print(f"Folder: {folder_name}")
             
             if folder_name:
-                #  file_name = f"{folder_name}/{file.filename}"
-                file_name = folder_name + file.filename
+                 file_name = f"{folder_name}{file.filename}"
+                # file_name = folder_name + file.filename
             # folder_name = request.form.get('folder_name','')
             # if folder_name:
             #     folder_name = folder_name.rstrip('/') + '/'
