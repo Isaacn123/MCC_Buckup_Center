@@ -112,13 +112,13 @@ class UploadFiles(Resource):
             file_stream = io.BytesIO(file_Content)
            
 
-
+            folder_name = request.form.get('folder_name', '').strip()
             # folder_name = request.form.get('folder_name','')
             # if folder_name:
             #     folder_name = folder_name.rstrip('/') + '/'
             
             # file_path = folder_name + file.filename
-            print(f"PATH: {request.files}")
+            print(f"PATH: {folder_name}")
 
             # bucket.upload_bytes(
             #     data_bytes=file_stream.getvalue(),
@@ -127,7 +127,7 @@ class UploadFiles(Resource):
             # )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
-            success_message = f"File '{file.filename}' uploaded successfully to '{file_path}'"
+            success_message = f"File '{file.filename}' uploaded successfully to '{folder_name}'"
             return jsonify({"message": success_message})
 
         except Exception as e:
