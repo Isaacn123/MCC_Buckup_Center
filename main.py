@@ -106,10 +106,11 @@ class GetUser(Resource):
 class UploadFiles(Resource):
     def post(self):
         try:
+            print(f"File to be : {request.folder_name}")
             file = request.files['file']
             file_Content = file.read()
             file_stream = io.BytesIO(file_Content)
-            print(f"File to be : {request.folder_name}")
+           
 
 
             folder_name = request.form.get('folder_name','')
@@ -124,7 +125,9 @@ class UploadFiles(Resource):
                 file_name=file_path
             )
 
-            return jsonify({"message": f"File {file.filename} uploaded successfully"})
+            # return jsonify({"message": f"File {file.filename} uploaded successfully"})
+            success_message = f"File '{file.filename}' uploaded successfully to '{file_path}'"
+            return jsonify({"message": success_message}), 200
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)} "}), 500
