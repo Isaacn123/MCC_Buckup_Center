@@ -86,9 +86,20 @@
                 alert("Please select a file")
                 return
             }
+
+            const selectedFolder = document.querySelector('.dropdown-menu .dropdown-item.active');
+
+            if(!selectedFolder){
+              alert("Select a folder to upload to!");
+              return;
+            }
+
+            const folderName = selectedFolder.textContext;
             
             const formdata = new FormData();
             formdata.append('file', file);
+            formdata.append('folder_name':folderName);
+            
             try
             {
             //  const response = await fetch('/upload', {

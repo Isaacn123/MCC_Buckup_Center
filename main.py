@@ -109,7 +109,7 @@ class UploadFiles(Resource):
             file = request.files['file']
             file_Content = file.read()
             file_stream = io.BytesIO(file_Content)
-            print(f"File to be : {file.filename}")
+            print(f"File to be : {request.folder_name}")
 
             bucket.upload_bytes(
                 data_bytes=file_stream.getvalue(),
