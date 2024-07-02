@@ -72,6 +72,11 @@ def download(file_name):
     file_info = bucket.get_file_info_by_name(file_name=file_name)
     print(f"FILE INFO: {file_info}")
     return jsonify(file_info)
+
+@app.route("/api/logout")
+def logout_user():
+    session.clear()
+    return redirect('/login')
     
 class CreateUser(Resource):
     @api.doc(description='Create current user information')

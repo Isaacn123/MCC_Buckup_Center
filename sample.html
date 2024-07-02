@@ -112,7 +112,7 @@
                             <h5 id="name-profile" title="">Nsamb Isaac</h5>
                             <small class="text-muted" id="date-ms">Someone famous in</small>
                           </div>
-                          <button type="button" class="btn btn-info">LogOut</button>
+                          <button type="button" class="btn btn-info" id="logoutId">LogOut</button>
                         </div>
                       </div>
                 </div>
@@ -253,6 +253,8 @@
     
     // Set the default active tab on page load
     document.addEventListener('DOMContentLoaded', function() {
+
+
     
       const defaultTab = "tabDashboard"
       const token = "{{ token }}";
@@ -260,6 +262,22 @@
       const user_profileEmail = document.getElementById("user_profile_email");
       const user_profileName = document.getElementById("user_profile_name");
       const profile_user_date = document.getElementById("profile_date");
+      const signoutBtn = document.getElementById('logoutId');
+
+      signoutBtn.addEventListener('click', function(){
+        fetch('/api/logout',{
+          method:"GET",
+          headers:{
+            "Accept":'application/json'
+          }
+        }).then((response)=>{
+        if(response.status == 200){
+          return response.json()
+        }
+        }).then((re)=>{
+          console.log("Loggedout...")
+        }).catch((e)=> console.log(str(e)))
+      })
       
       const date_created = document.getElementById("date-ms")
      // console.log("Token:", token);
