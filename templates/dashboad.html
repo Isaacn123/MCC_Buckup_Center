@@ -285,6 +285,7 @@
          .then((response)=>{
           if(response.status == 200){
             console.log("Logged out...");
+            location.reload();
           }
           else {
             console.error('Failed to log out:', response.status, response.statusText);
