@@ -287,8 +287,8 @@
         }
         }).then((re)=>{
           console.log("Loggedout...")
-        }).catch((e)=> console.log(str(e)))
-      })
+        }).catch((e)=> console.error(e))
+      });
       
       const date_created = document.getElementById("date-ms")
      // console.log("Token:", token);
