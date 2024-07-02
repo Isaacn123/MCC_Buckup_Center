@@ -281,12 +281,15 @@
           headers:{
             "Accept":'application/json'
           }
-        }).then((response)=>{
-        if(response.status == 200){
-          return response.json()
+        })
+         .then((resources)=>{
+          if(response.status == 200){
+            console.log("Logged out...");
+          }
+          else {
+            console.error('Failed to log out:', response.status, response.statusText);
         }
-        }).then((re)=>{
-          console.log("Loggedout...")
+          //console.log("Loggedout...")
         }).catch((e)=> console.error(e))
       });
       

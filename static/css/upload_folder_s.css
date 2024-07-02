@@ -4,7 +4,7 @@ header{width:100%}
 #searchbar,body,h1,h2,h3{font-family:Montserrat,sans-serif}
 /* *{margin:0;padding:0;outline:0;list-style:none;text-decoration:none;box-sizing:border-box;color:#111;background:0 0;border:none} */
 #searchbar,.right{border-radius:8px}
-body{background:url(http://www.thomaspodgro.com/pen/hero-bg.jpg) top left no-repeat;background-size:cover;font-weight:400;min-height:100vh}
+body{background:url('') top left no-repeat;background-size:cover;font-weight:400;min-height:100vh}
 #wrapper{padding:100px 100px 50px 50px}
 h1,h2,h3{font-weight:300}
 /* header .logo,header ul li{display:inline-block;font-weight:700} */
