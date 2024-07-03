@@ -253,7 +253,7 @@ class FORGOTPASSWORD(Resource):
             raise jsonify({"error": "User with this email does not exist"})
         
         expiration = datetime.utcnow() + timedelta(hours=Config.RESET_TOKEN_EXPIRATION)
-        reset_token = _jwt.encode({"id":user.id, "exp": expiration}, Config.JWT_SECRET, algorithm=["HS256"])
+        reset_token = _jwt.encode({"id":user.id, "exp": expiration}, Config.JWT_SECRET, algorithm="HS256")
 
         send_reset_email(user.email,reset_token)
 
