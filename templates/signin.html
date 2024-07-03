@@ -96,7 +96,9 @@
               //console.log("RESP:",response.json())
               return response.json()
             }else {
-              throw new Error("Something went wrong on API!")
+              console.log(response.message)
+              alert("Invalid password/username..")
+              //throw new Error("Something went wrong on API!")
             }
           }).then((resp)=>{
             console.debug(resp)
