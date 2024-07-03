@@ -47,7 +47,7 @@ user_model = api.model('User',{
 folder_name = api.model('Folder',{
     'folder_name': fields.String(required=True,description="Name of the folder to create")
 })
-email_address = api.models('User', {
+email_address = api.model('User', {
     "email":fields.String(required=True,description="Email can't be blank")
 })
 @app.route('/login')
