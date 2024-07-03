@@ -120,5 +120,11 @@ def generate_token():
             session['token_ms'] = token['access_token']
         # return jsonify(token)
         return token
+
+def get_user(email:str):
+    with get_db() as db:
+            user = db.query(_models.User).filter(_models.User.email == email).first()
     
+    return user
+
 

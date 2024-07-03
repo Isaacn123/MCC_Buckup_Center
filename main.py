@@ -2,6 +2,7 @@ from flask import Flask,request,jsonify,abort, render_template,redirect,session
 from flask_restx import Api, Resource,fields
 
 import services as _service
+import models as _model
 import  schemas as  _sechma
 import os
 import secrets
@@ -9,6 +10,11 @@ from b2sdk.v2 import InMemoryAccountInfo,B2Api
 from config.util import *
 import io
 import logging
+from datetime import datetime, timedelta
+from .config.util import RESET_TOKEN_EXPIRATION,JWT_SECRET
+import jwt as _jwt
+from flask_mail import Message, Mail
+from .config.util import Config
 
 # from flask_cors import CORS
 
@@ -19,7 +25,10 @@ b2_api = B2Api(info)
 b2_api.authorize_account('production', application_key=app_key, application_key_id=app_key_ID)
 bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
 
-logger = logging.getLogger(__name__)
+# Initializing my config settings
+app.config.from_object(Config)
+mail = Mail(app)
+
 
 # Generate or load secret key
 def generate_secret_key():
@@ -38,6 +47,9 @@ user_model = api.model('User',{
 
 folder_name = api.model('Folder',{
     'folder_name': fields.String(required=True,description="Name of the folder to create")
+})
+email_address = api.models('User', {
+    "email":fields.String(required=True,description="Email can't be blank")
 })
 @app.route('/login')
 def read_root():
@@ -224,6 +236,77 @@ class GETALLFILES(Resource):
         except Exception as e:
             return jsonify({"error": str(e)})
 
+# @app.route('/forgotpassword', method=["POST"])
+# def forgotpassword():
+class FORGOTPASSWORD(Resource):
+    @api.expect(email_address)
+    def post(self):
+        data = request.json
+        email = data.get('email')
+
+        if not email:
+            raise jsonify({"error":"Email is required!"})
+        
+        user = _service.get_user(email=email)
+
+        
+        if not user:
+            raise jsonify({"error": "User with this email does not exist"})
+        
+        expiration = datetime.utcnow() + timedelta(hours=RESET_TOKEN_EXPIRATION)
+        reset_token = _jwt.encode({"id":user.id, "exp": expiration}, JWT_SECRET, algorithm=["HS256"])
+
+        send_reset_email(user.email,reset_token)
+
+        return jsonify({"message": "Password reset email sent"})
+    
+    
+
+def send_reset_email(email,token):
+    reset_url = f"{request.host_url}reset_password?token={token}"
+    msg = Message(
+        subject="Password Reset Request",
+        sender= Config['MAIL_DEFAULT_SENDER'],
+        recipients=[email],
+        body=f"To reset your password, visit the following link:{reset_url}\n\n"
+        f"If you did not make this request, please ignore this email."
+    )
+
+    mail.send(msg)
+
+
+@app.route('/reset_password', methods=["POST"])
+def reset_password():
+        data = request.json
+        token = data.get("token")
+        new_password = data.get('new_password')
+
+        if not token or not new_password:
+            return jsonify({"error": "Token and new password are required"})
+        
+        try:
+            payload = _jwt.decode(token,Config.JWT_SECRET, algorithms=["HS256"])
+            user_id = payload.get("id")
+
+            if user_id is None:
+                return jsonify({"error":"Invalid token"})
+            
+            with _service.get_db() as db:
+                user = db.query(_model.User).filter(_model.User.id == user_id).first()
+            if not user:
+                return jsonify({"error": "User not found"})
+            
+            # Update the user's password
+            user.set_password(new_password)
+            db.commit()
+            
+        except _jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token has expired"})
+        except _jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"})
+
+        return jsonify({"message": "Password has been reset"})
+
         # print("Folders in the bucket:")
         # if folders:
         #     print("Folders in the BUCKT")
@@ -248,6 +331,8 @@ api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
 api.add_resource(UploadFiles,'/upload')
+api.add_resource(FORGOTPASSWORD, '/forgot_password')
+
 # api.add_resource(MainPage,'/login')
 
 
