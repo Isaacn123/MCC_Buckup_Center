@@ -11,7 +11,7 @@ from config.util import *
 import io
 import logging
 from datetime import datetime, timedelta
-from config.util import RESET_TOKEN_EXPIRATION,JWT_SECRET
+from config.util import Config,JWT_SECRET
 import jwt as _jwt
 from flask_mail import Message, Mail
 from config.util import Config
@@ -253,8 +253,8 @@ class FORGOTPASSWORD(Resource):
         if not user:
             raise jsonify({"error": "User with this email does not exist"})
         
-        expiration = datetime.utcnow() + timedelta(hours=RESET_TOKEN_EXPIRATION)
-        reset_token = _jwt.encode({"id":user.id, "exp": expiration}, JWT_SECRET, algorithm=["HS256"])
+        expiration = datetime.utcnow() + timedelta(hours=Config.RESET_TOKEN_EXPIRATION)
+        reset_token = _jwt.encode({"id":user.id, "exp": expiration}, Config.JWT_SECRET, algorithm=["HS256"])
 
         send_reset_email(user.email,reset_token)
 
@@ -266,7 +266,7 @@ def send_reset_email(email,token):
     reset_url = f"{request.host_url}reset_password?token={token}"
     msg = Message(
         subject="Password Reset Request",
-        sender= Config['MAIL_DEFAULT_SENDER'],
+        sender= Config.MAIL_DEFAULT_SENDER,
         recipients=[email],
         body=f"To reset your password, visit the following link:{reset_url}\n\n"
         f"If you did not make this request, please ignore this email."
