@@ -11,7 +11,6 @@ from config.util import *
 import io
 import logging
 from datetime import datetime, timedelta
-from config.util import Config,JWT_SECRET
 import jwt as _jwt
 from flask_mail import Message, Mail
 from config.util import Config
