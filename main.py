@@ -11,10 +11,10 @@ from config.util import *
 import io
 import logging
 from datetime import datetime, timedelta
-from .config.util import RESET_TOKEN_EXPIRATION,JWT_SECRET
+from config.util import RESET_TOKEN_EXPIRATION,JWT_SECRET
 import jwt as _jwt
 from flask_mail import Message, Mail
-from .config.util import Config
+from config.util import Config
 
 # from flask_cors import CORS
 
