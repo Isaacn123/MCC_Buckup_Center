@@ -278,6 +278,7 @@
       function switchTab(tabId) {
     
         console.log("function clicked");
+        location.reload()
     
         const tabs = document.querySelectorAll('.nav-item');
         tabs.forEach(tab => tab.classList.remove('active'));
@@ -290,7 +291,7 @@
     
         if (tabId === 'tabDashboardContent'){
           document.getElementById('fileListContainer').style.display = 'block'
-          location.reload()
+         
         }else{
           document.getElementById('fileListContainer').style.display = 'none'
         }
