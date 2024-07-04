@@ -308,6 +308,7 @@
       const user_profileEmail = document.getElementById("user_profile_email");
       const user_profileName = document.getElementById("user_profile_name");
       const profile_user_date = document.getElementById("profile_date");
+      const holderEmail = document.getElementById("message");
 
       const signoutBtn = document.getElementById('logoutId');
 
@@ -355,6 +356,7 @@
          user_profile_name.innerText =  `${resp.name}`;
          user_profileEmail.innerText =  `${resp.email}`;
          user_email = `${resp.email}`;
+         holderEmail = `${resp.email}`;
          const dateOn = `${resp.date_created}`
          const dateObject = new Date(dateOn);
          //date_created.innerText= `${dateObject.toLocaleString()}`;
