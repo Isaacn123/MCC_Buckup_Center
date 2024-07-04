@@ -166,10 +166,6 @@
             </div>
 
             <div class="row">
-              <div id="notification"></div>
-            </div>
-
-            <div class="row">
                 <div class="col ">
             
                       <nav class="navbar navbar-expand-md navbar-light bg-light">
@@ -206,6 +202,7 @@
             </div>
             <div class="row">
                 <div class="col">
+                  <div id="notification"></div>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Add new Folder
                       </button>
@@ -293,6 +290,7 @@
     
         if (tabId === 'tabDashboardContent'){
           document.getElementById('fileListContainer').style.display = 'block'
+          location.reload()
         }else{
           document.getElementById('fileListContainer').style.display = 'none'
         }
