@@ -68,6 +68,10 @@ def dashboard():
     else:
         return redirect('/login')
 
+@app.route('/passwordreset')
+def reset_password():
+
+    return render_template('reset_password.html')
 
 @app.route('/uploadfiles')
 def uploadfiles():
