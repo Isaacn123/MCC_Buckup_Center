@@ -166,6 +166,10 @@
             </div>
 
             <div class="row">
+              <div class="alert alert-primary" role="alert" id="notification"></div>
+            </div>
+
+            <div class="row">
                 <div class="col ">
             
                       <nav class="navbar navbar-expand-md navbar-light bg-light">
@@ -506,7 +510,7 @@
     
       
     
-        console.log(files_);
+        //console.log(files_);
     
         const foldercontainer = document.getElementById("tabDashboardContent");
         const fileListContainer = document.getElementById('fileListContainer');
@@ -587,8 +591,10 @@
 
       var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdropOne'));
       }
-
     
+
+  
+            
 
      
       fetch('/forgot_password', {
@@ -610,6 +616,11 @@
         if(modal.hide()){
           alert(data['message'])
         }
+
+        const notificationElement = document.createElement('div');
+        notificationElement.className ="alert alert-succes";
+        notificationElement.setAttribute("alert","role");
+        notificationElement.textContent = data['message'];
       
       }).catch((error) => console.error(error))
     });
