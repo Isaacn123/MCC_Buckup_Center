@@ -166,7 +166,7 @@
             </div>
 
             <div class="row">
-              <div class="alert alert-primary" role="alert" id="notification"></div>
+              <div id="notification"></div>
             </div>
 
             <div class="row">
@@ -593,7 +593,7 @@
       }
     
 
-  
+     const container = document.getElementById("notification")
             
 
      
@@ -618,9 +618,10 @@
         }
 
         const notificationElement = document.createElement('div');
-        notificationElement.className ="alert alert-succes";
+        notificationElement.className ="alert alert-success";
         notificationElement.setAttribute("alert","role");
         notificationElement.textContent = data['message'];
+        container.appendChild(notificationElement);
       
       }).catch((error) => console.error(error))
     });
