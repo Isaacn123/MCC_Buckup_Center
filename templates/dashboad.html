@@ -579,10 +579,17 @@
     //myModal.show();
 
     document.getElementById("resetPassword").addEventListener("click", function(){
-      
-      user_data = {
+
+      if(user_email){
+          user_data = {
         email:user_email
       }
+
+      var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdropOne'));
+      }
+
+    
+
      
       fetch('/forgot_password', {
         method:"POST",
@@ -599,6 +606,8 @@
         }
       }).then((data)=> {
         console.log("Email Send ", data)
+        modal.hide()
+        alert(data['message'])
       }).catch((error) => console.error(error))
     });
 
