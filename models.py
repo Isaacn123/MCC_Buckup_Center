@@ -3,8 +3,12 @@ import sqlalchemy.orm as _orm
 import passlib.hash as _hash
 import database as _database
 from datetime import datetime as _dt
+
+
+
 class User(_database.Base):
     __tablename__ = "users"
+
     id = _sql.Column(_sql.Integer,primary_key=True,index=True)
     email = _sql.Column(_sql.String,unique=True,index=True)
     name = _sql.Column(_sql.String)
@@ -14,6 +18,9 @@ class User(_database.Base):
 
     def verify_password(self,password:str):
         return _hash.bcrypt.verify(password,self.hashed_password)
+    
+    def set_password(self,password:str):
+        self.hashed_password = _hash.bcrypt.hash(password)
     
     def to_dict_user(self):
         return {
