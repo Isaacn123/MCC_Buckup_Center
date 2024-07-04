@@ -271,6 +271,7 @@
 
 <script>
     //document.addEventListener("DOMContentLoaded", function(){
+    const user_email = "";
      console.log("main Log.....");
     
       function switchTab(tabId) {
@@ -353,6 +354,7 @@
          profile_name.innerText= `${resp.name}`;
          user_profile_name.innerText =  `${resp.name}`;
          user_profileEmail.innerText =  `${resp.email}`;
+         user_email = `${resp.email}`;
          const dateOn = `${resp.date_created}`
          const dateObject = new Date(dateOn);
          //date_created.innerText= `${dateObject.toLocaleString()}`;
@@ -567,6 +569,12 @@
       })
       .catch((error) => console.error("Error fetching file list:", error));
     }
+
+   // Change password functionalitry
+   document.getElementById("changePassword").addEventListener('click', function(){
+      
+
+   });
  </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
