@@ -280,9 +280,9 @@
         console.log("function clicked");
 
         //remove alert message from showing
-        const alerts = document.querySelectorAll('.alert');
+        const alerts = document.querySelectorAll('.show');
         alerts.forEach(alert => alert.remove());
-        
+
         const tabs = document.querySelectorAll('.nav-item');
         tabs.forEach(tab => tab.classList.remove('active'));
         const tabContent = document.querySelectorAll('.tab-content');
@@ -620,7 +620,7 @@
         }
 
         const notificationElement = document.createElement('div');
-        notificationElement.className ="alert alert-success";
+        notificationElement.className ="show alert alert-success";
         notificationElement.setAttribute("alert","role");
         notificationElement.textContent = data['message'];
         container.appendChild(notificationElement);
