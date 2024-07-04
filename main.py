@@ -69,7 +69,7 @@ def dashboard():
         return redirect('/login')
 
 @app.route('/passwordreset')
-def reset_password():
+def resetPassword():
 
     return render_template('reset_password.html')
 
