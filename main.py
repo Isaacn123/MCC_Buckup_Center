@@ -266,7 +266,7 @@ class FORGOTPASSWORD(Resource):
     
 
 def send_reset_email(email,token):
-    reset_url = f"{request.host_url}reset_password?token={token}"
+    reset_url = f"{request.host_url}passwordreset?token={token}"
     msg = Message(
         subject="Password Reset Request",
         sender= Config.MAIL_DEFAULT_SENDER,
