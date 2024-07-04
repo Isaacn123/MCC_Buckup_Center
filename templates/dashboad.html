@@ -278,7 +278,9 @@
       function switchTab(tabId) {
     
         console.log("function clicked");
-
+        
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => alert.remove());
         const tabs = document.querySelectorAll('.nav-item');
         tabs.forEach(tab => tab.classList.remove('active'));
         const tabContent = document.querySelectorAll('.tab-content');
