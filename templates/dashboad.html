@@ -578,6 +578,31 @@
     //var myModal = new bootstrap.Modal(document.getElementById('rmkModal'), {});
     //myModal.show();
 
+    document.getElementById("resetPassword").addEventListener("click", function(){
+      
+      user_data = {
+        email:user_email
+      }
+     
+      fetch('/forgot_password', {
+        method:"POST",
+        headers:{
+          "Accept":"application/json",
+          "Content-Type":"application/json",
+        },
+        body:JSON.stringify(user_data)
+      }).then((response)=>{
+        if (response.status == 200){
+          return response.json()
+        }else{
+          console.error("There was Error requesting Password Reset..!")
+        }
+      }).then((data)=> {
+        console.log("Email Send ", data)
+      }).catch((error) => console.error(error))
+    });
+
+
   });
  </script>
 
