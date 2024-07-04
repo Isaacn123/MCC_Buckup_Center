@@ -26,6 +26,7 @@ passlib==1.7.4
 pydantic==2.7.4
 pydantic_core==2.18.4
 PyJWT==2.8.0
+python-dotenv==1.0.1
 pytz==2024.1
 referencing==0.35.1
 requests==2.32.3
