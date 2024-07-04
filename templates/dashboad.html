@@ -606,8 +606,11 @@
         }
       }).then((data)=> {
         console.log("Email Send ", data)
-        modal.hide()
-        alert(data['message'])
+        modal.hide();
+        if(modal.hide()){
+          alert(data['message'])
+        }
+      
       }).catch((error) => console.error(error))
     });
 
