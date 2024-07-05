@@ -21,6 +21,7 @@ class User(_database.Base):
     
     def set_password(self,password:str):
         self.hashed_password = _hash.bcrypt.hash(password)
+        print(f"PASS: {self.hashed_password}")
     
     def to_dict_user(self):
         return {
