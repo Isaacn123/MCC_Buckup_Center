@@ -300,6 +300,7 @@ def reset_password():
                 return jsonify({"error": "User not found"})
             
             # Update the user's password
+            print(f"PAs_new: {new_password}")
             user.set_password(new_password)
             db.commit()
             
