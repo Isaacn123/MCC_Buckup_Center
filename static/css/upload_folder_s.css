@@ -51,7 +51,7 @@ h1{font-size:50px;margin-bottom:30px}
 #folder3 i.fa-folder,#folder3-content h2 .fa-folder{color:#6fdbeb}
 #folder4 i.fa-folder,#folder4-content h2 .fa-folder{color:#eeca4e}
 #folder5 i.fa-folder,#folder5-content h2 .fa-folder{color:#5b5b5b}
-.tooltiper{position:relative;z-index:3;line-height:1px;}
+.tooltiper{position:relative;z-index:3;line-height:18px;}
 .tooltiper .tooltip{min-width:110px;position:absolute;text-align:left;color:#fff;display:block;top:50%;left:120px;transform:translateY(-50%) scale(0);transform-origin:left;transition:transform .2s ease-out,opacity .1s ease-out .1s}
 .tooltiper-up .tooltip{min-width:0;position:absolute;text-align:center;color:#fff;display:inline-block;top:-20px;left:50%;transform:translate(-50%,-50%) scale(0);transform-origin:bottom}
 .tooltiper-up:hover .tooltip,.tooltiper:hover .tooltip{opacity:1;transition:transform .2s ease-out,opacity .1s ease-out}
