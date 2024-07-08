@@ -172,8 +172,10 @@ class GETALLFOLDERSANDFILES(Resource):
           all_files = []
           for file_version,folder_name in response:
               
-              all_files.append({"file_version": file_version, "folder_name": folder_name})
-              
+              if folder_name is not None:
+                  all_files.append({"file_version": file_version.file_name, "folder_name": folder_name})
+              else:
+                  return jsonify({"message":"No Folder name found"})         
           
           return jsonify(all_files)
           
