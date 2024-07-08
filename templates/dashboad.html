@@ -464,7 +464,7 @@
 
 
       console.log("FOLDERNAME: 2",currentFolderName.textContent);
-      
+
       document.getElementById("createFolder").addEventListener("click", function(event){
         //event.preventDefault();
         console.log("FOLDERNAME: 3",currentFolderName.textContent);
@@ -473,6 +473,7 @@
         console.log("submitting");
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+          console.log(currentFolderName.textContent)
           var content = {
             "folder_name":folderInput
           }
