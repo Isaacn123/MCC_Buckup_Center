@@ -279,7 +279,8 @@
 
     var user_email = "";
      console.log("main Log.....");
-     
+     const currentFolderName = document.getElementById('currentFolderName');
+     var folderName = "";
       function switchTab(tabId) {
     
         console.log("function clicked");
@@ -320,8 +321,6 @@
       const user_profileName = document.getElementById("user_profile_name");
       const profile_user_date = document.getElementById("profile_date");
       var   holderEmail = document.getElementById("message");
-      const currentFolderName = document.getElementById('currentFolderName');
-      var folderName = "";
 
       const signoutBtn = document.getElementById('logoutId');
 
@@ -397,7 +396,7 @@
     // GET ALL FOLDERS AND FILES :
     
     function get_all_folders(){
-      const currentFolderNameModal = document.getElementById('currentFolderNameModal');
+      const currentFolderName = document.getElementById('currentFolderName');
       const addFolderBtn = document.getElementById('addFolderBtn');
       //fetch("/get_all_buckets", {
         fetch("/list_folder_and_files",{
@@ -447,11 +446,7 @@
             fileDiv.textContent = folder.name;
             folderContainer.appendChild(fileDiv);
           }
-
-          addFolderBtn.addEventListener("click", function(event)
-          {
-            currentFolderNameModal.textContent = `${folder.folder_name}`;
-          });
+          
        
       
           console.log("FOLDERNAME:1",currentFolderName.textContent);
