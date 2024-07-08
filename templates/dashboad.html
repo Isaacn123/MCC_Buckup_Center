@@ -205,7 +205,7 @@
             <div class="row">
                 <div class="col">
                   <div id="notification"></div>
-                    <span id="currentFolderNameModal"></span>
+                    <span id="currentFolderName"></span>
                     <button type="button" id="addFolderBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Add new Folder
                       </button>
@@ -446,7 +446,6 @@
             fileDiv.textContent = folder.name;
             folderContainer.appendChild(fileDiv);
           }
-          
        
       
           console.log("FOLDERNAME:1",currentFolderName.textContent);
@@ -464,6 +463,8 @@
       }).catch((error)=> console.error('Error fetch folder list:', error));
 
 
+      console.log("FOLDERNAME: 2",currentFolderName.textContent);
+      
       document.getElementById("createFolder").addEventListener("click", function(event){
         //event.preventDefault();
         console.log("FOLDERNAME: 3",currentFolderName.textContent);
