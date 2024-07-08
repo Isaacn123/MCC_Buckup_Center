@@ -424,14 +424,15 @@
             folderDiv.addEventListener("click", function(){
              fetchallFiles(folder);
             });
-            folderContainer.appendChild(folderDiv);
+           
           }  else {
             const fileDiv = document.createElement('div');
             fileDiv.className = 'file';
             fileDiv.textContent = folder.name;
-            folderContainer.appendChild(fileDiv);
+            
           }
-      
+          folderContainer.appendChild(folderDiv);
+          folderContainer.appendChild(fileDiv);
        
       
           
