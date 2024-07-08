@@ -205,6 +205,7 @@
             <div class="row">
                 <div class="col">
                   <div id="notification"></div>
+                    <span id="currentFolderName"></span>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Add new Folder
                       </button>
@@ -387,6 +388,8 @@
         })
     
     });
+
+    // GET ALL FOLDERS AND FILES :
     
     function get_all_folders(){
       //fetch("/get_all_buckets", {
@@ -423,6 +426,7 @@
       
             folderDiv.addEventListener("click", function(){
              fetchallFiles(folder.folder_name);
+             currentFolderName.textcontent = `${folder.folder_name}`.substring(15,0);
             });
 
             folderContainer.appendChild(folderDiv);
