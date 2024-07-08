@@ -170,12 +170,12 @@ class GETALLFOLDERSANDFILES(Resource):
         try:
           response  = bucket.ls(latest_only=True)
           all_files = []
-          for file_version,folder_name in response:
+          for file_version in response:
               
-              if folder_name is not None:
-                  all_files.append({"file_version": file_version.file_name, "folder_name": folder_name})
-              else:
-                  all_files.append({"file_version":file_version.file_name})
+            #   if folder_name is not None:
+            #       all_files.append({"file_version": file_version.file_name, "folder_name": folder_name})
+            #   else:
+            all_files.append({"file_version":file_version.file_name})
                 #   return jsonify({"message":"No Folder name found"})         
           
           return jsonify(all_files)
