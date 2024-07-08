@@ -170,25 +170,41 @@ class GETALLFOLDERSANDFILES(Resource):
         try:
           response  = bucket.ls(latest_only=True)
           all_files = []
-          for file_version in response:
+          for file_version,folder_name in response:
               
-              if 'is_folder' in file_version and file_version['is_folder']:
+              if folder_name is not None:
+                  
                   all_files.append({
-                      "name":file_version['name'],
-                      "path":file_version['path'],
-                      "type":"folder",
-                      "folder_name":file_version['name']
-                                    })
-              else:
-                  file_name = file_version['name']
-                  folder = file_version.get('folder_name',"")
-
-                  all_files.append({
-                      "name": file_name,
-                      "path":file_version["path"],
-                      "type": "file",
-                      "folder_name": folder
+                       "name":file_version.file_name,
+                       "info":file_version.file_info,
+                       "type":"folder",
+                       "folder_name":folder_name
                   })
+              else :
+                   all_files.append({
+                       "name":file_version.file_name,
+                       "info":file_version.file_info,
+                       "type":"folder",
+                       "folder_name":folder_name
+                  })
+              
+            #   if 'is_folder' in file_version and file_version['is_folder']:
+            #       all_files.append({
+            #           "name":file_version['name'],
+            #           "path":file_version['path'],
+            #           "type":"folder",
+            #           "folder_name":file_version['name']
+            #                         })
+            #   else:
+            #       file_name = file_version['name']
+            #       folder = file_version.get('folder_name',"")
+
+            #       all_files.append({
+            #           "name": file_name,
+            #           "path":file_version["path"],
+            #           "type": "file",
+            #           "folder_name": folder
+            #       })
                   
               
             #   if folder_name is not None:
