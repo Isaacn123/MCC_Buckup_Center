@@ -175,8 +175,6 @@ class GETALLFOLDERSANDFILES(Resource):
               if folder_name is not None:
                   
                   all_files.append({
-                       "name":file_version.file_name,
-                       "info":file_version.file_info,
                        "type":"folder",
                        "folder_name":folder_name
                   })
