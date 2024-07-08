@@ -397,6 +397,7 @@
     
     function get_all_folders(){
       const currentFolderName = document.getElementById('currentFolderName');
+      const addFolderBtn = document.getElementById('addFolderBtn');
       //fetch("/get_all_buckets", {
         fetch("/list_folder_and_files",{
         method:"GET", 
@@ -445,6 +446,11 @@
             fileDiv.textContent = folder.name;
             folderContainer.appendChild(fileDiv);
           }
+
+          addFolderBtn.addEventListener("click", function(event)
+          {
+            currentFolderName.textContent = `${folder.folder_name}`;
+          });
        
       
           console.log("FOLDERNAME:1",currentFolderName.textContent);
@@ -462,7 +468,6 @@
       }).catch((error)=> console.error('Error fetch folder list:', error));
 
 
-      console.log("FOLDERNAME: 2",currentFolderName.textContent);
       document.getElementById("createFolder").addEventListener("click", function(event){
         //event.preventDefault();
         console.log("FOLDERNAME: 3",currentFolderName.textContent);
