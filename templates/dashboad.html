@@ -473,6 +473,14 @@
         currentFolderName.textContent = folderName;
         console.log("submitting",currentFolderNames);
 
+        // Remove the prefix "Current Folder: "
+        const prefix = 'Current Folder: ';
+        if (currentFolderNames.startsWith(prefix)) {
+          currentFolderNames = currentFolderNames.substring(prefix.length);
+        }
+
+      console.log(currentFolderNames);
+      
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
 
