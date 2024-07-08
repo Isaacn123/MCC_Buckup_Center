@@ -445,7 +445,7 @@
           }
        
       
-          
+          console.log("FOLDERNAME:1",currentFolderName.textContent);
           
         });
       } else {
@@ -460,9 +460,10 @@
       }).catch((error)=> console.error('Error fetch folder list:', error));
 
 
-      console.log("FOLDERNAME:",folderName);
+      console.log("FOLDERNAME: 2",currentFolderName.textContent);
       document.getElementById("createFolder").addEventListener("click", function(event){
         //event.preventDefault();
+        console.log("FOLDERNAME: 3",currentFolderName.textContent);
         var folderInput =  document.getElementById("folderInput").value;
         currentFolderName.textContent = folderName;
         console.log("submitting");
