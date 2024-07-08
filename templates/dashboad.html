@@ -206,7 +206,7 @@
                 <div class="col">
                   <div id="notification"></div>
                     <span id="currentFolderName"></span>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    <button type="button" id="addFolderBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Add new Folder
                       </button>
                   
@@ -348,35 +348,35 @@
     
       switchTab(defaultTab)
     
-      fetch('/api/user/me',{
-        method:"GET",
-        headers:{ 
-          "Content-Type": "application/json",
-          "Authorization":`Bearer ${token}`
-        },
-        }).then((response) =>{
-    
-          if (response.status === 200) {
-           return response.json();
-          }else{
-    
-            throw new Error("Something went wrong on API!");
-    
-          }
-        }).then((resp)=>{
-         profile_name.innerText= `${resp.name}`;
-         user_profile_name.innerText =  `${resp.name}`;
-         user_profileEmail.innerText =  `${resp.email}`;
-         user_email = `${resp.email}`;
-         const dateOn = `${resp.date_created}`
-         const dateObject = new Date(dateOn);
-         //date_created.innerText= `${dateObject.toLocaleString()}`;
-         const formattedDate = dateObject.toLocaleDateString('en-US', {
-          weekday: 'short', // Abbreviated day of the week (e.g., Wed)
-          year: 'numeric',  // Full year (e.g., 2024)
-          month: 'short',   // Abbreviated month name (e.g., Jun)
-          day: 'numeric'    // Day of the month (e.g., 24)
-      });
+          fetch('/api/user/me',{
+            method:"GET",
+            headers:{ 
+              "Content-Type": "application/json",
+              "Authorization":`Bearer ${token}`
+            },
+            }).then((response) =>{
+        
+              if (response.status === 200) {
+              return response.json();
+              }else{
+        
+                throw new Error("Something went wrong on API!");
+        
+              }
+            }).then((resp)=>{
+            profile_name.innerText= `${resp.name}`;
+            user_profile_name.innerText =  `${resp.name}`;
+            user_profileEmail.innerText =  `${resp.email}`;
+            user_email = `${resp.email}`;
+            const dateOn = `${resp.date_created}`
+            const dateObject = new Date(dateOn);
+            //date_created.innerText= `${dateObject.toLocaleString()}`;
+            const formattedDate = dateObject.toLocaleDateString('en-US', {
+              weekday: 'short', // Abbreviated day of the week (e.g., Wed)
+              year: 'numeric',  // Full year (e.g., 2024)
+              month: 'short',   // Abbreviated month name (e.g., Jun)
+              day: 'numeric'    // Day of the month (e.g., 24)
+          });
     
       date_created.innerText= `${formattedDate}`;
       profile_user_date.innerText = `${formattedDate}`;
@@ -390,11 +390,13 @@
     
         })
     
+        get_all_folders();
     });
 
     // GET ALL FOLDERS AND FILES :
     
     function get_all_folders(){
+      const currentFolderName = document.getElementById('currentFolderName');
       //fetch("/get_all_buckets", {
         fetch("/list_folder_and_files",{
         method:"GET", 
@@ -497,7 +499,7 @@
     }
 
     
-    get_all_folders();
+  
     // Model create Folder MOdel 
     
   
