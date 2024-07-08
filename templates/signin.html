@@ -77,7 +77,7 @@
           //formData.append('password',password)
           const formdata = {
             username:email,
-            password:password
+            password:password         
           };
           console.log("FORM:",formdata);
           fetch(
@@ -101,7 +101,8 @@
               //throw new Error("Something went wrong on API!")
             }
           }).then((resp)=>{
-            console.debug(resp)
+            //console.debug(resp)
+            console.log("User logged in successfully!")
               // Handle successful login response here
           }). catch((error)=>{
            console.error(error)

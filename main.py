@@ -164,6 +164,25 @@ class UploadFiles(Resource):
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)}"})
+        
+class GETALLFOLDERSANDFILES(Resource):
+    def get(self):
+        try:
+          response  = bucket.ls(latest_only=True)
+          all_files = []
+          for file_version,folder_name in response:
+              
+              all_files.append({"file_version": file_version, "folder_name": folder_name})
+              
+          
+          return jsonify(all_files)
+          
+        except Exception as e:
+
+            return jsonify({"message": f"Failed to return all the files {str(e)}"})
+        
+
+
 
 class CreateB2BucketFolder(Resource):
     @api.doc(description='Create A Folder in the Bucket')
@@ -336,6 +355,9 @@ api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
 api.add_resource(UploadFiles,'/upload')
 api.add_resource(FORGOTPASSWORD, '/forgot_password')
+
+# Changing the Fetch method:
+api.add_resource(GETALLFOLDERSANDFILES, '/list_folder_and_files')
 
 # api.add_resource(MainPage,'/login')
 
