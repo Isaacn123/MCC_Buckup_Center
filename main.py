@@ -232,11 +232,13 @@ class CreateB2BucketFolder(Resource):
             if not folder_name:
                 return {"message": "folder_name is required"}
             
+
+            
             if not folder_name.endswith('/'):
                 folder_name +='/'
 
             # Add a placeholder file name within the "folder" 
-            placeholder_file = folder_name + 'folder.txt'
+            placeholder_file = folder_name  + 'folder.txt'
 
             bucket.upload_bytes(b'',placeholder_file)
 

@@ -484,19 +484,19 @@
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
 
-          console.log(currentFolderNames);
+          console.log("FLS:",currentFolderNames);
 
           if (currentFolderNames) {
             console.log("TRUE")
             const folder1 = currentFolderName.textContent;
             console.log("FOLDERNAME: 3",folder1);
             var content = {
-              "folder_name":`${currentFolderNames}${folderInput}`,
+              "folder_name":folderInput,
               "new_folder":currentFolderNames
             }
             
           }else{
-            console.log("FALSE")
+            console.log("FALSE",currentFolderNames)
             var content = {
               "folder_name":folderInput
             }
