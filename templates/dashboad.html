@@ -467,16 +467,27 @@
 
       document.getElementById("createFolder").addEventListener("click", function(event){
         //event.preventDefault();
-        console.log("FOLDERNAME: 3",currentFolderName.textContent);
+        
         var folderInput =  document.getElementById("folderInput").value;
         currentFolderName.textContent = folderName;
         console.log("submitting");
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
           console.log(currentFolderName.textContent)
-          var content = {
-            "folder_name":folderInput
+
+          if (currentFolderName) {
+            const folder1 = currentFolderName.textContent;
+            console.log("FOLDERNAME: 3",folder1);
+            var content = {
+              "folder_name":`${folder1}/${folderInput}`
+            }
+            
+          }else{
+            var content = {
+              "folder_name":folderInput
+            }
           }
+         
           fetch('/create_b2_folder',{
             method:"POST",
             headers:{
