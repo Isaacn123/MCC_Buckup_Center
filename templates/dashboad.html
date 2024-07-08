@@ -218,6 +218,7 @@
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+                              <p><em><span id="currentFolderName"></span>/</em></p>
                               <input type="text" id="folderInput" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2">
                             </div>
                             <div class="modal-footer">
@@ -429,6 +430,7 @@
              fetchallFiles(folder.folder_name);
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
             });
+      
 
             folderContainer.appendChild(folderDiv);
            
