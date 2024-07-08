@@ -190,7 +190,54 @@
   </section>
 
 <script>
-
+  function get_all_folders(){
+      fetch("/get_all_buckets", {
+        method:"GET", 
+        headers:{
+          "Accept":"application/json"
+        }
+      }).then((response)=>{
+        if (response.status == 200){
+          return response.json()
+        }
+        
+      }).then((data) => {
+        console.log("FOLDERS",data.length)
+      // creating folder HTML 
+      const folderContainer = document.getElementById('tabDashboardContent');
+      
+      if(data.length > 0){
+        data.forEach((folder,index) =>{
+      
+          const folderDiv = document.createElement('Div');
+          folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+          folderDiv.dataset.tooltip = '0 file';
+          folderDiv.id =`folder${index + 1}`;
+      
+          folderDiv.innerHTML = `
+          <i class="fa fa-folder" aria-hidden="true"></i>
+          <i class="fa fa-check" aria-hidden="true"></i>
+          <p class="folder-title">${folder}</p>
+          `;
+    
+          folderDiv.addEventListener("click", function(){
+           fetchallFiles(folder);
+          });
+      
+          folderContainer.appendChild(folderDiv);
+          
+        });
+      } else {
+      
+        const noFoldersDiv = document.createElement('div');
+        noFoldersDiv.className = 'alert alert-warning';
+        noFoldersDiv.textContent = 'No folders found';
+        folderContainer.appendChild(noFoldersDiv);
+       
+      }
+        
+      }).catch((error)=> console.error('Error fetch folder list:', error));
+    }
 //document.addEventListener("DOMContentLoaded", function(){
  console.log("main Log.....");
 

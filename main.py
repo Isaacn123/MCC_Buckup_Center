@@ -176,13 +176,15 @@ class GETALLFOLDERSANDFILES(Resource):
                   
                   all_files.append({
                        "type":"folder",
-                       "folder_name":folder_name
+                       "folder_name":folder_name,
+                       "date": file_version.upload_timestamp
                   })
               else :
                    all_files.append({
                        "name":file_version.file_name,
                        "info":file_version.file_info,
-                       "type":file_version.content_type,
+                       "type":"file",
+                       "date": file_version.upload_timestamp,
                        "folder_name":folder_name
                   })
               

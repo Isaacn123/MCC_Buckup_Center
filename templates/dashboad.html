@@ -389,7 +389,8 @@
     });
     
     function get_all_folders(){
-      fetch("/get_all_buckets", {
+      //fetch("/get_all_buckets", {
+        fetch("/list_folder_and_files",{
         method:"GET", 
         headers:{
           "Accept":"application/json"
@@ -436,6 +437,7 @@
         
       }).catch((error)=> console.error('Error fetch folder list:', error));
     }
+
     
     get_all_folders();
     // Model create Folder MOdel 
