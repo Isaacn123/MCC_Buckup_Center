@@ -430,6 +430,7 @@
       
             folderDiv.addEventListener("click", function(){
              fetchallFiles(folder.folder_name);
+             folderName = folder.name;
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
             });
       
@@ -440,7 +441,6 @@
             const fileDiv = document.createElement('div');
             fileDiv.className = 'file';
             fileDiv.textContent = folder.name;
-            folderName = folder.name;
             folderContainer.appendChild(fileDiv);
           }
        
