@@ -184,7 +184,7 @@ class GETALLFOLDERSANDFILES(Resource):
                    all_files.append({
                        "name":file_version.file_name,
                        "info":file_version.file_info,
-                       "type":"folder",
+                       "type":file_version.content_type,
                        "folder_name":folder_name
                   })
               
