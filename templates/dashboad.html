@@ -469,7 +469,7 @@
         //event.preventDefault();
         
         var folderInput =  document.getElementById("folderInput").value;
-        const currentFolderNames = currentFolderName.textContent.trim();
+        let currentFolderNames = currentFolderName.textContent.trim();
         currentFolderName.textContent = folderName;
         console.log("submitting",currentFolderNames);
 
@@ -480,7 +480,7 @@
         }
 
       console.log(currentFolderNames);
-      
+
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
 
