@@ -469,13 +469,16 @@
         //event.preventDefault();
         
         var folderInput =  document.getElementById("folderInput").value;
+        const currentFolderNames = currentFolderNameSpan.textContent.trim();
         currentFolderName.textContent = folderName;
-        console.log("submitting");
+        console.log("submitting",currentFolderNames);
+
         if (folderInput){
           var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
-          console.log(currentFolderName.textContent)
 
-          if (currentFolderName) {
+          console.log(currentFolderNames);
+
+          if (currentFolderNames) {
             console.log("TRUE")
             const folder1 = currentFolderName.textContent;
             console.log("FOLDERNAME: 3",folder1);
