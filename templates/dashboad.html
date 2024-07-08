@@ -218,7 +218,7 @@
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <p><em><span id="currentFolderName"></span>/</em></p>
+                              <p><em>Current Folder:<strong><span id="currentFolderName"></span></strong>/</em></p>
                               <input type="text" id="folderInput" class="form-control" placeholder="Create a Folder" aria-label="Create a Folder" aria-describedby="button-addon2">
                             </div>
                             <div class="modal-footer">
@@ -276,9 +276,11 @@
 
 <script>
     //document.addEventListener("DOMContentLoaded", function(){
+
     var user_email = "";
      console.log("main Log.....");
-    
+     const currentFolderName = document.getElementById('currentFolderName');
+     let folderName = "";
       function switchTab(tabId) {
     
         console.log("function clicked");
@@ -408,7 +410,7 @@
         console.log("FOLDERS",data.length)
       // creating folder HTML 
       const folderContainer = document.getElementById('tabDashboardContent');
-      const currentFolderName = document.getElementById('currentFolderName');
+     
       
       if(data.length > 0){
         data.forEach((folder,index) =>{
@@ -438,6 +440,7 @@
             const fileDiv = document.createElement('div');
             fileDiv.className = 'file';
             fileDiv.textContent = folder.name;
+            folderName = folder.name;
             folderContainer.appendChild(fileDiv);
           }
        
@@ -464,6 +467,7 @@
     document.getElementById("createFolder").addEventListener("click", function(event){
       //event.preventDefault();
       var folderInput =  document.getElementById("folderInput").value;
+      currentFolderName.textContent = folderName;
       console.log("submitting");
       if (folderInput){
         var modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
