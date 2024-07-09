@@ -436,7 +436,7 @@
             `;
       
             folderDiv.addEventListener("click", function(){
-             fetchallFiles(folder.folder_name);
+             fetchallFiles(folder.folder_name,maxlength);
              folderName = folder.name;
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
             });
@@ -558,7 +558,7 @@
     
     })
     
-    function fetchallFiles(folderName){
+    function fetchallFiles(folderName, maxlength){
       console.log(`Sending folder name: ${folderName}`);
     
       fetch('/list_all_files',{
