@@ -292,9 +292,30 @@ class GETALLFILES(Resource):
             if not folder_name:
                 return jsonify({"error": "Folder name is required"})
             file_versions = bucket.ls(folder_to_list=folder_name,latest_only=True)
-            files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
 
-            return jsonify({"files":files})
+            # files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
+            file_results = []
+            for file_version,folder_name in file_versions:
+
+                if folder_name is not None:
+                    file_results.append({
+                        "folder_name":folder_name,
+                        "path":file_version.file_name,
+                        "type":"folder"
+
+                    })
+                else:
+                    file_results.append({
+                        "name":file_version.file_name,
+                        "type":"file",
+                        "info":file_version.file_info,
+                        "type":"file",
+                        "date": file_version.upload_timestamp,
+                        "folder_name":folder_name
+
+                    })
+
+            return jsonify({"files":file_results})
 
         except Exception as e:
             return jsonify({"error": str(e)})
