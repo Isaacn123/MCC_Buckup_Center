@@ -398,6 +398,7 @@
     function get_all_folders(){
       const currentFolderName = document.getElementById('currentFolderName');
       const addFolderBtn = document.getElementById('addFolderBtn');
+      const maxlength = 20;
       //fetch("/get_all_buckets", {
         fetch("/list_folder_and_files",{
         method:"GET", 
@@ -413,7 +414,7 @@
         console.log("FOLDERS",data.length)
       // creating folder HTML 
       const folderContainer = document.getElementById('tabDashboardContent');
-     
+
       
       if(data.length > 0){
         data.forEach((folder,index) =>{
@@ -424,11 +425,14 @@
             folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
             folderDiv.dataset.tooltip = '0 file';
             folderDiv.id =`folder${index + 1}`;
-        
+           const stringInput = folder.folder_name;
+           const stringInput2 = folder.name;
+           const name1 = stringInput.length > maxlength > stringInput.substring(0,maxlength - 3) + '...' : stringInput;
+           const name2 = stringInput2.length > maxlength > stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
             folderDiv.innerHTML = `
             <i class="fa fa-folder" aria-hidden="true"></i>
             <i class="fa fa-check" aria-hidden="true"></i>
-            <p class="folder-title">${folder.folder_name}</p>
+            <p class="folder-title"><small>${name1}<small></p>
             `;
       
             folderDiv.addEventListener("click", function(){
@@ -448,7 +452,7 @@
             fileDiv.innerHTML = `
             <i class="fa fa-file" aria-hidden="true"></i>
             <i class="fa fa-check" aria-hidden="true"></i>
-            <p class="folder-title"><small>${folder.name}</small></p>
+            <p class="folder-title"><small>${name2}</small></p>
             `;
             folderContainer.appendChild(fileDiv);
           }
