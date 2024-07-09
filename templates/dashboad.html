@@ -446,6 +446,9 @@
            
           }  else {
             const fileDiv = document.createElement('div');
+            const stringInput2 = `${folder.name}`;
+            const name2 = stringInput2.length > maxlength ? stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
+            
             fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
             fileDiv.dataset.tooltip = '0 file';
             fileDiv.id =`file${index + 1}`;
