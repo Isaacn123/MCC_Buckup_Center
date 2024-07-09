@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <script>
+        function  strip_prefix(text,prefix){
+          if (text.startswith(prefix)){
+                    return text[len(prefix)]
+                }
+       
+               return text
+            }
+
+            function get_common_prefix(folder_name){
+                if (folder_name.endswith('/')){
+                    return folder_name
+                }
+                return folder_name + '/'
+                }
+    </script>
+</body>
+</html>
