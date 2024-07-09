@@ -295,18 +295,19 @@ class GETALLFILES(Resource):
 
             # files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
             file_results = []
+            common_prefix = get_common_prefix(folder_name)
             for file_version,folder_name in file_versions:
 
                 if folder_name is not None and folder_name.endswith('/'):
                     file_results.append({
-                        "folder_name":folder_name,
+                        "folder_name":strip_prefix(folder_name,common_prefix),
                         "path":file_version.file_name,
                         "type":"folder"
 
                     })
                 else:
                     file_results.append({
-                        "name":file_version.file_name,
+                        "name":strip_prefix(file_version.file_name,common_prefix) if folder_name else None,
                         "type":"file",
                         "date": file_version.upload_timestamp,
                         "folder_name":folder_name
@@ -420,6 +421,16 @@ api.add_resource(FORGOTPASSWORD, '/forgot_password')
 api.add_resource(GETALLFOLDERSANDFILES, '/list_folder_and_files')
 
 # api.add_resource(MainPage,'/login')
+
+def strip_prefix(text,prefix):
+    if text.startswith(prefix):
+        return text[len(prefix)]
+    return text
+
+def get_common_prefix(folder_name):
+    if folder_name.endswith('/'):
+        return folder_name
+    return folder_name + '/'
 
 
 # @app.route("/signin", method=["POST"])
