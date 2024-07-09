@@ -423,8 +423,8 @@ api.add_resource(GETALLFOLDERSANDFILES, '/list_folder_and_files')
 # api.add_resource(MainPage,'/login')
 
 def strip_prefix(text,prefix):
-    if text.startswith(prefix):
-        return text[len(prefix)]
+    if text and text.startswith(prefix):
+        return text[len(prefix):]
     return text
 
 def get_common_prefix(folder_name):
