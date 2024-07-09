@@ -603,12 +603,12 @@
               folderDiv.dataset.tooltip = '0 file';
               folderDiv.id =`folder${index + 1}`;
             
-              const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
+              //const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
           
               folderDiv.innerHTML = `
               <i class="fa fa-folder" aria-hidden="true"></i>
               <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${folderName}</small></p>
+              <p class="folder-title"><small>${item.folder_name}</small></p>
               `;
         
               folderDiv.addEventListener("click", function(){
