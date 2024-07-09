@@ -308,8 +308,6 @@ class GETALLFILES(Resource):
                     file_results.append({
                         "name":file_version.file_name,
                         "type":"file",
-                        "info":file_version.file_info,
-                        "type":"file",
                         "date": file_version.upload_timestamp,
                         "folder_name":folder_name
 

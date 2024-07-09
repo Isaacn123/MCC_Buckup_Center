@@ -592,38 +592,79 @@
     
         if(data.files.length > 0){
            data.files.forEach(file => {
-           const fileItem = document.createElement('li');
-           fileItem.className = 'list-group-item d-flex justify-content-between align-items-center w-100';
+
+
+
+            if(file.type === "folder"){
+
+              const folderDiv = document.createElement('Div');
+              folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+              folderDiv.dataset.tooltip = '0 file';
+              folderDiv.id =`folder${index + 1}`;
+          
+              folderDiv.innerHTML = `
+              <i class="fa fa-folder" aria-hidden="true"></i>
+              <i class="fa fa-check" aria-hidden="true"></i>
+              <p class="folder-title">${file.folder_name}</p>
+              `;
+        
+              folderDiv.addEventListener("click", function(){
+               fetchallFiles(file.folder_name);
+               folderName = file.name;
+               currentFolderName.textContent = `Current Folder: ${file.folder_name}`;
+              });
+        
+  
+              folderContainer.appendChild(folderDiv);
+             
+            }  else {
+              const fileDiv = document.createElement('div');
+              fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+              fileDiv.dataset.tooltip = '0 file';
+              fileDiv.id =`file${index + 1}`;
+              fileDiv.innerHTML = `
+              <i class="fa fa-file" aria-hidden="true"></i>
+              <i class="fa fa-check" aria-hidden="true"></i>
+              <p class="folder-title">${file.name}</p>
+              `;
+              folderContainer.appendChild(fileDiv);
+            }
+         
+
+
+
+           //const fileItem = document.createElement('li');
+           //fileItem.className = 'list-group-item d-flex justify-content-between align-items-center w-100';
            //fileItem.innerHTML = '<button type="button" class="btn btn-outline-success">Success</button><button type="button" class="btn btn-outline-danger">Danger</button>'
     
-           const fileText = document.createTextNode(file);
-           fileItem.appendChild(fileText);
+           //const fileText = document.createTextNode(file);
+           //fileItem.appendChild(fileText);
     
-           const divContainer = document.createElement('div');
-           divContainer.className = "d-flex justify-content-between align-items-center w-5"
-           fileItem.appendChild(divContainer)
+           //const divContainer = document.createElement('div');
+           //divContainer.className = "d-flex justify-content-between align-items-center w-5"
+           //fileItem.appendChild(divContainer)
            
-           const successbtn = document.createElement("a");
-           successbtn.type = 'button';
-           successbtn.className = 'btn btn-device btn-outline-success';
-           successbtn.textContent = 'Download';
-           successbtn.href ="#"
-           successbtn.setAttribute('download','');
+           //const successbtn = document.createElement("a");
+          // successbtn.type = 'button';
+          // successbtn.className = 'btn btn-device btn-outline-success';
+           //successbtn.textContent = 'Download';
+          // successbtn.href ="#"
+          // successbtn.setAttribute('download','');
            
-           divContainer.appendChild(successbtn);
+          // divContainer.appendChild(successbtn);
     
            successbtn.addEventListener('click', function(){
             
            })
     
-           const dangerButton = document.createElement('button');
-           dangerButton.type = 'button';
-           dangerButton.className = 'btn btn-device btn-outline-danger';
-           dangerButton.textContent = 'Delete';
-           divContainer.appendChild(dangerButton);
+          // const dangerButton = document.createElement('button');
+          // dangerButton.type = 'button';
+          // dangerButton.className = 'btn btn-device btn-outline-danger';
+          // dangerButton.textContent = 'Delete';
+          // divContainer.appendChild(dangerButton);
     
           // fileItem.textContent = file;
-           filelist.appendChild(fileItem);
+          // filelist.appendChild(fileItem);
           });
         } else {
     
