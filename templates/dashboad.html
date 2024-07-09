@@ -591,7 +591,7 @@
         fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
     
         if(data.files.length > 0){
-           data.files.forEach(file => {
+           data.files.forEach((file,index) => {
 
 
 
