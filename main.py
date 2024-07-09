@@ -297,7 +297,7 @@ class GETALLFILES(Resource):
             file_results = []
             for file_version,folder_name in file_versions:
 
-                if folder_name is not None:
+                if folder_name is not None and folder_name.endswith('/'):
                     file_results.append({
                         "folder_name":folder_name,
                         "path":file_version.file_name,
