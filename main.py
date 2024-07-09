@@ -307,7 +307,7 @@ class GETALLFILES(Resource):
                     })
                 else:
                     file_results.append({
-                        "name":file_version.file_name,
+                        "name":strip_prefix(file_version.file_name,common_prefix),
                         "type":"file",
                         "date": file_version.upload_timestamp,
                         "folder_name":folder_name
