@@ -427,8 +427,8 @@
             folderDiv.id =`folder${index + 1}`;
            const stringInput = folder.folder_name;
            const stringInput2 = folder.name;
-           const name1 = stringInput.length > maxlength > stringInput.substring(0,maxlength - 3) + '...' : stringInput;
-           const name2 = stringInput2.length > maxlength > stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
+           const name1 = stringInput.length > maxlength ? stringInput.substring(0,maxlength - 3) + '...' : stringInput;
+           const name2 = stringInput2.length > maxlength ? stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
             folderDiv.innerHTML = `
             <i class="fa fa-folder" aria-hidden="true"></i>
             <i class="fa fa-check" aria-hidden="true"></i>
