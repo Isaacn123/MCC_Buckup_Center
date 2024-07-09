@@ -611,12 +611,16 @@
               folderDiv.id =`folder${index + 1}`;
             
               //const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
+
+              const inputString = `${file.folder_name}`;
+              const foldername = stringfy(maxlength,inputString);
           
               folderDiv.innerHTML = `
               <i class="fa fa-folder" aria-hidden="true"></i>
               <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${file.folder_name}</small></p>
+              <p class="folder-title"><small>${foldername}</small></p>
               `;
+
         
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
@@ -633,10 +637,13 @@
               fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
               fileDiv.dataset.tooltip = '0 file';
               fileDiv.id =`file${index + 1}`;
+              const inputString = `${file.name}`;
+              const filename = stringfy(maxlength,inputString);
+
               fileDiv.innerHTML = `
               <i class="fa fa-file" aria-hidden="true"></i>
               <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${file.name}</small></p>
+              <p class="folder-title"><small>${filename}</small></p>
               `;
               filelist.appendChild(fileDiv);
             }
@@ -753,6 +760,11 @@
 
 
   });
+
+  function stringfy(maxlength,stringinput){
+    const mystring = stringInput.length > maxlength ? stringinput.substring(0, maxlength - 3) + '...': stringinput;
+    return mystring
+  }
  </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
