@@ -425,8 +425,8 @@
             folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
             folderDiv.dataset.tooltip = '0 file';
             folderDiv.id =`folder${index + 1}`;
-           const stringInput = folder.folder_name;
-           const stringInput2 = folder.name;
+           const stringInput = `${folder.folder_name}`;
+           const stringInput2 = `${folder.name}`;
            const name1 = stringInput.length > maxlength ? stringInput.substring(0,maxlength - 3) + '...' : stringInput;
            const name2 = stringInput2.length > maxlength ? stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
             folderDiv.innerHTML = `
