@@ -439,6 +439,7 @@
              fetchallFiles(folder.folder_name,maxlength);
              folderName = folder.name;
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
+             window.location.href = `folderContents.html?folder=${folder.folder_name}`;
             });
       
 
