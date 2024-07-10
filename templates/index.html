@@ -86,7 +86,7 @@
 
       function getQueryParams(params){
         const urlParam = new URLSearchParams(window.location.search);
-        return urlParam.get(param);
+        return urlParam.get(params);
       }
         document.getElementById("uploadmcForm").addEventListener("submit", async function(event) {
             event.preventDefault();
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
      const currentFolder = getQueryParams('folder');
 
      console.log("FOLDCURT:",currentFolder);
-     
+
 document.getElementById("dropdownMenuButton1").addEventListener('click', function(){
 
     
