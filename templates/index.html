@@ -210,61 +210,80 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById("dropdownMenuButton1").addEventListener('click', function(){
 
     
-         
-          fetch("/get_all_buckets", {
-              method:"GET", 
-              headers:{
-              "Accept":"application/json"
-                }
-        }).then((response)=>{
-          if (response.status == 200){
-            return response.json()
-          } else {
-            throw new Error('Failed to fetch data');
-        }
-        }).then((dataresponse)=>{
-          console.log("RESUL:",dataresponse)
-          const ItemList = document.getElementById("myDropdownMenu");
-          ItemList.innerHTML = '';
-    
-        if(dataresponse.length >0){
+       if(currentFolder && currentFolder.trim() !== ""){
+           
+        const list = [currentFolder]
 
-          dataresponse.forEach((bucketName,index) => {
+          a_list.className = "dropdown-item";
+          a_list.href = "#";
+          a_list.textContent = currentFolder;
 
-            const itemElement = document.createElement('li');
-            const a_list = document.createElement("a");
-            const buttonDropdown = document.getElementById("dropdownMenuButton1")
+          itemElement.appendChild(a_list); // Append the anchor to the list item
+          ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
+  
+          a_list.addEventListener("click",function(){
+            a_list.classList.add('active');
+            buttonDropdown.textContent = currentFolder
+          })
+          console.log("HO:",currentFolder);
+         });
 
-            a_list.className = "dropdown-item";
-            a_list.href = "#";
-            a_list.textContent = bucketName;
-
-            itemElement.appendChild(a_list); // Append the anchor to the list item
-            ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
-    
-            a_list.addEventListener("click",function(){
-              a_list.classList.add('active');
-              buttonDropdown.textContent = bucketName
-            })
-            console.log("HHL:",bucketName);
-           });
         }else{
+          fetch("/get_all_buckets", {
+            method:"GET", 
+            headers:{
+            "Accept":"application/json"
+              }
+      }).then((response)=>{
+        if (response.status == 200){
+          return response.json()
+        } else {
+          throw new Error('Failed to fetch data');
+      }
+      }).then((dataresponse)=>{
+        console.log("RESUL:",dataresponse)
+        const ItemList = document.getElementById("myDropdownMenu");
+        ItemList.innerHTML = '';
+  
+      if(dataresponse.length >0){
 
-          const noItemsElement = document.createElement('li');
-          const noItemsText = document.createElement('span');
-          noItemsText.className = "dropdown-item";
-          noItemsText.textContent = "No buckets found";
+        dataresponse.forEach((bucketName,index) => {
 
-          noItemsElement.appendChild(noItemsText);
-          dropdownMenu.appendChild(noItemsElement);
+          const itemElement = document.createElement('li');
+          const a_list = document.createElement("a");
+          const buttonDropdown = document.getElementById("dropdownMenuButton1")
+
+          a_list.className = "dropdown-item";
+          a_list.href = "#";
+          a_list.textContent = bucketName;
+
+          itemElement.appendChild(a_list); // Append the anchor to the list item
+          ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
+  
+          a_list.addEventListener("click",function(){
+            a_list.classList.add('active');
+            buttonDropdown.textContent = bucketName
+          })
+          console.log("HHL:",bucketName);
+         });
+      }else{
+
+        const noItemsElement = document.createElement('li');
+        const noItemsText = document.createElement('span');
+        noItemsText.className = "dropdown-item";
+        noItemsText.textContent = "No buckets found";
+
+        noItemsElement.appendChild(noItemsText);
+        dropdownMenu.appendChild(noItemsElement);
 
 
 
+      }
+
+      }).catch((error)=>{
+        console.error(error)
+      }); 
         }
-
-        }).catch((error)=>{
-          console.error(error)
-        }); 
       
       });
     }); 
