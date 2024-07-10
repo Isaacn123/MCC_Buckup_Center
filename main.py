@@ -331,9 +331,10 @@ class GETALLFILES(Resource):
             file_results = []
             common_prefix = get_common_prefix(folder_name)
             for file_version,folder_name in file_versions:
+                path_url_name = get_presigned_url(bucket_name,file_version.file_name)
 
                 if folder_name is not None and folder_name.endswith('/'):
-                    path_url_name = get_presigned_url(bucket_name,file_version.file_name)
+                    
                     # token = generate_auth_token(file_version.file_name,3600) 
                     # secure_url = generate_secure_url(path_url_name,token=token)   
                     file_results.append({
