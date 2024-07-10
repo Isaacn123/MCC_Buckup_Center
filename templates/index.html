@@ -86,7 +86,7 @@
         document.getElementById("uploadmcForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
-            console.log("FOLDERS_:", localStorage.getItem("Foldername"));
+           
             const fileInput = document.querySelector('input[type="file"]');
             const progressBar = document.getElementById('progressBar');
             const progressStyle = document.getElementsByClassName("bg-success")
@@ -94,6 +94,8 @@
 
             const file = fileInput.files[0];
             // console.log("FILE:", file)
+            console.log("FOLDERS_:", localStorage.getItem("Foldername"));
+            console.log("SEND");
 
             const selectedFolder = document.querySelector('.dropdown-menu .dropdown-item.active');
 
