@@ -196,10 +196,15 @@ document.addEventListener('DOMContentLoaded', function() {
      const p_info = document.getElementById("info");
      const currentFolder = getQueryParams('folder');
 
+      const prefix = 'Current Folder: ';
+     if (currentFolder.startsWith(prefix)) {
+      currentFolder = currentFolder.substring(prefix.length);
+     }
+
      console.log("FOLDCURT:",currentFolder);
 
      if(currentFolder && currentFolder.trim() !== ""){
-      p_info.textContent = `You are about to UPLOAD TO THIS FOLDER:<strong>${currentFolder}</strong>`;
+      p_info.textContent = `You are about to UPLOAD TO THIS FOLDER:${currentFolder}`;
       p_info.textContent = 
      }
 
