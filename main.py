@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 import jwt as _jwt
 from flask_mail import Message, Mail
 from config.util import Config
+from itsdangerous import TimedSerializer, SignatureExpired, BadSignature
 
 # from flask_cors import CORS
 
@@ -292,6 +293,23 @@ def get_presigned_url(bucket_name,file_name):
     
     return download_url
 
+def generate_auth_token(file_name, expiration=3600):
+    serializer = TimedSerializer(os.getenv('SECRET_KEY'), expires_in=expiration)
+    return serializer.dumps(file_name)
+
+def verify_auth_token(token):
+    serializer = TimedSerializer(os.getenv('SECRET_KEY'))
+    try:
+        return serializer.loads(token)
+    except SignatureExpired:
+        # Token expired
+        return None
+    except BadSignature:
+        # Invalid token
+        return None
+
+def generate_secure_url(base_url, token):
+    return f"{base_url}?Authorization={token}"
 
 class GETALLFILES(Resource):
     @api.expect(folder_name)
@@ -313,6 +331,8 @@ class GETALLFILES(Resource):
 
                 if folder_name is not None and folder_name.endswith('/'):
                     path_url_name = get_presigned_url(bucket_name,file_version.file_name)
+                    token= generate_auth_token(file_version.file_name,3600)
+                    secure_url = generate_secure_url(path_url_name,token=token)
                     file_results.append({
                         "folder_name":strip_prefix(folder_name,common_prefix),
                         "path":file_version.file_name,
@@ -323,7 +343,7 @@ class GETALLFILES(Resource):
                     file_results.append({
                         "name":strip_prefix(file_version.file_name,common_prefix),
                         "type":"file",
-                        "url":path_url_name,
+                        "url":secure_url,
                         "date": file_version.upload_timestamp,
                         "content_type":file_version.content_type,
                         "folder_name":folder_name
