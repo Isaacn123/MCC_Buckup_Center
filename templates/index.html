@@ -40,7 +40,7 @@
                   </div>
                 <div class="col-sm-8 col-md-6 col-lg-10 col-xl-8" data-zanim-xs="{&quot;delay&quot;:0.5,&quot;animation&quot;:&quot;slide-right&quot;}" style="transform: translate(0px, 0px); opacity: 1;">
                   <h3 class="display-4 fs-7">Welcome to Our&amp; Backup Center.</h3>
-                  <h6 class="text-primary mt-3">Please store your data with us, crafted for those who prioritize design.</h6>
+                  <h6 class="text-primary mt-3" id="info">Please store your data with us, crafted for those who prioritize design.</h6>
                   
                   <form id="uploadmcForm" enctype="multipart/form-data"  class="mt-5">
                     <div class="mb-3">
@@ -193,10 +193,14 @@
 
         });
 document.addEventListener('DOMContentLoaded', function() {
-
+     const p_info = document.getElementById("info");
      const currentFolder = getQueryParams('folder');
 
      console.log("FOLDCURT:",currentFolder);
+
+     if(currentFolder){
+      p_info.textContent = `You are about to UPLOAD TO THIS FOLDER:<strong>${currentFolder}</strong>`
+     }
 
 document.getElementById("dropdownMenuButton1").addEventListener('click', function(){
 
