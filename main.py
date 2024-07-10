@@ -170,6 +170,7 @@ class GETALLFOLDERSANDFILES(Resource):
           response  = bucket.ls(latest_only=True)
           all_files = []
           for file_version,folder_name in response:
+              path_url_name = get_presigned_url(bucket_name,file_version.file_name)
               
               if folder_name is not None:
                   
@@ -183,6 +184,7 @@ class GETALLFOLDERSANDFILES(Resource):
                        "name":file_version.file_name,
                        "info":file_version.file_info,
                        "type":"file",
+                       "url":path_url_name,
                        "content_type":file_version.content_type,
                        "date": file_version.upload_timestamp,
                        "folder_name":folder_name
@@ -279,6 +281,11 @@ class GETALLBUCKET2FOLDERS(Resource):
         except Exception as e:
 
             return jsonify({"error:": str(e)})
+def get_presigned_url(bucket_name,file_name):
+
+    download_url = b2_api.get_download_url_for_file_name(file_name=file_name,bucket_name=bucket_name)
+    
+    return download_url
 
 class GETALLFILES(Resource):
     @api.expect(folder_name)
@@ -299,6 +306,7 @@ class GETALLFILES(Resource):
             for file_version,folder_name in file_versions:
 
                 if folder_name is not None and folder_name.endswith('/'):
+                    path_url_name = get_presigned_url(bucket_name,file_version.file_name)
                     file_results.append({
                         "folder_name":strip_prefix(folder_name,common_prefix),
                         "path":file_version.file_name,
@@ -309,7 +317,7 @@ class GETALLFILES(Resource):
                     file_results.append({
                         "name":strip_prefix(file_version.file_name,common_prefix),
                         "type":"file",
-                        "url":file_version.s3_url,
+                        "url":path_url_name,
                         "date": file_version.upload_timestamp,
                         "content_type":file_version.content_type,
                         "folder_name":folder_name
