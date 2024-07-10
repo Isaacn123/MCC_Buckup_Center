@@ -329,9 +329,9 @@
 
       const addingfiles = document.getElementById("addFiles");
 
-      const currentFolderName = localStorage.getItem('currentFolderName');
+      const currentFolderCs = localStorage.getItem('currentFolderName');
 
-      console.log("CURENT:",currentFolderName);
+      console.log("CURENT:",currentFolderCs);
 
       addingfiles.addEventListener('click', function(){
      
@@ -634,7 +634,7 @@
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
                folderName = `${file.folder_name}`;
-               localStorage.setItem("currentFolderName",folderName);
+               localStorage.setItem("currentFolderName",`${file.folder_name}`);
                currentFolderName.textContent = `Current Folder: ${file.folder_name}`;
               });
         
