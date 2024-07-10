@@ -328,11 +328,11 @@
       const signoutBtn = document.getElementById('logoutId');
 
       const addingfiles = document.getElementById("addFiles");
-
+      const CurrentFolder = document.getElementById("currentFolderName");
       const currentFolderCs = localStorage.getItem('currentFolderName');
 
       
-
+      console.log("CURENT2:",currentFolderName.textContent);
       addingfiles.addEventListener('click', function(){
      
         console.log("CURENT:",currentFolderCs);
