@@ -330,12 +330,15 @@
       const addingfiles = document.getElementById("addFiles");
       const CurrentFolder = document.getElementById("currentFolderName");
       const currentFolderCs = localStorage.getItem('currentFolderName');
+      const uploadLinkElement = addFilesButton.querySelector('a');
 
       
       console.log("CURENT2:",CurrentFolder.textContent);
       addingfiles.addEventListener('click', function(){
-     
-        console.log("CURENT:",currentFolderCs);
+        var currentFolder = `${CurrentFolder.textContent}`;
+        const uploadLink = `/uploadfiles?folder=${encodeURIComponent(currentFolder)}`;
+        addingfiles.setAttribute('href',uploadLink)
+
         console.log("CURENT2:",CurrentFolder.textContent);
       });
 
