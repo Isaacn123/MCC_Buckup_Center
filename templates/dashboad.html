@@ -509,9 +509,9 @@
 
         // Remove the prefix "Current Folder: "
         const prefix = 'Current Folder: ';
-       // if (currentFolderNames.startsWith(prefix)) {
-       //   currentFolderNames = currentFolderNames.substring(prefix.length);
-       // }
+        if (currentFolderNames.startsWith(prefix)) {
+          currentFolderNames = currentFolderNames.substring(prefix.length);
+        }
 
       console.log(currentFolderNames);
 
