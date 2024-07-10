@@ -207,7 +207,7 @@
             <div class="row">
                 <div class="col">
                   <div id="notification"></div>
-                    <small><span id="currentFolderName"></span></small>
+                    <small>Current Folder: <span id="currentFolderName"></span></small>
                     <button type="button" id="addFolderBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Add new Folder
                       </button>
@@ -508,9 +508,9 @@
 
         // Remove the prefix "Current Folder: "
         const prefix = 'Current Folder: ';
-        if (currentFolderNames.startsWith(prefix)) {
-          currentFolderNames = currentFolderNames.substring(prefix.length);
-        }
+       // if (currentFolderNames.startsWith(prefix)) {
+       //   currentFolderNames = currentFolderNames.substring(prefix.length);
+       // }
 
       console.log(currentFolderNames);
 
@@ -635,7 +635,7 @@
                fetchallFiles(file.folder_name);
                folderName = `${file.folder_name}`;
                localStorage.setItem("currentFolderName",`${file.folder_name}`);
-               currentFolderName.textContent = `Current Folder: ${file.folder_name}`;
+               currentFolderName.textContent = `${file.folder_name}`;
               });
         
   
