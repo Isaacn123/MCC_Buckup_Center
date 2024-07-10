@@ -171,6 +171,7 @@ class GETALLFOLDERSANDFILES(Resource):
           response  = bucket.ls(latest_only=True)
           all_files = []
           for file_version,folder_name in response:
+            #   path_url_name = get_presigned_url(bucket_name,file_version.file_name)
               path_url_name = get_presigned_url(bucket_name,file_version.file_name)
               
               if folder_name is not None:
@@ -286,12 +287,13 @@ class GETALLBUCKET2FOLDERS(Resource):
 def get_presigned_url(bucket_name,file_name):
 
     # download_url = b2_api.get_download_url_for_file_name(file_name=file_name,bucket_name=bucket_name)
-    download_url = b2_api.get_download_url_for_file_name(bucket_name=bucket_name,file_name=file_name)
+    # download_url = b2_api.get_download_url_for_file_name(bucket_name=bucket_name,file_name=file_name)
+    download_url = bucket.get_download_authorization(file_name_prefix=file_name,valid_duration_in_seconds=3600)
 
-    base_url = 'https://f000.backblazeb2.com/file'
+    base_url = 'https://f005.backblazeb2.com/file'
     presigned_url = f"{base_url}/{bucket_name}/{file_name}?Authorization={download_url}"  
     
-    return download_url
+    return presigned_url
 
 def generate_auth_token(file_name, expiration=3600):
     serializer = TimedSerializer(os.getenv('SECRET_KEY'), expires_in=expiration)
@@ -331,8 +333,8 @@ class GETALLFILES(Resource):
 
                 if folder_name is not None and folder_name.endswith('/'):
                     path_url_name = get_presigned_url(bucket_name,file_version.file_name)
-                    token = generate_auth_token(file_version.file_name,3600) 
-                    secure_url = generate_secure_url(path_url_name,token=token)   
+                    # token = generate_auth_token(file_version.file_name,3600) 
+                    # secure_url = generate_secure_url(path_url_name,token=token)   
                     file_results.append({
                         "folder_name":strip_prefix(folder_name,common_prefix),
                         "path":file_version.file_name,
@@ -343,7 +345,7 @@ class GETALLFILES(Resource):
                     file_results.append({
                         "name":strip_prefix(file_version.file_name,common_prefix),
                         "type":"file",
-                        "url":secure_url,
+                        "url":path_url_name,
                         "date": file_version.upload_timestamp,
                         "content_type":file_version.content_type,
                         "folder_name":folder_name
