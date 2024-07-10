@@ -331,8 +331,8 @@ class GETALLFILES(Resource):
 
                 if folder_name is not None and folder_name.endswith('/'):
                     path_url_name = get_presigned_url(bucket_name,file_version.file_name)
-                    token= generate_auth_token(file_version.file_name,3600)
-                    secure_url = generate_secure_url(path_url_name,token=token)
+                    token = generate_auth_token(file_version.file_name,3600) 
+                    secure_url = generate_secure_url(path_url_name,token=token)   
                     file_results.append({
                         "folder_name":strip_prefix(folder_name,common_prefix),
                         "path":file_version.file_name,
