@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
      console.log("FOLDCURT:",currentFolder);
 
-     if(currentFolder){
+     if(currentFolder && currentFolder.trim() !== ""){
       p_info.textContent = `You are about to UPLOAD TO THIS FOLDER:<strong>${currentFolder}</strong>`
      }
 
