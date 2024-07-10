@@ -170,6 +170,7 @@ class GETALLFOLDERSANDFILES(Resource):
         try:
           response  = bucket.ls(latest_only=True)
           all_files = []
+          path_url_name = ""
           for file_version,folder_name in response:
             #   path_url_name = get_presigned_url(bucket_name,file_version.file_name)
               path_url_name = get_presigned_url(bucket_name,file_version.file_name)
