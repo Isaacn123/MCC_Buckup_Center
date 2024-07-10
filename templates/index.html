@@ -224,9 +224,9 @@ document.getElementById("dropdownMenuButton1").addEventListener('click', functio
           a_list.addEventListener("click",function(){
             a_list.classList.add('active');
             buttonDropdown.textContent = currentFolder
-          })
+          });
           console.log("HO:",currentFolder);
-         });
+         
 
         }else{
           fetch("/get_all_buckets", {
