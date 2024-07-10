@@ -96,7 +96,6 @@ def logout_user():
 class CreateUser(Resource):
     @api.doc(description='Create current user information')
     @api.expect(user_model)  #inputs data matching the user model
-    
     def post(self):
         print("am testing")
         user_data = request.get_json()

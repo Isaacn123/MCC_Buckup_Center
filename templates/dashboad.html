@@ -90,12 +90,14 @@
 
                 .navbar-nav {
                   line-height: 10px !important;
-                }   
-  
-            
+                }    
+                .col{
+               flex: none !important;
+                }
                 .logo_im{
                     display: none !important;
                 }
+
                 header{
                padding:0 30px;
                z-index:999}
@@ -313,7 +315,8 @@
     
     // Set the default active tab on page load
     document.addEventListener('DOMContentLoaded', function() {
-    
+
+      const inFolder = false;
       const defaultTab = "tabDashboard"
       const token = "{{ token }}";
       const profile_name = document.getElementById("name-profile");
@@ -428,7 +431,7 @@
            const stringInput = `${folder.folder_name}`;
            //const stringInput2 = `${folder.name}`;
            const name1 = stringInput.length > maxlength ? stringInput.substring(0,maxlength - 3) + '...' : stringInput;
-           //const name2 = stringInput2.length > maxlength ? stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
+
             folderDiv.innerHTML = `
             <i class="fa fa-folder" aria-hidden="true"></i>
             <i class="fa fa-check" aria-hidden="true"></i>
@@ -436,8 +439,10 @@
             `;
       
             folderDiv.addEventListener("click", function(){
+              inFolder = true;
              fetchallFiles(folder.folder_name,maxlength);
-             folderName = folder.name;
+             folderName = `${folder.name}`;
+             localStorage.setItem("Foldername",folderName);
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
            //  window.location.href = `folderContents.html?folder=${folder.folder_name}`;
             });
@@ -471,6 +476,7 @@
         noFoldersDiv.className = 'alert alert-warning';
         noFoldersDiv.textContent = 'No folders found';
         folderContainer.appendChild(noFoldersDiv);
+       
        
       }
         
@@ -614,7 +620,8 @@
         
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
-               folderName = file.name;
+               folderName = `${file.folder_name}`;
+               localStorage.setItem("Foldername",folderName);
                currentFolderName.textContent = `Current Folder: ${file.folder_name}`;
               });
         
@@ -677,7 +684,6 @@
         } else {
     
           const noFilesItem = document.createElement('li');
-    
           noFilesItem.className = 'list-group-item';
           noFilesItem.textContent = 'No files found';
           filelist.appendChild(noFilesItem);
@@ -715,8 +721,6 @@
     
 
      const container = document.getElementById("notification")
-            
-
      
       fetch('/forgot_password', {
         method:"POST",
@@ -741,6 +745,7 @@
         const notificationElement = document.createElement('div');
         notificationElement.className ="show alert alert-success";
         notificationElement.setAttribute("alert","role");
+
         notificationElement.textContent = data['message'];
         container.appendChild(notificationElement);
       
