@@ -213,6 +213,9 @@ document.getElementById("dropdownMenuButton1").addEventListener('click', functio
        if(currentFolder && currentFolder.trim() !== ""){
            
         const list = [currentFolder]
+          const itemElement = document.createElement('li');
+          const a_list = document.createElement("a");
+          const buttonDropdown = document.getElementById("dropdownMenuButton1")
 
           a_list.className = "dropdown-item";
           a_list.href = "#";
