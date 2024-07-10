@@ -262,7 +262,7 @@
                     <!-- Right part  -->
                     <div class="input-select-wrap text-center">
                         <div class="fileUpload">
-                          <a href="/uploadfiles">
+                          <a href="/uploadfiles" id="addFiles">
                             <span>+</span>
                             <p>Add your files</p>
                           </a>
@@ -326,6 +326,19 @@
       var   holderEmail = document.getElementById("message");
 
       const signoutBtn = document.getElementById('logoutId');
+
+      const addingfiles = document.getElementById("addFiles");
+
+      const currentFolderName = localStorage.getItem('currentFolderName');
+
+      console.log("CURENT:",currentFolderName);
+
+      addingfiles.addEventListener('click', function(){
+     
+
+      });
+
+
 
       signoutBtn.addEventListener('click', function(){
         fetch('/api/logout',{
@@ -442,7 +455,7 @@
               inFolder = true;
              fetchallFiles(folder.folder_name,maxlength);
              folderName = `${folder.name}`;
-             localStorage.setItem("Foldername",folderName);
+             localStorage.setItem("currentFolderName",folderName);
              currentFolderName.textContent = `Current Folder: ${folder.folder_name}`;
            //  window.location.href = `folderContents.html?folder=${folder.folder_name}`;
             });
@@ -621,7 +634,7 @@
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
                folderName = `${file.folder_name}`;
-               localStorage.setItem("Foldername",folderName);
+               localStorage.setItem("currentFolderName",folderName);
                currentFolderName.textContent = `Current Folder: ${file.folder_name}`;
               });
         
