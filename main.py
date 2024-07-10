@@ -285,12 +285,12 @@ class GETALLBUCKET2FOLDERS(Resource):
 def get_presigned_url(bucket_name,file_name):
 
     # download_url = b2_api.get_download_url_for_file_name(file_name=file_name,bucket_name=bucket_name)
-    download_url = b2_api.get_download_authorization(file_name,31536000)
+    download_url = b2_api.get_download_url_for_file_name(bucket_name=bucket_name,file_name=file_name)
 
     base_url = 'https://f000.backblazeb2.com/file'
     presigned_url = f"{base_url}/{bucket_name}/{file_name}?Authorization={download_url}"  
     
-    return presigned_url
+    return download_url
 
 
 class GETALLFILES(Resource):
