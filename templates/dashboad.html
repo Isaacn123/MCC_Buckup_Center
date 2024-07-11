@@ -827,14 +827,15 @@ function removeTrailingSlash(folderName) {
           });
         } else {
           
-         // fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
-         const folder = `${currentFolderName.textContent}`;
-        const noFilesItem = document.createElement('li');
-        noFilesItem.className = 'list-group-item';
-        noFilesItem.textContent = folder;//'No files found';
+         //fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
+       //  const folder = `${currentFolderName.textContent}`;
+       // const noFilesItem = document.createElement('li');
+       // noFilesItem.className = 'list-group-item';
+       // noFilesItem.textContent = folder;//'No files found';
       
         filelist.appendChild(noFilesItem);
-        let ur = removeTrailingSlash(folder);
+        let folderName = removeTrailingSlash(folder);
+        fetchsubFolders(folderName,maxlength,foldercontainer,fileListContainer,filelist)
         console.log("REMOVED:",ur);
         }
        // if ()
