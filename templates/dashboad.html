@@ -708,9 +708,11 @@
 
               if(file.content_type === "image/jpeg" || file.content_type === "image/png"){
                 const formatedURL = formatUrl(`${file.url}`)
+                const url = `${file.url}`;
+                const urls = url.replace(/,/g, '%2C+');
 
                 fileDiv.innerHTML = `
-                 <img src="${file.url}" alt="Image Thumbnail" width="90">
+                 <img src="${urls}" alt="Image Thumbnail" width="90">
                 <i class="fa fa-check" aria-hidden="true"></i>
                 <p class="folder-title"><small>${filename}</small></p>
                 `;
