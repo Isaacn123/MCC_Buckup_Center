@@ -471,15 +471,29 @@
             const fileDiv = document.createElement('div');
             const stringInput2 = `${folder.name}`;
             const name2 = stringInput2.length > maxlength ? stringInput2.substring(0,maxlength - 3) + '...' : stringInput2;
-            
             fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
             fileDiv.dataset.tooltip = '0 file';
             fileDiv.id =`file${index + 1}`;
-            fileDiv.innerHTML = `
+
+            if(folder.content_type == "image/jpeg" || folder.content_type == "image/png"){
+
+              fileDiv.innerHTML = `
+               <img src="${folder.url}" alt="Image Thumbnail" width="90">
+              <i class="fa fa-check" aria-hidden="true"></i>
+              <p class="folder-title"><small>${name2}</small></p>
+              `;
+
+            } else{
+
+                fileDiv.innerHTML = `
             <i class="fa fa-file" aria-hidden="true"></i>
             <i class="fa fa-check" aria-hidden="true"></i>
             <p class="folder-title"><small>${name2}</small></p>
             `;
+            }
+            
+         
+          
             folderContainer.appendChild(fileDiv);
           }
        

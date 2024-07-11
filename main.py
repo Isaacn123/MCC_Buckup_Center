@@ -296,24 +296,6 @@ def get_presigned_url(bucket_name,file_name):
     
     return presigned_url
 
-def generate_auth_token(file_name, expiration=3600):
-    serializer = TimedSerializer(os.getenv('SECRET_KEY'), expires_in=expiration)
-    return serializer.dumps(file_name)
-
-def verify_auth_token(token):
-    serializer = TimedSerializer(os.getenv('SECRET_KEY'))
-    try:
-        return serializer.loads(token)
-    except SignatureExpired:
-        # Token expired
-        return None
-    except BadSignature:
-        # Invalid token
-        return None
-
-def generate_secure_url(base_url, token):
-    return f"{base_url}?Authorization={token}"
-
 class GETALLFILES(Resource):
     @api.expect(folder_name)
     def post(self):
