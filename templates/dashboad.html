@@ -683,7 +683,7 @@
 
           
 
-            
+            // start the Onlick Function
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
                folderName = `${file.folder_name}`;
@@ -694,7 +694,95 @@
                currentFolderName.textContent = parent; //`${file.folder_name}`;
 
                
+               fetch('/list_all_files',{
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json"
+                },
+                body:JSON.stringify({folder_name: folderName})
+              })
+              .then((response) =>{
+                if (response.status == 200){
+                  return response.json();
+                }
+              })
+              .then((data) => {
+
+
+                if(file.type === "folder"){
+
+                  const folderDiv = document.createElement('Div');
+                  folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                  folderDiv.dataset.tooltip = '0 file';
+                  folderDiv.id =`folder${index + 1}`;
+                
+                  //const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
+    
+                  const inputString = `${file.folder_name}`;
+                  const foldername = stringfy(maxlength,inputString);
+              
+                  folderDiv.innerHTML = `
+                  <i class="fa fa-folder" aria-hidden="true"></i>
+                  <i class="fa fa-check" aria-hidden="true"></i>
+                  <p class="folder-title"><small>${foldername}</small></p>
+                  `;
+                  console.log("PARENT:",`${currentFolderName.textContent}`);
+
+                  filelist.appendChild(folderDiv);
+
+                }else{
+
+                  const fileDiv = document.createElement('div');
+                  fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                  fileDiv.dataset.tooltip = '0 file';
+                  fileDiv.id =`file${index + 1}`;
+                  const inputString = `${file.name}`;
+                  const filename = stringfy(maxlength,inputString);
+    
+                  //fileDiv.innerHTML = `
+                 // <i class="fa fa-file" aria-hidden="true"></i>
+                  //<i class="fa fa-check" aria-hidden="true"></i>
+                  //<p class="folder-title"><small>${filename}</small></p>
+                  //`;
+     
+
+                  // second Loop
+    
+                  if(file.content_type === "image/jpeg" || file.content_type === "image/png"){
+                    const formatedURL = formatUrl(`${file.url}`)
+                    let url = `${file.url}`;
+                        url = url.replace(/ /g, '+');
+                        url = url.replace(/,/g, '%2C');
+    
+                    fileDiv.innerHTML = `
+                     <img src="${url}" alt="Image Thumbnail" width="90">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <p class="folder-title"><small>${filename}</small></p>
+                    `;
+      
+                  } else{
+      
+                      fileDiv.innerHTML = `
+                  <i class="fa fa-file" aria-hidden="true"></i>
+                  <i class="fa fa-check" aria-hidden="true"></i>
+                  <p class="folder-title"><small>${filename}</small></p>
+                  `;
+                  }
+                  filelist.appendChild(fileDiv);
+
+
+                }
+
+
+              }
+             // end of if Statement
+              ).catch((error) => console.log(e))
+
+
+
               });
+
+              //end of the Click Function
         
   
               //foldercontainer.appendChild(folderDiv);
