@@ -627,6 +627,11 @@
       
     }
 
+    // Example usage in a function
+function removeTrailingSlash(folderName) {
+  return folderName.replace(/\/$/, '');
+}
+
     function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContainer, filelist) {
       fetch('/list_all_files', {
           method: "POST",
@@ -825,7 +830,7 @@
          // fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
         const noFilesItem = document.createElement('li');
         noFilesItem.className = 'list-group-item';
-        noFilesItem.textContent = 'No files found';
+        noFilesItem.textContent = parent;//'No files found';
         filelist.appendChild(noFilesItem);
         }
        // if ()
