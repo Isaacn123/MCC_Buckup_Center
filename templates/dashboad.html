@@ -633,9 +633,10 @@ function removeTrailingSlash(folderName) {
 }
 
     function fetchsubFolders(folderName, maxlength) {
-      const foldercontainer = document.getElementById("tabDashboardContent");
-      const fileListContainer = document.getElementById('fileListContainer');
-      const filelist = document.createElement('div')
+      //const foldercontainer = document.getElementById("tabDashboardContent");
+      //const fileListContainer = document.getElementById('fileListContainer');
+      const fileList_Container = document.createElement('div');
+      const filelist = document.createElement('div');
       let parent  = "";
       fetch('/list_all_files', {
           method: "POST",
@@ -653,7 +654,7 @@ function removeTrailingSlash(folderName) {
       })
       .then((data) => {
           filelist.className = 'row w-100';
-          fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+          fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
   
           if (data.files.length > 0) {
               data.files.forEach((file, index) => {
@@ -674,7 +675,7 @@ function removeTrailingSlash(folderName) {
   
                       // Add click listener to fetch files of this folder
                       folderDiv.addEventListener("click", function() {
-                          fetchsubFolders(file.folder_name, maxlength, foldercontainer, fileListContainer, filelist);
+                        
                           localStorage.setItem("currentFolderName", file.folder_name);
                           const parent = currentFolderName.textContent + file.folder_name;
                           console.log("PARENT-2:::", parent);
