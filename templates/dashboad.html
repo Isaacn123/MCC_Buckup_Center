@@ -486,9 +486,10 @@
             } else if(folder.content_type === "video/mp4"){
 
               fileDiv.innerHTML = `
-           <video id="video-id" width="90" poster="https://i.ytimg.com/vi/5Peo-ivmupE/maxresdefault.jpg" style="display: none;">
-         <source src="${folder.url}" type="video/mp4">        
-             </video>
+          <video width="90" height="100" muted loop>
+                <source src="${folder.url}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
              <i class="fa fa-check" aria-hidden="true"></i>
              <p class="folder-title"><small>${name2}</small></p>
              `;
@@ -591,6 +592,16 @@
     
   
     // Model create Folder MOdel 
+
+    const video = fileDiv.querySelector('video');
+    video.addEventListener('mouseover', () => {
+        video.currentTime = 5;  // Adjust this value to start playing from a different time
+        video.play();
+    });
+    video.addEventListener('mouseout', () => {
+        video.pause();
+        video.currentTime = 0;
+    });
     
   
     
