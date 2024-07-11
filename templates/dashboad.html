@@ -681,14 +681,16 @@
               `;
               console.log("PARENT:",`${currentFolderName.textContent}`);
 
-              parent = `${currentFolderName.textContent}${file.folder_name}`;
-              console.log("PARENT:",parent);
+          
 
             
               folderDiv.addEventListener("click", function(){
                fetchallFiles(file.folder_name);
                folderName = `${file.folder_name}`;
                localStorage.setItem("currentFolderName",`${file.folder_name}`);
+
+               parent = `${currentFolderName.textContent}${file.folder_name}`;
+               console.log("PARENT:",parent);
                currentFolderName.textContent = `${file.folder_name}`;
               });
         
