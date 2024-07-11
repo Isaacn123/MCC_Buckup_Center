@@ -710,7 +710,7 @@
                 const formatedURL = formatUrl(`${file.url}`)
                 let url = `${file.url}`;
                     url = url.replace(/ /g, '+');
-                    url = url.replace(/,/g, '%2C');
+                    url = url.replace(/, /g, '%2C');
 
                 fileDiv.innerHTML = `
                  <img src="${urls}" alt="Image Thumbnail" width="90">
