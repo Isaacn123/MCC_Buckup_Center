@@ -615,11 +615,12 @@
       urlObj.pathname = urlObj.pathname.replace(/,/g, '%2C');
 
       // Enncode spceial characters except '/' and '+'
-      const formattedUrl = url.split('/').map(segment => {
-        return segment.split('+').map(encodeURIComponent).join('+');
+      urlObj.pathname = urlObj.pathname.split('/').map(segment => {
+        //return segment.split('+').map(encodeURIComponent).join('+');
+        return encodeURIComponent(segment);
       }).join('/');
 
-      return formattedUrl;
+      return urlObj.href;
     }
     
     function fetchallFiles(folderName, maxlength){
