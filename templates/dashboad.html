@@ -483,6 +483,15 @@
               <p class="folder-title"><small>${name2}</small></p>
               `;
 
+            } else if(folder.content_type === "video/mp4"){
+
+              fileDiv.innerHTML = `
+           <video id="video-id" width="200" poster="https://i.ytimg.com/vi/5Peo-ivmupE/maxresdefault.jpg">
+         <source src="${folder.url}" type="video/mp4">        
+             </video>
+             <i class="fa fa-check" aria-hidden="true"></i>
+             <p class="folder-title"><small>${name2}</small></p>
+             `;
             } else{
 
                 fileDiv.innerHTML = `
