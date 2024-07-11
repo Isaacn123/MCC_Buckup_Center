@@ -475,7 +475,7 @@
             fileDiv.dataset.tooltip = '0 file';
             fileDiv.id =`file${index + 1}`;
 
-            if(folder.content_type == "image/jpeg" || folder.content_type == "image/png"){
+            if(folder.content_type === "image/jpeg" || folder.content_type === "image/png"){
 
               fileDiv.innerHTML = `
                <img src="${folder.url}" alt="Image Thumbnail" width="90">
