@@ -652,7 +652,7 @@ function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContain
       }
   })
   .then((data) => {
-      filelist.className = 'row w-100';
+      filelists.className = 'row w-100';
       fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
 
       if (data.files.length > 0) {
