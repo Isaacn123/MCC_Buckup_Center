@@ -614,13 +614,17 @@
       // Replace commas with %2C
       urlObj.pathname = urlObj.pathname.replace(/,/g, '%2C');
 
-      // Enncode spceial characters except '/' and '+'
-      urlObj.pathname = urlObj.pathname.split('/').map(segment => {
-        //return segment.split('+').map(encodeURIComponent).join('+');
-        return encodeURIComponent(segment);
-      }).join('/');
+      urlObj.pathname = encodeURI(urlObj.pathname)
 
       return urlObj.href;
+
+      // Enncode spceial characters except '/' and '+'
+      //urlObj.pathname = urlObj.pathname.split('/').map(segment => {
+        //return segment.split('+').map(encodeURIComponent).join('+');
+       // return encodeURIComponent(segment);
+     // }).join('/');
+
+      
     }
     
     function fetchallFiles(folderName, maxlength){
