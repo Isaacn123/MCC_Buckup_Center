@@ -632,8 +632,9 @@ function removeTrailingSlash(folderName) {
   return folderName.replace(/\/$/, '');
 }
 
-function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContainer, filelist) {
-  const fileList_Container = document.createElement('div');
+function fetchsubFolders(folderName, maxlength) {
+  const foldercontainer = document.getElementById("tabDashboardContent");
+  const fileList_Container = document.getElementById('fileListContainer');
   const filelists = document.createElement('div');
   let parent = "";
 
@@ -710,14 +711,18 @@ function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContain
           });
 
           // Append filelists to fileListContainer
-          fileListContainer.appendChild(fileList_Container);
-          filelist.appendChild(filelists);
+         // fileList_Container.appendChild(filelists);
+         // filelist.appendChild(filelists);
       } else {
           const noFilesItem = document.createElement('li');
           noFilesItem.className = 'list-group-item';
           noFilesItem.textContent = 'No files found';
           filelist.appendChild(noFilesItem);
       }
+
+      fileList_Container.appendChild(filelists);
+      fileList_Container.style.display = 'block'
+      foldercontainer.style.display = 'none';
   })
   .catch((error) => {
       console.error("Error fetching file list:", error);
