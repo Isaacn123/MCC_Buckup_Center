@@ -814,7 +814,7 @@ function fetchsubFolders(folderName, maxlength) {
               const filename = stringfy(maxlength,inputString);
 
 
-              if(file.content_type === "image/jpeg" || file.content_type === "image/png"){
+              if(file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type === "image/webp"){
                 const formatedURL = formatUrl(`${file.url}`)
                 let url = `${file.url}`;
                     url = url.replace(/ /g, '+');
