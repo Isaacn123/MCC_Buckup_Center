@@ -708,8 +708,9 @@
 
               if(file.content_type === "image/jpeg" || file.content_type === "image/png"){
                 const formatedURL = formatUrl(`${file.url}`)
-                const url = `${file.url}`;
-                const urls = url.replace(/,/g, '%2C+');
+                let url = `${file.url}`;
+                    url = url.replace(/ /g, '+');
+                    url = url.replace(/,/g, '%2C');
 
                 fileDiv.innerHTML = `
                  <img src="${urls}" alt="Image Thumbnail" width="90">
