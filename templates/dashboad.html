@@ -604,7 +604,7 @@
       url = url.replace(/ /g, '+');
 
       // replace commas with %2C+
-      url = url.replace(/,/g, '%2C+');
+      url = url.replace(/,/g, '%2C');
 
       // Enncode spceial characters except '/' and '+'
       const formattedUrl = url.split('/').map(segment => {
