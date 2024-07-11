@@ -632,7 +632,11 @@ function removeTrailingSlash(folderName) {
   return folderName.replace(/\/$/, '');
 }
 
-    function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContainer, filelist) {
+    function fetchsubFolders(folderName, maxlength) {
+      const foldercontainer = document.getElementById("tabDashboardContent");
+      const fileListContainer = document.getElementById('fileListContainer');
+      const filelist = document.createElement('div')
+      let parent  = "";
       fetch('/list_all_files', {
           method: "POST",
           headers: {
@@ -679,7 +683,7 @@ function removeTrailingSlash(folderName) {
   
                       filelist.appendChild(folderDiv);
                   } else {
-                    console.log("DATA", file.name)
+                    console.log("DATA", file.url);
                       const fileDiv = document.createElement('div');
                       fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
                       fileDiv.dataset.tooltip = '0 file';
