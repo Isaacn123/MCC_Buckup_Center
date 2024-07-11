@@ -636,7 +636,7 @@ function removeTrailingSlash(folderName) {
       //const foldercontainer = document.getElementById("tabDashboardContent");
       //const fileListContainer = document.getElementById('fileListContainer');
       const fileList_Container = document.createElement('div');
-      const filelist = document.createElement('div');
+      const filelists = document.createElement('div');
       let parent  = "";
       fetch('/list_all_files', {
           method: "POST",
@@ -660,21 +660,21 @@ function removeTrailingSlash(folderName) {
               data.files.forEach((file, index) => {
                
                   if (file.type === "folder") {
-                      const folderDiv = document.createElement('div');
-                      folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-                      folderDiv.dataset.tooltip = '0 file';
-                      folderDiv.id = `folder${index + 1}`;
+                      const folderDivs = document.createElement('div');
+                      folderDivs.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                      folderDivs.dataset.tooltip = '0 file';
+                      folderDivs.id = `folder${index + 1}`;
   
                       const foldername = stringfy(maxlength, file.folder_name); // Assuming stringfy function is defined
   
-                      folderDiv.innerHTML = `
+                      folderDivs.innerHTML = `
                           <i class="fa fa-folder" aria-hidden="true"></i>
                           <i class="fa fa-check" aria-hidden="true"></i>
                           <p class="folder-title"><small>${foldername}</small></p>
                       `;
   
                       // Add click listener to fetch files of this folder
-                      folderDiv.addEventListener("click", function() {
+                      folderDivs.addEventListener("click", function() {
                         
                           localStorage.setItem("currentFolderName", file.folder_name);
                           const parent = currentFolderName.textContent + file.folder_name;
@@ -682,13 +682,13 @@ function removeTrailingSlash(folderName) {
                           currentFolderName.textContent = parent;
                       });
   
-                      filelist.appendChild(folderDiv);
+                      filelists.appendChild(folderDivs);
                   } else {
-                    console.log("DATA", file.type);
-                      const fileDiv = document.createElement('div');
-                      fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-                      fileDiv.dataset.tooltip = '0 file';
-                      fileDiv.id = `file${index + 1}`;
+                    console.log("DATA", file.content_type);
+                      const fileDivs = document.createElement('div');
+                      fileDivs.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                      fileDivs.dataset.tooltip = '0 file';
+                      fileDivs.id = `file${index + 1}`;
   
                       const filename = stringfy(maxlength, file.name); // Assuming stringfy function is defined
   
@@ -708,7 +708,7 @@ function removeTrailingSlash(folderName) {
                               <p class="folder-title"><small>${filename}</small></p>
                           `;
                       }
-                      filelist.appendChild(fileDiv);
+                      filelists.appendChild(fileDivs);
                   }
               });
           } else {
