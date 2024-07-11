@@ -653,7 +653,7 @@ function removeTrailingSlash(folderName) {
   
           if (data.files.length > 0) {
               data.files.forEach((file, index) => {
-                console.log("DATA", data.files)
+               
                   if (file.type === "folder") {
                       const folderDiv = document.createElement('div');
                       folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
@@ -679,6 +679,7 @@ function removeTrailingSlash(folderName) {
   
                       filelist.appendChild(folderDiv);
                   } else {
+                    console.log("DATA", file.name)
                       const fileDiv = document.createElement('div');
                       fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
                       fileDiv.dataset.tooltip = '0 file';
