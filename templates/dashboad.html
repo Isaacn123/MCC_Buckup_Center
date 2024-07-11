@@ -627,111 +627,91 @@
       
     }
 
-    function fetchsubFolders(folderName,maxlength,foldercontainer,fileListContainer,filelist){
-      fetch('/list_all_files',{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({folder_name: folderName})
+    function fetchsubFolders(folderName, maxlength, foldercontainer, fileListContainer, filelist) {
+      fetch('/list_all_files', {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ folder_name: folderName })
       })
-      .then((response) =>{
-        if (response.status == 200){
-          return response.json();
-        }
+      .then((response) => {
+          if (response.status === 200) {
+              return response.json();
+          } else {
+              throw new Error('Failed to fetch data');
+          }
       })
       .then((data) => {
-        filelist.className = 'row w-100';
-        fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
-    
-        if(data.files.length > 0){
-          data.files.forEach((file,index) => {
-
-            if(file.type === "folder"){
-
-              const folderDiv = document.createElement('Div');
-              folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-              folderDiv.dataset.tooltip = '0 file';
-              folderDiv.id =`folder${index + 1}`;
-            
-              //const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
-
-              const inputString = `${file.folder_name}`;
-              const foldername = stringfy(maxlength,inputString);
-          
-              folderDiv.innerHTML = `
-              <i class="fa fa-folder" aria-hidden="true"></i>
-              <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${foldername}</small></p>
-              `;
-              console.log("PARENT:",`${currentFolderName.textContent}`);
-
-          
-
-            // start the Onlick Function
-              folderDiv.addEventListener("click", function(){
-               fetchallFiles(file.folder_name);
-               folderName = `${file.folder_name}`;
-               localStorage.setItem("currentFolderName",`${file.folder_name}`);
-
-               parent = `${currentFolderName.textContent}${file.folder_name}`;
-               console.log("PARENT-2:::",parent);
-               currentFolderName.textContent = parent; //`${file.folder_name}`;
-
+          filelist.className = 'row w-100';
+          fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+  
+          if (data.files.length > 0) {
+              data.files.forEach((file, index) => {
+                  if (file.type === "folder") {
+                      const folderDiv = document.createElement('div');
+                      folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                      folderDiv.dataset.tooltip = '0 file';
+                      folderDiv.id = `folder${index + 1}`;
+  
+                      const foldername = stringfy(maxlength, file.folder_name); // Assuming stringfy function is defined
+  
+                      folderDiv.innerHTML = `
+                          <i class="fa fa-folder" aria-hidden="true"></i>
+                          <i class="fa fa-check" aria-hidden="true"></i>
+                          <p class="folder-title"><small>${foldername}</small></p>
+                      `;
+  
+                      // Add click listener to fetch files of this folder
+                      folderDiv.addEventListener("click", function() {
+                          fetchsubFolders(file.folder_name, maxlength, foldercontainer, fileListContainer, filelist);
+                          localStorage.setItem("currentFolderName", file.folder_name);
+                          const parent = currentFolderName.textContent + file.folder_name;
+                          console.log("PARENT-2:::", parent);
+                          currentFolderName.textContent = parent;
+                      });
+  
+                      filelist.appendChild(folderDiv);
+                  } else {
+                      const fileDiv = document.createElement('div');
+                      fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+                      fileDiv.dataset.tooltip = '0 file';
+                      fileDiv.id = `file${index + 1}`;
+  
+                      const filename = stringfy(maxlength, file.name); // Assuming stringfy function is defined
+  
+                      if (file.content_type === "image/jpeg" || file.content_type === "image/png") {
+                          const formatedURL = formatUrl(file.url); // Assuming formatUrl function is defined
+                          let url = file.url.replace(/ /g, '+').replace(/,/g, '%2C');
+                          
+                          fileDiv.innerHTML = `
+                              <img src="${url}" alt="Image Thumbnail" width="90">
+                              <i class="fa fa-check" aria-hidden="true"></i>
+                              <p class="folder-title"><small>${filename}</small></p>
+                          `;
+                      } else {
+                          fileDiv.innerHTML = `
+                              <i class="fa fa-file" aria-hidden="true"></i>
+                              <i class="fa fa-check" aria-hidden="true"></i>
+                              <p class="folder-title"><small>${filename}</small></p>
+                          `;
+                      }
+                      filelist.appendChild(fileDiv);
+                  }
               });
-
-              filelist.appendChild(folderDiv);
-             
-            }  else {
-              const fileDiv = document.createElement('div');
-              fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-              fileDiv.dataset.tooltip = '0 file';
-              fileDiv.id =`file${index + 1}`;
-              const inputString = `${file.name}`;
-              const filename = stringfy(maxlength,inputString);
-
-
-              if(file.content_type === "image/jpeg" || file.content_type === "image/png"){
-                const formatedURL = formatUrl(`${file.url}`)
-                let url = `${file.url}`;
-                    url = url.replace(/ /g, '+');
-                    url = url.replace(/,/g, '%2C');
-
-                fileDiv.innerHTML = `
-                 <img src="${url}" alt="Image Thumbnail" width="90">
-                <i class="fa fa-check" aria-hidden="true"></i>
-                <p class="folder-title"><small>${filename}</small></p>
-                `;
-  
-              } else{
-  
-                  fileDiv.innerHTML = `
-              <i class="fa fa-file" aria-hidden="true"></i>
-              <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${filename}</small></p>
-              `;
-              }
-              filelist.appendChild(fileDiv);
-            }
-
-
-          });
-
-        }else {
-    
-         const noFilesItem = document.createElement('li');
-         noFilesItem.className = 'list-group-item';
-         noFilesItem.textContent = 'No files found';
-         filelist.appendChild(noFilesItem);
-       //function fetchsubFolders(folderName,maxlength,foldercontainer,fileListContainer,filelist) {% endcomment %}
-        }
-
-
+          } else {
+              const noFilesItem = document.createElement('li');
+              noFilesItem.className = 'list-group-item';
+              noFilesItem.textContent = 'No files found';
+              filelist.appendChild(noFilesItem);
+          }
       })
-
-      .catch((error) => console.error("Error fetching file list:", error));
-    }
-    
+      .catch((error) => {
+          console.error("Error fetching file list:", error);
+          // Handle error, e.g., display error message
+      });
+  }
+  
     function fetchallFiles(folderName, maxlength){
       console.log(`Sending folder name: ${folderName}`);
     
@@ -845,7 +825,7 @@
          // fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
          const noFilesItem = document.createElement('li');
         noFilesItem.className = 'list-group-item';
-        noFilesItem.textContent = parent; //'No files found';
+        noFilesItem.textContent = 'No files found';
         filelist.appendChild(noFilesItem);
         }
        // if ()
