@@ -742,7 +742,7 @@ function fetchsubFolders(folderName, maxlength) {
                     
                    }  else if(file.content_type === "application/pdf") {
                     fileDivs.innerHTML = `
-                      <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                      <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                       <i class="fa fa-check" aria-hidden="true"></i>
                       <p class="folder-title"><small>${filename}</small></p>
                     `;
@@ -896,7 +896,7 @@ function fetchsubFolders(folderName, maxlength) {
                
               } else if (file.content_type === "application/pdf") {
                 fileDiv.innerHTML = `
-                  <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                  <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                   <i class="fa fa-check" aria-hidden="true"></i>
                   <p class="folder-title"><small>${filename}</small></p>
                 `;
