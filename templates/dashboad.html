@@ -855,12 +855,13 @@ function fetchsubFolders(folderName, maxlength) {
               const inputString = `${file.name}`;
               const filename = stringfy(maxlength,inputString);
 
+              const formatedURL = formatUrl(`${file.url}`)
+              let url = `${file.url}`;
+                  url = url.replace(/ /g, '+');
+                  url = url.replace(/,/g, '%2C');
+
 
               if(file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type === "image/webp"){
-                const formatedURL = formatUrl(`${file.url}`)
-                let url = `${file.url}`;
-                    url = url.replace(/ /g, '+');
-                    url = url.replace(/,/g, '%2C');
 
                 fileDiv.innerHTML = `
                  <img src="${url}" alt="Image Thumbnail" width="90">
