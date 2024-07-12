@@ -890,9 +890,10 @@ function fetchsubFolders(folderName, maxlength) {
               <p class="folder-title"><small>${filename}</small></p>
               `;
               }
-              filelist.appendChild(fileDiv);
+              
               const videoid = fileDiv.querySelector('#videothumb');
-              filelist.appendChild(createVideoThumb(videoid,url));
+              createVideoThumb(videoid,url);
+              filelist.appendChild(fileDiv);
             }
          
 
