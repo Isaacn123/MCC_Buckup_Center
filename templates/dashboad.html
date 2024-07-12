@@ -740,7 +740,13 @@ function fetchsubFolders(folderName, maxlength) {
                     const videoid = fileDiv.querySelector('#videothumb');
                     createVideoThumb(videoid,url);
                     
-                   } else {
+                   }  else if (file.content_type === "application/pdf") {
+                    fileDiv.innerHTML = `
+                      <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                      <i class="fa fa-check" aria-hidden="true"></i>
+                      <p class="folder-title"><small>${filename}</small></p>
+                    `;
+                  } else {
                       fileDivs.innerHTML = `
                           <i class="fa fa-file" aria-hidden="true"></i>
                           <i class="fa fa-check" aria-hidden="true"></i>
@@ -888,6 +894,12 @@ function fetchsubFolders(folderName, maxlength) {
                const videoid = fileDiv.querySelector('#videothumb');
                createVideoThumb(videoid,url);
                
+              } else if (file.content_type === "application/pdf") {
+                fileDiv.innerHTML = `
+                  <i class="fa fa-file-pdf" aria-hidden="true"></i>
+                  <i class="fa fa-check" aria-hidden="true"></i>
+                  <p class="folder-title"><small>${filename}</small></p>
+                `;
               } else{
   
                   fileDiv.innerHTML = `
