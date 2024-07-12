@@ -728,7 +728,7 @@ function fetchsubFolders(folderName, maxlength) {
                       `;
                   } else if(file.content_type === "video/mp4"){
                     // <source src="${file.url}" type="video/mp4">
-                     fileDiv.innerHTML = `
+                    fileDivs.innerHTML = `
                  <video id="videothumb"width="90" height="100"  muted loop>
                        Your browser does not support the video tag.
                    </video>
@@ -740,8 +740,8 @@ function fetchsubFolders(folderName, maxlength) {
                     const videoid = fileDiv.querySelector('#videothumb');
                     createVideoThumb(videoid,url);
                     
-                   }  else if (file.content_type === "application/pdf") {
-                    fileDiv.innerHTML = `
+                   }  else if(file.content_type === "application/pdf") {
+                    fileDivs.innerHTML = `
                       <i class="fa fa-file-pdf" aria-hidden="true"></i>
                       <i class="fa fa-check" aria-hidden="true"></i>
                       <p class="folder-title"><small>${filename}</small></p>
