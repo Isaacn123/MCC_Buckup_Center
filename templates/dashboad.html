@@ -983,8 +983,8 @@ function createVideoThumb(videoid, url){
   source.src = url;
   source.type = 'video/mp4';
 
-  video.appendChild(source);
-  video.addEventListener('loadeddata', function(){
+  videoid.appendChild(source);
+  videoid.addEventListener('loadeddata', function(){
   if (video.readyState >= 2){
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
