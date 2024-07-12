@@ -715,10 +715,11 @@ function fetchsubFolders(folderName, maxlength) {
                   fileDivs.id = `file${index + 1}`;
 
                   const filename = stringfy(maxlength, file.name); // Assuming stringfy function is defined
+                  const formatedURL = formatUrl(file.url); // Assuming formatUrl function is defined
+                  let url = file.url.replace(/ /g, '+').replace(/,/g, '%2C');
 
                   if (file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type  === "image/webp") {
-                      const formatedURL = formatUrl(file.url); // Assuming formatUrl function is defined
-                      let url = file.url.replace(/ /g, '+').replace(/,/g, '%2C');
+                  
                       
                       fileDivs.innerHTML = `
                           <img src="${url}" alt="Image Thumbnail" width="90">
@@ -726,16 +727,20 @@ function fetchsubFolders(folderName, maxlength) {
                           <p class="folder-title"><small>${filename}</small></p>
                       `;
                   } else if(file.content_type === "video/mp4"){
-
-                    fileDiv.innerHTML = `
-                <video width="90" height="100" muted loop>
-                      <source src="${file.url}" type="video/mp4">
-                      Your browser does not support the video tag.
-                  </video>
-                   <i class="fa fa-check" aria-hidden="true"></i>
-                   <p class="folder-title"><small>${filename}</small></p>
-                   `;
-                  } else {
+                    // <source src="${file.url}" type="video/mp4">
+                     fileDiv.innerHTML = `
+                 <video id="videothumb"width="90" height="100"  muted loop>
+                       Your browser does not support the video tag.
+                   </video>
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <p class="folder-title"><small>${filename}</small></p>
+                    `;
+     
+                    
+                    const videoid = fileDiv.querySelector('#videothumb');
+                    createVideoThumb(videoid,url);
+                    
+                   } else {
                       fileDivs.innerHTML = `
                           <i class="fa fa-file" aria-hidden="true"></i>
                           <i class="fa fa-check" aria-hidden="true"></i>
