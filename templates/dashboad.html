@@ -719,7 +719,7 @@ function fetchsubFolders(folderName, maxlength) {
                           <i class="fa fa-check" aria-hidden="true"></i>
                           <p class="folder-title"><small>${filename}</small></p>
                       `;
-                  } else if(folder.content_type === "video/mp4"){
+                  } else if(file.content_type === "video/mp4"){
 
                     fileDiv.innerHTML = `
                 <video width="90" height="100" muted loop>
@@ -862,7 +862,7 @@ function fetchsubFolders(folderName, maxlength) {
                 <p class="folder-title"><small>${filename}</small></p>
                 `;
   
-              } else if(folder.content_type === "video/mp4"){
+              } else if(file.content_type === "video/mp4"){
 
                 fileDiv.innerHTML = `
             <video width="90" height="100" muted loop>
