@@ -986,13 +986,13 @@ function createVideoThumb(videoid, url){
 
   videoid.appendChild(source);
   videoid.addEventListener('loadeddata', function(){
-  if (video.readyState >= 2){
+  if (videoid.readyState >= 2){
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHieght;
+    canvas.width = videoid.videoWidth;
+    canvas.height = videoid.videoHieght;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(video,0,0,canvas.width,canvas.height);
-    video.poster = canvas.toDataURL();
+    ctx.drawImage(videoid,0,0,canvas.width,canvas.height);
+    videoid.poster = canvas.toDataURL();
 
   }
 
