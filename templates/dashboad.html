@@ -334,13 +334,19 @@
 
       
       console.log("CURENT2:",CurrentFolder.textContent);
-      addingfiles.addEventListener('click', function(){
-        var currentFolder = `${CurrentFolder.textContent}`;
-        const uploadLink = `/uploadfiles?folder=${encodeURIComponent(currentFolder)}`;
-        addingfiles.setAttribute('href',uploadLink)
 
-        console.log("CURENT2:",CurrentFolder.textContent);
-      });
+      addingfiles.addEventListener('click', function(){
+
+            var currentFolder = `${CurrentFolder.textContent}`;
+
+            const uploadLink = `/uploadfiles?folder=${encodeURIComponent(currentFolder)}`;
+
+            addingfiles.setAttribute('href',uploadLink);
+
+            console.log("CURENT2:",CurrentFolder.textContent);
+            
+
+      });             
 
 
 
@@ -863,15 +869,18 @@ function fetchsubFolders(folderName, maxlength) {
                 `;
   
               } else if(file.content_type === "video/mp4"){
-
+               // <source src="${file.url}" type="video/mp4">
                 fileDiv.innerHTML = `
-            <video width="90" height="100" muted loop>
-                  <source src="${file.url}" type="video/mp4">
+            <video id="videothumb"width="90" height="100"  muted loop>
                   Your browser does not support the video tag.
               </video>
                <i class="fa fa-check" aria-hidden="true"></i>
                <p class="folder-title"><small>${filename}</small></p>
                `;
+
+               
+
+               
               } else{
   
                   fileDiv.innerHTML = `
@@ -881,6 +890,8 @@ function fetchsubFolders(folderName, maxlength) {
               `;
               }
               filelist.appendChild(fileDiv);
+              const videoid = fileDiv.querySelector('#videothumb');
+              filelist.appendChild(createVideoThumb(videoid,file.url));
             }
          
 
@@ -965,6 +976,30 @@ function fetchsubFolders(folderName, maxlength) {
 
 
   });
+     
+function createVideoThumb(videoid, url){
+  const source = document.createElement('source');
+  //const video = document.getElementById('videothumb');
+  source.src = url;
+  source.type = 'video/mp4';
+
+  video.appendChild(source);
+  video.addEventListener('loadeddata', function(){
+  if (video.readyState >= 2){
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHieght;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    video.poster = canvas.toDataURL();
+
+  }
+
+ 
+  });
+}
+
+
 
   function stringfy(maxlength,stringinput){
     const mystring = stringinput.length > maxlength ? stringinput.substring(0, maxlength - 3) + '...': stringinput;
