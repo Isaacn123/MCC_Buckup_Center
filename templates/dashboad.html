@@ -880,7 +880,8 @@ function fetchsubFolders(folderName, maxlength) {
                `;
 
                
-
+               const videoid = fileDiv.querySelector('#videothumb');
+               createVideoThumb(videoid,url);
                
               } else{
   
@@ -891,8 +892,7 @@ function fetchsubFolders(folderName, maxlength) {
               `;
               }
               
-              const videoid = fileDiv.querySelector('#videothumb');
-              createVideoThumb(videoid,url);
+
               filelist.appendChild(fileDiv);
             }
          
