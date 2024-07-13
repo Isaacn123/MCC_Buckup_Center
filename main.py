@@ -79,6 +79,12 @@ def resetPassword():
 
     return render_template('reset_password.html')
 
+
+@app.route('/mult_uploads')
+def mult_uploads():
+    return render_template("upload_files.html")
+
+
 @app.route('/uploadfiles')
 def uploadfiles():
     if 'logged_in' in session and session['logged_in']:
