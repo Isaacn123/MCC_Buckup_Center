@@ -147,7 +147,7 @@ class UploadMultipleFiles(Resource):
                 # checking if the folder exists 
 
                 if folder_name :
-                    file_name = f"{folder_name}{file_data['file'].filename}"
+                    file_name = f"{folder_name}{file_data.filename}"
                     batch_data.append((file_stream, file_name))
             
             for data_stream,file_name in batch_data:
