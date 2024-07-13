@@ -52,7 +52,7 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="myDropdownMenu"></ul>
                       </div>
                         <label for="formFileLg" class="form-label">Select File</label>
-                        <input class="form-control form-control-lg" id="formFileLg" type="file"  multiple>
+                        <input class="form-control form-control-lg" id="formFileLg" name="filefield" type="file"  multiple>
                     </div>
                     <!-- <div class="mb-0"><input class="form-control bg-light" type="password" placeholder="Password"></div> -->
                     <div class="mb-3 d-grid"><button class="btn btn-dark mt-3" type="submit" name="submit">Upload</button></div>
@@ -96,8 +96,12 @@
             const progressBar = document.getElementById('progressBar');
             const progressStyle = document.getElementsByClassName("bg-success")
             const status = document.getElementById('status');
+            const formdata = new FormData();
 
             const file = fileInput.files[0];
+            for(let i = 0; i < fileInput.files.length; i++){
+              formdata.append('filefield',fileInput.files[i])
+            }
             // console.log("FILE:", file)
             // console.log("FOLDERS_:", localStorage.getItem("Foldername"));
             console.log("SEND");
@@ -121,8 +125,8 @@
 
             console.log("FOLDER:",folderName);
             
-            const formdata = new FormData();
-            formdata.append('file', file);
+          
+            //formdata.append('file', file);
             formdata.append('folder_name',folderName);
 
             try
