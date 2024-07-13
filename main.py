@@ -234,17 +234,22 @@ class CreateB2BucketFolder(Resource):
             data = request.get_json()
             folder_name = data.get('folder_name')
             create_folder =  data.get('parent_folder')
+            placeholder_file = ''
 
             if not folder_name:
                 return {"message": "folder_name is required"}
             
-
-            
             if not folder_name.endswith('/'):
                 folder_name +='/'
 
+            if not create_folder:
+                placeholder_file = folder_name  + 'folder.txt'
+            else:
+                placeholder_file = create_folder + folder_name  + 'folder.txt'
+
+
             # Add a placeholder file name within the "folder" 
-            placeholder_file = create_folder + folder_name  + 'folder.txt'
+            # placeholder_file = create_folder + folder_name  + 'folder.txt'
 
             bucket.upload_bytes(b'',placeholder_file)
 
