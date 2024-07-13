@@ -132,7 +132,7 @@ class GetUser(Resource):
         return jsonify(user)
 
 class UploadMultipleFiles(Resource):
-    @api.expect(folder_name)
+    # @api.expect(folder_name)
     def post(self):
         try:
             uploaded_files = request.files.getlist('files[]')
@@ -157,7 +157,7 @@ class UploadMultipleFiles(Resource):
                 )
                 print(f"Uploading file: {file_name}")
 
-            return jsonify({"message":"Files Uploaded"})
+            return jsonify({"message":"Files Uploaded","files":batch_data})
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)}"})
