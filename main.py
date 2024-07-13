@@ -138,6 +138,8 @@ class UploadMultipleFiles(Resource):
             uploaded_files = request.files.getlist('files[]')
             batch_data = []
 
+            folder_name = request.form.get('folder_name', '').strip()
+
             for file_data in uploaded_files:
                 file_content = file_data['file'].read()
                 file_stream = io.BytesIO(file_content)
@@ -153,6 +155,8 @@ class UploadMultipleFiles(Resource):
                     data_bytes=data_stream.getvalue(),
                     file_name=file_name
                 )
+                print(f"Uploading file: {file_name}")
+
             return jsonify({"message":"Files Uploaded"})
 
         except Exception as e:
