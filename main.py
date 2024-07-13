@@ -153,10 +153,10 @@ class UploadMultipleFiles(Resource):
             
             for data_stream,file_name in batch_data:
                 print(f"Uploading file: {data_stream.getvalue()}")
-                # bucket.upload_bytes(
-                #     data_bytes=data_stream.getvalue(),
-                #     file_name=file_name
-                # )
+                bucket.upload_bytes(
+                    data_bytes=data_stream.getvalue(),
+                    file_name=file_name
+                )
                 print(f"Uploading file: {file_name}")
 
             return jsonify({"message":"Files Uploaded"})
