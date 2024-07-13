@@ -135,7 +135,7 @@ class UploadMultipleFiles(Resource):
     # @api.expect(folder_name)
     def post(self):
         try:
-            uploaded_files = request.files.getlist('files[]')
+            uploaded_files = request.files.getlist('filefield')
             batch_data = []
 
             folder_name = request.form.get('folder_name', '').strip()
