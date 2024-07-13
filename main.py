@@ -141,13 +141,14 @@ class UploadMultipleFiles(Resource):
             folder_name = request.form.get('folder_name', '').strip()
 
             for file_data in uploaded_files:
-                file_content = file_data['file'].read()
+                file_content = file_data.read()
                 file_stream = io.BytesIO(file_content)
 
                 # checking if the folder exists 
 
                 if folder_name :
                     file_name = f"{folder_name}{file_data.filename}"
+                    print(f"file_na: {file_name}")
                     batch_data.append((file_stream, file_name))
             
             for data_stream,file_name in batch_data:
