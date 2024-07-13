@@ -153,13 +153,13 @@ class UploadMultipleFiles(Resource):
             
             for data_stream,file_name in batch_data:
                 print(f"Uploading file: {file_name}")
-                bucket.upload_bytes(
-                    data_bytes=data_stream.getvalue(),
-                    file_name=file_name
-                )
+                # bucket.upload_bytes(
+                #     data_bytes=data_stream.getvalue(),
+                #     file_name=file_name
+                # )
                 print(f"Uploading file: {file_name}")
 
-            return jsonify({"message":"Files Uploaded","files":batch_data})
+            return jsonify({"message":"Files Uploaded"})
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)}"})
