@@ -48,6 +48,11 @@ user_model = api.model('User',{
 folder_name = api.model('Folder',{
     'folder_name': fields.String(required=True,description="Name of the folder to create")
 })
+
+# input_files = api.model('Folder',{
+#     'folder_name': fields.(required=True,description="Name of the folder to create")
+# })
+
 email_address = api.model('Password', {
     "email":fields.String(required=True,description="Email can't be blank")
 })
@@ -148,6 +153,7 @@ class UploadMultipleFiles(Resource):
                     data_bytes=data_stream.getvalue(),
                     file_name=file_name
                 )
+            return jsonify({"message":"Files Uploaded"})
 
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)}"})
