@@ -126,17 +126,50 @@ class GetUser(Resource):
         user = _service.get_current_user()
         return jsonify(user)
 
+class UploadMultipleFiles(Resource):
+    def post(self):
+        try:
+            uploaded_files = request.files.getlist('files[]')
+            batch_data = []
+
+            for file_data in uploaded_files:
+                file_content = file_data['file'].read()
+                file_stream = io.BytesIO(file_content)
+
+                # checking if the folder exists 
+
+                if folder_name :
+                    file_name = f"{folder_name}{file_data['file'].filename}"
+                    batch_data.append((file_stream, file_name))
+            
+            for data_stream,file_name in batch_data:
+                bucket.upload_bytes(
+                    data_bytes=data_stream.getvalue(),
+                    file_name=file_name
+                )
+
+        except Exception as e:
+            return jsonify({"message": f"Failed to upload file: {str(e)}"})
+
 # @app.route("/upload", methods=['POST'])
 class UploadFiles(Resource):
     def post(self):
         try:
             # print(f"File to be : {request.folder_name}")
-            file = request.files['file']
+            file = request.files['file[]']
             file_Content = file.read()
             file_stream = io.BytesIO(file_Content)
+          
            
 
             folder_name = request.form.get('folder_name', '').strip()
+
+            # checking if the folder exists 
+
+            if folder_name :
+                file_name = f"{folder_name}{file.filename}"
+          
+
 
             # print(f"fold: {request.files['folder_name']}")
             print(f"Folder: {folder_name}")
@@ -442,6 +475,7 @@ api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
 api.add_resource(UploadFiles,'/upload')
+api.add_resource(UploadMultipleFiles,'/upload_multiple')
 api.add_resource(FORGOTPASSWORD, '/forgot_password')
 
 # Changing the Fetch method:
