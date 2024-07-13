@@ -151,6 +151,7 @@ class UploadMultipleFiles(Resource):
                     batch_data.append((file_stream, file_name))
             
             for data_stream,file_name in batch_data:
+                print(f"Uploading file: {file_name}")
                 bucket.upload_bytes(
                     data_bytes=data_stream.getvalue(),
                     file_name=file_name
