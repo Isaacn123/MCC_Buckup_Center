@@ -141,7 +141,7 @@ class UploadMultipleFiles(Resource):
     # @api.expect(folder_name)
     def post(self):
         try:
-            uploaded_files = request.files.getlist('filefield')
+            uploaded_files = request.files.getlist('file')
             batch_data = []
 
             folder_name = request.form.get('folder_name', '').strip()
@@ -175,7 +175,7 @@ class UploadFiles(Resource):
     def post(self):
         try:
             # print(f"File to be : {request.folder_name}")
-            file = request.files['file[]']
+            file = request.files['file']
             file_Content = file.read()
             file_stream = io.BytesIO(file_Content)
           

@@ -150,7 +150,7 @@
                     }
                 };
 
-                xhr.onload = function(){
+      xhr.onload = function(){
                     if(xhr.status === 200) {
                         status.textContent = "File Uploaded successfully"
                         fileInput.value =""
@@ -160,9 +160,9 @@
                         console.log(`Error upload:${xhr.status}`)
                         status.textContent = `Upload failed: ${xhr.statusText}`;
                     }
-                };
+         };
 
-                xhr.onerror = function() {
+       xhr.onerror = function() {
             status.textContent = `Error: Failed to upload file`
                       };
 
@@ -170,7 +170,7 @@
 
                     console.log("Sending FormData:", formdata);
 
-                    xhr.onreadystatechange = function () {
+       xhr.onreadystatechange = function () {
 
           if (xhr.readyState === XMLHttpRequest.DONE) {
               if (xhr.status === 200) {
