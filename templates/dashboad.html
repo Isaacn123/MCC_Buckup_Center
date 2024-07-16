@@ -702,7 +702,7 @@ function fetchsubFolders(folderName, maxlength) {
 
                   // Add click listener to fetch files of this folder
                   folderDivs.addEventListener("click", function() {
-                      fetchsubFolders(file.folder_name, maxlength, foldercontainer, fileListContainer, filelist);
+                      fetchsubFolders(file.folder_name, maxlength);
                       localStorage.setItem("currentFolderName", file.folder_name);
                       const parent = currentFolderName.textContent + file.folder_name;
                       console.log("PARENT-2:::", parent);
