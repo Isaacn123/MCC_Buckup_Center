@@ -763,10 +763,13 @@ function fetchsubFolders(folderName, maxlength) {
          // fileList_Container.appendChild(filelists);
          // filelist.appendChild(filelists);
       } else {
-          const noFilesItem = document.createElement('li');
-          noFilesItem.className = 'list-group-item';
-          noFilesItem.textContent = 'No files found';
-          filelist.appendChild(noFilesItem);
+         // const noFilesItem = document.createElement('li');
+        //  noFilesItem.className = 'list-group-item';
+        //  noFilesItem.textContent = 'No files found';
+        //  filelist.appendChild(noFilesItem);
+        const folder = `${currentFolderName.textContent}`;
+        let folderName = removeTrailingSlash(folder);
+        fetchsubFolders(folderName,maxlength)
       }
 
       fileList_Container.appendChild(filelists);
