@@ -1,4 +1,4 @@
-from flask import Flask,request,jsonify,abort, render_template,redirect,session
+from flask import Flask,request,jsonify,abort, render_template,redirect,session, send_from_directory
 from flask_restx import Api, Resource,fields
 
 import services as _service
@@ -20,6 +20,7 @@ from itsdangerous import TimedSerializer, SignatureExpired, BadSignature
 
 app = Flask(__name__)
 app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list' #'full'
+FILE_DIRECTORY = os.path.join(os.path.dirname(__file__),'.c-f-m-production')
 info = InMemoryAccountInfo()
 b2_api = B2Api(info)
 b2_api.authorize_account('production', application_key=app_key, application_key_id=app_key_ID)
@@ -485,6 +486,9 @@ def reset_password():
     # return {"message": "It works! Am testing now again"}
     # return render_template("dashboard.html")
 
+@app.route('download/cfc_auth')
+def download_auth_file(filename):
+    return send_from_directory(FILE_DIRECTORY,filename)
 
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
