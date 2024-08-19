@@ -485,8 +485,10 @@ def reset_password():
 # def main():
     # return {"message": "It works! Am testing now again"}
     # return render_template("dashboard.html")
-
-@app.route('download/cfc_auth')
+# class FORGOTPASSWORD(Resource):
+#     @api.expect(email_address)
+#     def post(self):
+@app.route('/download/cfc_auth')
 def download_auth_file(filename):
     return send_from_directory(FILE_DIRECTORY,filename)
 
