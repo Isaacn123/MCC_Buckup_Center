@@ -490,7 +490,9 @@ def reset_password():
 #     def post(self):
 @app.route('/download/cfc_auth')
 def download_auth_file(filename):
-    print('DirectorY: ${FILE_DIRECTORY}')
+    files = filename
+    print(f"filename: {files}")
+    print(f'DirectorY: {FILE_DIRECTORY}')
     return {"Path":FILE_DIRECTORY}
     # return send_from_directory(FILE_DIRECTORY,filename)
 
