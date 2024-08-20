@@ -488,13 +488,12 @@ def reset_password():
 # class FORGOTPASSWORD(Resource):
 #     @api.expect(email_address)
 #     def post(self):
-@app.route('/download/cfc_auth')
+@app.route('/download/cfc_auth/<filename>')
 def download_auth_file(filename):
     files = filename
     print(f"filename: {files}")
     print(f'DirectorY: {FILE_DIRECTORY}')
-    return {"Path":FILE_DIRECTORY}
-    # return send_from_directory(FILE_DIRECTORY,filename)
+    return send_from_directory(FILE_DIRECTORY,filename)
 
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
