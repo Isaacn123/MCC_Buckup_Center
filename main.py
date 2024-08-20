@@ -491,7 +491,8 @@ def reset_password():
 @app.route('/download/cfc_auth')
 def download_auth_file(filename):
     print('DirectorY: ${FILE_DIRECTORY}')
-    return send_from_directory(FILE_DIRECTORY,filename)
+    return FILE_DIRECTORY
+    # return send_from_directory(FILE_DIRECTORY,filename)
 
     
 api.add_resource(CreateB2BucketFolder, '/create_b2_folder')
