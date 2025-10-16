@@ -1049,26 +1049,22 @@ function fetchsubFolders(folderName, maxlength) {
 
   });
      
-function createVideoThumb(videoid, url){
+function createVideoThumb(videoEl, url){
   const source = document.createElement('source');
-  //const video = document.getElementById('videothumb');
   source.src = url;
   source.type = 'video/mp4';
-
-  videoid.appendChild(source);
-  videoid.addEventListener('loadeddata', function(){
-  if (videoid.readyState >= 2){
-    const canvas = document.createElement('canvas');
-    canvas.width = videoid.videoWidth;
-    canvas.height = videoid.videoHieght;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(videoid,0,0,canvas.width,canvas.height);
-    videoid.poster = canvas.toDataURL();
-
-  }
-
- 
-  });
+  // Show a reliable moving thumbnail without canvas (avoids CORS taint issues)
+  try {
+    videoEl.setAttribute('preload','metadata');
+    videoEl.muted = true;
+    videoEl.loop = true;
+    videoEl.playsInline = true;
+  } catch (e) {}
+  videoEl.appendChild(source);
+  videoEl.addEventListener('loadeddata', function(){
+    try { videoEl.currentTime = 0.1; } catch(e) {}
+    try { videoEl.play(); } catch(e) {}
+  }, { once: true });
 }
 
 
