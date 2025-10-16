@@ -521,27 +521,12 @@ def get_common_prefix(folder_name):
         return folder_name
     return folder_name + '/'
 
-# Direct-to-B2 helper endpoint: returns an upload URL and auth token
-@app.route('/b2/get_upload_url', methods=['POST'])
-def b2_get_upload_url():
-    try:
-        # Optional: accept folder_name to validate access or future use; not required by B2
-        _ = request.json if request.is_json else {}
-        
-        # Get upload URL using B2 API directly
-        upload_url_response = b2_api.get_upload_url(bucket.id)
-        
-        # Debug log
-        print(f"B2 upload_url_response: {upload_url_response}")
-        
-        return jsonify({
-            "uploadUrl": upload_url_response['uploadUrl'],
-            "authorizationToken": upload_url_response['authorizationToken']
-        })
-            
-    except Exception as e:
-        print(f"B2 upload URL error: {str(e)}")  # Debug log
-        return jsonify({"error": f"Failed to get B2 upload URL: {str(e)}"}), 500
+# REVERTED: Direct-to-B2 approach was too complex with B2 SDK
+# Keeping original server-side upload method for now
+# @app.route('/b2/get_upload_url', methods=['POST'])
+# def b2_get_upload_url():
+#     # This approach was causing issues with B2 SDK methods
+#     pass
 
 
 # @app.route("/signin", method=["POST"])
