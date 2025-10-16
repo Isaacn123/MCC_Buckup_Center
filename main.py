@@ -528,12 +528,33 @@ def b2_get_upload_url():
         # Optional: accept folder_name to validate access or future use; not required by B2
         _ = request.json if request.is_json else {}
         upload_data = bucket.get_upload_url()
+
         # Example structure: { 'uploadUrl': '...', 'authorizationToken': '...' }
-        return jsonify({
-            "uploadUrl": upload_data['uploadUrl'],
-            "authorizationToken": upload_data['authorizationToken']
-        })
+        # return jsonify({
+        #     "uploadUrl": upload_data['uploadUrl'],
+        #     "authorizationToken": upload_data['authorizationToken']
+        # })
+        
+        # B2 SDK returns different structure - let's handle it properly
+        print(f"B2 upload_data: {upload_data}")  # Debug log
+        
+        # The B2 SDK returns an object with upload_url and authorization_token attributes
+        if hasattr(upload_data, 'upload_url') and hasattr(upload_data, 'authorization_token'):
+            return jsonify({
+                "uploadUrl": upload_data.upload_url,
+                "authorizationToken": upload_data.authorization_token
+            })
+        # Fallback for dict-like response
+        elif isinstance(upload_data, dict):
+            return jsonify({
+                "uploadUrl": upload_data.get('upload_url', upload_data.get('uploadUrl')),
+                "authorizationToken": upload_data.get('authorization_token', upload_data.get('authorizationToken'))
+            })
+        else:
+            return jsonify({"error": f"Unexpected B2 response format: {type(upload_data)}"}), 500
+            
     except Exception as e:
+        print(f"B2 upload URL error: {str(e)}")  # Debug log
         return jsonify({"error": f"Failed to get B2 upload URL: {str(e)}"}), 500
 
 
