@@ -773,8 +773,8 @@ function fetchsubFolders(folderName, maxlength) {
                     <p class="folder-title"><small>${filename}</small></p>
                     `;
      
-                    
-                    const videoid = fileDiv.querySelector('#videothumb');
+                    // const videoid = fileDiv.querySelector('#videothumb');
+                    const videoid = fileDivs.querySelector('#videothumb');
                     createVideoThumb(videoid,url);
                     fileDivs.addEventListener('click', function(){
                       openPreview(url, 'video', `${filename}`);
