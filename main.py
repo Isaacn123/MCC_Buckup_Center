@@ -528,19 +528,15 @@ def b2_get_upload_url():
         # Optional: accept folder_name to validate access or future use; not required by B2
         _ = request.json if request.is_json else {}
         
-        # Use the correct B2 SDK method to get upload URL
-        upload_url = bucket.get_upload_url()
+        # Get upload URL using B2 API directly
+        upload_url_response = b2_api.get_upload_url(bucket.id)
         
         # Debug log
-        print(f"B2 upload_url: {upload_url}")
-        
-        # The B2 SDK get_upload_url() returns a string URL
-        # We need to get the authorization token separately
-        auth_token = b2_api.get_account_info().authorization_token
+        print(f"B2 upload_url_response: {upload_url_response}")
         
         return jsonify({
-            "uploadUrl": upload_url,
-            "authorizationToken": auth_token
+            "uploadUrl": upload_url_response['uploadUrl'],
+            "authorizationToken": upload_url_response['authorizationToken']
         })
             
     except Exception as e:
