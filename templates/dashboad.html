@@ -267,6 +267,11 @@
                        <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
                         <h2>Files</h2>
                       </div>
+                      <div id="loadingSpinner" class="text-center my-3 d-none">
+                        <div class="spinner-border" role="status" aria-label="Loading">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
                 
                       <div id="tabProfileContent" class="tab-content">
                         <h3>My Profile Content</h3>
@@ -689,6 +694,8 @@ function fetchsubFolders(folderName, maxlength) {
   const fileList_Container = document.getElementById('fileListContainer');
   const filelists = document.createElement('div');
   let parent = "";
+  const spinner = document.getElementById('loadingSpinner');
+  if(spinner){ spinner.classList.remove('d-none'); }
 
   fetch('/list_all_files', {
       method: "POST",
@@ -705,6 +712,7 @@ function fetchsubFolders(folderName, maxlength) {
       }
   })
   .then((data) => {
+      if(spinner){ spinner.classList.add('d-none'); }
       filelists.className = 'row w-100';
       fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
 
@@ -814,6 +822,7 @@ function fetchsubFolders(folderName, maxlength) {
   })
   .catch((error) => {
       console.error("Error fetching file list:", error);
+      if(spinner){ spinner.classList.add('d-none'); }
       // Handle error, e.g., display error message
   });
 }
@@ -821,6 +830,8 @@ function fetchsubFolders(folderName, maxlength) {
   
     function fetchallFiles(folderName, maxlength){
       console.log(`Sending folder name: ${folderName}`);
+      const spinner = document.getElementById('loadingSpinner');
+      if(spinner){ spinner.classList.remove('d-none'); }
     
       fetch('/list_all_files',{
         method:"POST",
@@ -835,6 +846,7 @@ function fetchsubFolders(folderName, maxlength) {
         }
       })
       .then((data) => {
+       if(spinner){ spinner.classList.add('d-none'); }
     
         console.log(data);
         var files_ = []
@@ -981,7 +993,7 @@ function fetchsubFolders(folderName, maxlength) {
        })
     
       })
-      .catch((error) => console.error("Error fetching file list:", error));
+      .catch((error) => { console.error("Error fetching file list:", error); if(spinner){ spinner.classList.add('d-none'); }});
     }
 
    // Change password functionalitry
