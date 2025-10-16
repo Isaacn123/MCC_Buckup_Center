@@ -138,54 +138,108 @@
             //  const data = await response.json();
             //  document.getElementById('message').innerText = data.message;
            
-           // REVERTED: Back to original working server-side upload method
-           const xhr = new XMLHttpRequest();
-           //xhr.open('POST','https://mcc.backup.miracle44radio.com/upload',true);
-           xhr.open('POST','/upload_multiple',true);
+           // ORIGINAL WORKING METHOD (commented out but preserved)
+           // const xhr = new XMLHttpRequest();
+           // xhr.open('POST','/upload_multiple',true);
+           // xhr.upload.onprogress = function(event) {
+           //     if(event.lengthComputable){
+           //         const percentComplete = (event.loaded / event.total) * 100;
+           //         progressBar.style.width = percentComplete + '%';
+           //         progressBar.setAttribute('aria-valuenow', percentComplete);
+           //         status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
+           //     }
+           // };
+           // xhr.onload = function(){
+           //     if(xhr.status === 200) {
+           //         status.textContent = "File Uploaded successfully"
+           //         fileInput.value =""
+           //         progressBar.classList.add("bg-info")
+           //     } else {
+           //         status.textContent = `Upload failed: ${xhr.statusText}`;
+           //     }
+           // };
+           // xhr.onerror = function() {
+           //     status.textContent = `Error: Failed to upload file`
+           // };
+           // xhr.send(formdata);
 
-               xhr.upload.onprogress = function(event) {
+           // NEW: Direct browser-to-B2 upload (faster, no server memory usage)
+           status.textContent = "Preparing direct upload...";
+           const files = Array.from(fileInput.files);
+           const totalBytes = files.reduce((acc,f) => acc + f.size, 0);
+           let uploadedBytes = 0;
 
-                   if(event.lengthComputable){
-                       const percentComplete = (event.loaded / event.total) * 100;
-                       progressBar.style.width = percentComplete + '%';
-                       progressBar.setAttribute('aria-valuenow', percentComplete);
-                       status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
-
-                       console.log("Upload ", Math.round(percentComplete) + "% complete.");
-                   }
-               };
-
-     xhr.onload = function(){
-                   if(xhr.status === 200) {
-                       status.textContent = "File Uploaded successfully"
-                       fileInput.value =""
-                       progressBar.classList.add("bg-info")
-
-                   } else {
-                       console.log(`Error upload:${xhr.status}`)
-                       status.textContent = `Upload failed: ${xhr.statusText}`;
-                   }
-        };
-
-      xhr.onerror = function() {
-           status.textContent = `Error: Failed to upload file`
-                     };
-
-           status.textContent = "Please wait, uploading in progress...";
-
-                   console.log("Sending FormData:", formdata);
-
-      xhr.onreadystatechange = function () {
-
-         if (xhr.readyState === XMLHttpRequest.DONE) {
-             if (xhr.status === 200) {
-                 console.log('File uploaded successfully');
-             } else {
-                 console.error('Error uploading file: ' + xhr.status);
+           async function directB2Upload(file, folderPrefix){
+             // 1) Get upload URL and token from server
+             const resp = await fetch('/b2/get_upload_url', { 
+               method: 'POST', 
+               headers: { 'Content-Type': 'application/json' }, 
+               body: JSON.stringify({}) 
+             });
+             const { uploadUrl, authorizationToken } = await resp.json();
+             if(!uploadUrl || !authorizationToken){ 
+               throw new Error('Failed to obtain B2 upload URL'); 
              }
-         }
-};
-                   xhr.send(formdata);
+
+             // 2) Compute SHA1 for B2
+             const sha1 = await computeSHA1(file);
+
+             // 3) Build B2 headers
+             const b2FileName = encodeURIComponent((folderPrefix || '') + file.name).replace(/%2F/g,'/');
+             const headers = new Headers();
+             headers.set('Authorization', authorizationToken);
+             headers.set('X-Bz-File-Name', b2FileName);
+             headers.set('Content-Type', file.type || 'b2/x-auto');
+             headers.set('X-Bz-Content-Sha1', sha1);
+
+             // 4) Upload with progress tracking
+             const reader = file.stream().getReader();
+             const stream = new ReadableStream({
+               start(controller){
+                 function pump(){
+                   reader.read().then(({done, value}) => {
+                     if(done){ controller.close(); return; }
+                     uploadedBytes += value.byteLength;
+                     const percent = Math.round((uploadedBytes / totalBytes) * 100);
+                     progressBar.style.width = percent + '%';
+                     progressBar.setAttribute('aria-valuenow', percent);
+                     status.textContent = `${percent}%: Direct upload...`;
+                     controller.enqueue(value);
+                     pump();
+                   }).catch(err => controller.error(err));
+                 }
+                 pump();
+               }
+             });
+
+             const res = await fetch(uploadUrl, { method: 'POST', headers, body: stream });
+             if(!res.ok){
+               const text = await res.text();
+               throw new Error(`B2 upload failed: ${res.status} ${text}`);
+             }
+             return await res.json();
+           }
+
+           // SHA1 helper
+           async function computeSHA1(file){
+             const buffer = await file.arrayBuffer();
+             const hash = await window.crypto.subtle.digest('SHA-1', buffer);
+             const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+             return hex;
+           }
+
+           try{
+             const folderPrefix = folderName.endsWith('/') ? folderName : folderName + '/';
+             for(const f of files){
+               await directB2Upload(f, folderPrefix);
+             }
+             status.textContent = 'All files uploaded successfully (direct to B2)';
+             progressBar.classList.add('bg-info');
+             fileInput.value = '';
+           }catch(err){
+             console.error(err);
+             status.textContent = `Upload failed: ${err.message}`;
+           }
             
 
             
