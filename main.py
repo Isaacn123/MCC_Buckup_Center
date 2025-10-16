@@ -541,8 +541,16 @@ def b2_get_upload_url():
         auth_response = requests.post(auth_url, json=auth_data)
         auth_result = auth_response.json()
         
+        # Debug: print the auth response to see the structure
+        print(f"B2 auth response: {auth_result}")
+        
+        # B2 API response has 'apiUrl' field, but let's handle different possible field names
+        api_url = auth_result.get('apiUrl') or auth_result.get('api_url') or auth_result.get('apiUrl')
+        if not api_url:
+            return jsonify({"error": "No apiUrl in B2 auth response"}), 500
+        
         # Get upload URL for the bucket
-        upload_url_endpoint = f"{auth_result['apiUrl']}/b2api/v2/b2_get_upload_url"
+        upload_url_endpoint = f"{api_url}/b2api/v2/b2_get_upload_url"
         upload_data = {
             "bucketId": bucket.id
         }
@@ -553,6 +561,8 @@ def b2_get_upload_url():
             headers={"Authorization": auth_result['authorizationToken']}
         )
         upload_result = upload_response.json()
+        
+        print(f"B2 upload response: {upload_result}")
         
         return jsonify({
             "uploadUrl": upload_result['uploadUrl'],
