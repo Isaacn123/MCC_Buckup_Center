@@ -138,53 +138,107 @@
             //  const data = await response.json();
             //  document.getElementById('message').innerText = data.message;
            
-            const xhr = new XMLHttpRequest();
-            //xhr.open('POST','https://mcc.backup.miracle44radio.com/upload',true);
-            xhr.open('POST','/upload_multiple',true);
+           // OLD: Server-relayed upload (commented out to avoid reading files into server memory)
+           // const xhr = new XMLHttpRequest();
+           // xhr.open('POST','/upload_multiple',true);
+           // xhr.upload.onprogress = function(event) {
+           //     if(event.lengthComputable){
+           //         const percentComplete = (event.loaded / event.total) * 100;
+           //         progressBar.style.width = percentComplete + '%';
+           //         progressBar.setAttribute('aria-valuenow', percentComplete);
+           //         status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
+           //     }
+           // };
+           // xhr.onload = function(){
+           //     if(xhr.status === 200) {
+           //         status.textContent = "File Uploaded successfully"
+           //         fileInput.value =""
+           //         progressBar.classList.add("bg-info")
+           //     } else {
+           //         status.textContent = `Upload failed: ${xhr.statusText}`;
+           //     }
+           // };
+           // xhr.onerror = function() {
+           //     status.textContent = `Error: Failed to upload file`
+           // };
+           // xhr.send(formdata);
 
-                xhr.upload.onprogress = function(event) {
+           // NEW: Direct browser-to-B2 upload (no server buffering)
+           status.textContent = "Preparing upload...";
+           const files = Array.from(fileInput.files);
+           const totalBytes = files.reduce((acc,f) => acc + f.size, 0);
+           let uploadedBytes = 0;
 
-                    if(event.lengthComputable){
-                        const percentComplete = (event.loaded / event.total) * 100;
-                        progressBar.style.width = percentComplete + '%';
-                        progressBar.setAttribute('aria-valuenow', percentComplete);
-                        status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
+           async function b2UploadSingle(file, folderPrefix){
+             // 1) Get upload URL and token from server
+             const resp = await fetch('/b2/get_upload_url', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+             const { uploadUrl, authorizationToken } = await resp.json();
+             if(!uploadUrl || !authorizationToken){ throw new Error('Failed to obtain B2 upload URL'); }
 
-                        console.log("Upload ", Math.round(percentComplete) + "% complete.");
-                    }
-                };
+             // 2) Compute SHA1 progressively
+             const sha1 = await computeSHA1(file);
 
-      xhr.onload = function(){
-                    if(xhr.status === 200) {
-                        status.textContent = "File Uploaded successfully"
-                        fileInput.value =""
-                        progressBar.classList.add("bg-info")
+             // 3) Build B2 headers
+             const b2FileName = encodeURIComponent((folderPrefix || '') + file.name).replace(/%2F/g,'/');
+             const headers = new Headers();
+             headers.set('Authorization', authorizationToken);
+             headers.set('X-Bz-File-Name', b2FileName);
+             headers.set('Content-Type', file.type || 'b2/x-auto');
+             headers.set('X-Bz-Content-Sha1', sha1);
 
-                    } else {
-                        console.log(`Error upload:${xhr.status}`)
-                        status.textContent = `Upload failed: ${xhr.statusText}`;
-                    }
-         };
+             // 4) Upload with fetch; track progress via ReadableStream tee
+             const reader = file.stream().getReader();
+             const stream = new ReadableStream({
+               start(controller){
+                 function pump(){
+                   reader.read().then(({done, value}) => {
+                     if(done){ controller.close(); return; }
+                     uploadedBytes += value.byteLength;
+                     const percent = Math.round((uploadedBytes / totalBytes) * 100);
+                     progressBar.style.width = percent + '%';
+                     progressBar.setAttribute('aria-valuenow', percent);
+                     status.textContent = `${percent}%: Uploading...`;
+                     controller.enqueue(value);
+                     pump();
+                   }).catch(err => controller.error(err));
+                 }
+                 pump();
+               }
+             });
 
-       xhr.onerror = function() {
-            status.textContent = `Error: Failed to upload file`
-                      };
+             const res = await fetch(uploadUrl, { method: 'POST', headers, body: stream });
+             if(!res.ok){
+               const text = await res.text();
+               throw new Error(`B2 upload failed: ${res.status} ${text}`);
+             }
+             return await res.json();
+           }
 
-            status.textContent = "Please wait, uploading in progress...";
+           // Minimal SHA1 helper using SubtleCrypto
+           async function computeSHA1(file){
+             const chunkSize = 4 * 1024 * 1024; // 4MB chunks
+             const chunks = Math.ceil(file.size / chunkSize);
+             const reader = file.stream().getReader();
+             const sha1 = await window.crypto.subtle.digest.bind(window.crypto.subtle);
+             // Fallback: read whole file if streaming hashing unavailable
+             const buffer = await file.arrayBuffer();
+             const hash = await window.crypto.subtle.digest('SHA-1', buffer);
+             const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+             return hex;
+           }
 
-                    console.log("Sending FormData:", formdata);
-
-       xhr.onreadystatechange = function () {
-
-          if (xhr.readyState === XMLHttpRequest.DONE) {
-              if (xhr.status === 200) {
-                  console.log('File uploaded successfully');
-              } else {
-                  console.error('Error uploading file: ' + xhr.status);
-              }
-          }
-};
-                    xhr.send(formdata);
+           try{
+             const folderPrefix = folderName.endsWith('/') ? folderName : folderName + '/';
+             for(const f of files){
+               await b2UploadSingle(f, folderPrefix);
+             }
+             status.textContent = 'All files uploaded successfully';
+             progressBar.classList.add('bg-info');
+             fileInput.value = '';
+           }catch(err){
+             console.error(err);
+             status.textContent = `Upload failed: ${err.message}`;
+           }
             
 
             

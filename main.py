@@ -521,6 +521,21 @@ def get_common_prefix(folder_name):
         return folder_name
     return folder_name + '/'
 
+# Direct-to-B2 helper endpoint: returns an upload URL and auth token
+@app.route('/b2/get_upload_url', methods=['POST'])
+def b2_get_upload_url():
+    try:
+        # Optional: accept folder_name to validate access or future use; not required by B2
+        _ = request.json if request.is_json else {}
+        upload_data = bucket.get_upload_url()
+        # Example structure: { 'uploadUrl': '...', 'authorizationToken': '...' }
+        return jsonify({
+            "uploadUrl": upload_data['uploadUrl'],
+            "authorizationToken": upload_data['authorizationToken']
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to get B2 upload URL: {str(e)}"}), 500
+
 
 # @app.route("/signin", method=["POST"])
 # def CreateUser():
