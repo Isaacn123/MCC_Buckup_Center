@@ -521,65 +521,9 @@ def get_common_prefix(folder_name):
         return folder_name
     return folder_name + '/'
 
-# HYBRID: Add direct-to-B2 method alongside original server-side upload
-# Original server-side method is preserved and working
-# This adds a faster direct browser-to-B2 option
-
-@app.route('/b2/get_upload_url', methods=['POST'])
-def b2_get_upload_url():
-    try:
-        import requests
-        
-        # Get authorization token first
-        auth_url = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account"
-        auth_data = {
-            "applicationKeyId": app_key_ID,
-            "applicationKey": app_key
-        }
-        
-        auth_response = requests.post(auth_url, json=auth_data)
-        
-        # Check if auth request was successful
-        if auth_response.status_code != 200:
-            return jsonify({"error": f"B2 auth failed: {auth_response.text}"}), 500
-            
-        auth_result = auth_response.json()
-        
-        print(f"B2 auth response: {auth_result}")
-        
-        # Get API URL with proper field names
-        api_url = auth_result.get('apiUrl') or auth_result.get('api_url')
-        if not api_url:
-            return jsonify({"error": "No apiUrl in B2 auth response"}), 500
-        
-        # Get upload URL for the bucket
-        upload_url_endpoint = f"{api_url}/b2api/v2/b2_get_upload_url"
-        upload_data = {
-            "bucketId": bucket.id  # Make sure 'bucket' is defined in your context
-        }
-        
-        upload_response = requests.post(
-            upload_url_endpoint, 
-            json=upload_data,
-            headers={"Authorization": auth_result['authorizationToken']}
-        )
-        
-        # Check if upload URL request was successful
-        if upload_response.status_code != 200:
-            return jsonify({"error": f"B2 upload URL failed: {upload_response.text}"}), 500
-            
-        upload_result = upload_response.json()
-        
-        print(f"B2 upload response: {upload_result}")
-        
-        return jsonify({
-            "uploadUrl": upload_result['uploadUrl'],
-            "authorizationToken": upload_result['authorizationToken']
-        })
-        
-    except Exception as e:
-        print(f"B2 upload URL error: {str(e)}")
-        return jsonify({"error": f"Failed to get B2 upload URL: {str(e)}"}), 500
+# REVERTED: Back to original working server-side upload method
+# Direct-to-B2 approach was causing too many issues
+# Original working method is preserved below
 
 # @app.route("/signin", method=["POST"])
 # def CreateUser():
