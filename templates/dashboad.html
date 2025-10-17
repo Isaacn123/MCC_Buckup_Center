@@ -902,16 +902,16 @@ function fetchsubFolders(folderName, maxlength) {
           
 
             // start the Onlick Function
-              folderDiv.addEventListener("click", function(){
-               fetchallFiles(file.folder_name);
-               folderName = `${file.folder_name}`;
-               localStorage.setItem("currentFolderName",`${file.folder_name}`);
-
-               parent = `${currentFolderName.textContent}${file.folder_name}`;
-               console.log("PARENT-2:::",parent);
-               currentFolderName.textContent = parent; //`${file.folder_name}`;
-
-              });
+             folderDiv.addEventListener("click", function(){
+              try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
+              fetchallFiles(file.folder_name);
+              folderName = `${file.folder_name}`;
+              localStorage.setItem("currentFolderName",`${file.folder_name}`);
+              const sep = currentFolderName.textContent.endsWith('/') || !currentFolderName.textContent ? '' : '/';
+              parent = `${currentFolderName.textContent}${sep}${file.folder_name}`;
+              console.log("PARENT-2:::",parent);
+              currentFolderName.textContent = parent.endsWith('/') ? parent : parent + '/';
+             });
 
               //end of the Click Function
         
