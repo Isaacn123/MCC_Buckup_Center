@@ -143,33 +143,126 @@ class UploadMultipleFiles(Resource):
     def post(self):
         try:
             uploaded_files = request.files.getlist('filefield')
-            batch_data = []
-
             folder_name = request.form.get('folder_name', '').strip()
-
-            for file_data in uploaded_files:
-                file_content = file_data.read()
-                file_stream = io.BytesIO(file_content)
-
-                # checking if the folder exists 
-
-                if folder_name :
-                    file_name = f"{folder_name}{file_data.filename}"
-                    print(f"file_na: {file_name}")
-                    batch_data.append((file_stream, file_name))
             
-            for data_stream,file_name in batch_data:
-                # print(f"Uploading file: {data_stream.getvalue()}")
-                bucket.upload_bytes(
-                    data_bytes=data_stream.getvalue(),
-                    file_name=file_name
-                )
-                print(f"Uploading file: {file_name}")
-
-            return jsonify({"message":"Files Uploaded"})
-
+            # Enhanced processing for large batches
+            return self._process_large_batch(uploaded_files, folder_name)
+            
         except Exception as e:
             return jsonify({"message": f"Failed to upload file: {str(e)}"})
+    
+    def _process_large_batch(self, uploaded_files, folder_name):
+        """Enhanced method for processing large file batches"""
+        import time
+        import gc
+        
+        # Configuration for chunked processing
+        CHUNK_SIZE = 10  # Process 10 files at a time
+        MAX_RETRIES = 3
+        RETRY_DELAY = 2  # seconds
+        
+        successful_uploads = []
+        failed_uploads = []
+        
+        print(f"Processing {len(uploaded_files)} files in chunks of {CHUNK_SIZE}")
+        
+        # Process files in chunks to avoid memory issues
+        for i in range(0, len(uploaded_files), CHUNK_SIZE):
+            chunk = uploaded_files[i:i + CHUNK_SIZE]
+            print(f"Processing chunk {i//CHUNK_SIZE + 1}: files {i+1}-{min(i+CHUNK_SIZE, len(uploaded_files))}")
+            
+            # Process this chunk
+            chunk_results = self._process_chunk(chunk, folder_name, MAX_RETRIES, RETRY_DELAY)
+            successful_uploads.extend(chunk_results['success'])
+            failed_uploads.extend(chunk_results['failed'])
+            
+            # Force garbage collection to free memory
+            gc.collect()
+            
+            # Small delay between chunks to avoid overwhelming B2
+            if i + CHUNK_SIZE < len(uploaded_files):
+                time.sleep(1)
+        
+        # Return results
+        if failed_uploads:
+            return jsonify({
+                "message": f"Upload completed with {len(successful_uploads)} successful, {len(failed_uploads)} failed",
+                "successful": len(successful_uploads),
+                "failed": len(failed_uploads),
+                "failed_files": [f['filename'] for f in failed_uploads]
+            })
+        else:
+            return jsonify({
+                "message": f"All {len(successful_uploads)} files uploaded successfully",
+                "successful": len(successful_uploads),
+                "failed": 0
+            })
+    
+    def _process_chunk(self, chunk, folder_name, max_retries, retry_delay):
+        """Process a chunk of files with retry logic"""
+        import time
+        
+        successful = []
+        failed = []
+        
+        for file_data in chunk:
+            file_name = f"{folder_name}{file_data.filename}" if folder_name else file_data.filename
+            
+            # Retry logic for each file
+            for attempt in range(max_retries):
+                try:
+                    # Read file content
+                    file_data.seek(0)  # Reset file pointer
+                    file_content = file_data.read()
+                    
+                    # Upload to B2
+                    bucket.upload_bytes(
+                        data_bytes=file_content,
+                        file_name=file_name
+                    )
+                    
+                    print(f"✓ Uploaded: {file_name}")
+                    successful.append({'filename': file_name, 'size': len(file_content)})
+                    break  # Success, exit retry loop
+                    
+                except Exception as e:
+                    print(f"✗ Attempt {attempt + 1} failed for {file_name}: {str(e)}")
+                    
+                    if attempt < max_retries - 1:
+                        # Wait before retry (exponential backoff)
+                        time.sleep(retry_delay * (2 ** attempt))
+                    else:
+                        # Final attempt failed
+                        failed.append({'filename': file_name, 'error': str(e)})
+                        print(f"✗ Final failure for {file_name}")
+        
+        return {'success': successful, 'failed': failed}
+
+    # ORIGINAL METHOD - KEPT FOR BACKWARD COMPATIBILITY
+    def _original_upload_method(self, uploaded_files, folder_name):
+        """Original upload method - kept intact for reference"""
+        batch_data = []
+
+        for file_data in uploaded_files:
+            file_content = file_data.read()
+            file_stream = io.BytesIO(file_content)
+
+            # checking if the folder exists 
+
+            if folder_name :
+                file_name = f"{folder_name}{file_data.filename}"
+                print(f"file_na: {file_name}")
+                batch_data.append((file_stream, file_name))
+        
+        for data_stream,file_name in batch_data:
+            # print(f"Uploading file: {data_stream.getvalue()}")
+            bucket.upload_bytes(
+                data_bytes=data_stream.getvalue(),
+                file_name=file_name
+            )
+            print(f"Uploading file: {file_name}")
+
+        return jsonify({"message":"Files Uploaded"})
 
 # @app.route("/upload", methods=['POST'])
 class UploadFiles(Resource):
