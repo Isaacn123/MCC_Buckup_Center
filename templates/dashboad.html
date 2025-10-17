@@ -309,9 +309,6 @@
     function getQueryParam(name){
       try{ return new URLSearchParams(window.location.search).get(name) || ""; }catch(e){ return ""; }
     }
-    async function copyText(text){
-      try{ await navigator.clipboard.writeText(text); alert('Link copied to clipboard'); }
-      catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); alert('Link copied to clipboard');}catch(err){ alert(text);} document.body.removeChild(ta);} }
      console.log("main Log.....");
      const currentFolderName = document.getElementById('currentFolderName');
      var folderName = "";
@@ -497,7 +494,6 @@
             <i class=\"fa fa-folder\" aria-hidden=\"true\"></i>
             <i class=\"fa fa-check\" aria-hidden=\"true\"></i>
             <p class=\"folder-title\"><small>${name1}<small></p>
-            <button type=\"button\" class=\"btn btn-sm btn-outline-secondary mt-1 share-btn\">Share</button>
             `;
       
             folderDiv.addEventListener("click", function(){
@@ -508,13 +504,7 @@
               localStorage.setItem("currentFolderName",folderName);
               currentFolderName.textContent = `${folder.folder_name}`;
             });
-            const shareBtn = folderDiv.querySelector('.share-btn');
-            shareBtn.addEventListener('click', function(ev){
-              ev.stopPropagation();
-              const fullPath = folder.folder_name;
-              const link = `${location.origin}/dashboard?folder=${encodeURIComponent(fullPath)}`;
-              copyText(link);
-            });
+            
       
 
             folderContainer.appendChild(folderDiv);
@@ -751,7 +741,6 @@ function fetchsubFolders(folderName, maxlength) {
                       <i class=\"fa fa-folder\" aria-hidden=\"true\"></i>
                       <i class=\"fa fa-check\" aria-hidden=\"true\"></i>
                       <p class=\"folder-title\"><small>${foldername}</small></p>
-                      <button type=\"button\" class=\"btn btn-sm btn-outline-secondary mt-1 share-btn\">Share</button>
                   `;
 
                   // Add click listener to fetch files of this folder
@@ -763,13 +752,7 @@ function fetchsubFolders(folderName, maxlength) {
                       console.log("PARENT-2:::", parent);
                       currentFolderName.textContent = parent;
                   });
-                  const shareBtn2 = folderDivs.querySelector('.share-btn');
-                  shareBtn2.addEventListener('click', function(ev){
-                    ev.stopPropagation();
-                    const fullPath = file.folder_name;
-                    const link = `${location.origin}/dashboard?folder=${encodeURIComponent(fullPath)}`;
-                    copyText(link);
-                  });
+                  
 
                   filelists.appendChild(folderDivs);
               } else {
