@@ -1087,6 +1087,7 @@ function fetchsubFolders(folderName, maxlength) {
   });
      
 function createVideoThumb(videoEl, url){
+  console.log('Creating video thumb for:', url);
   const source = document.createElement('source');
   source.src = url;
   source.type = 'video/mp4';
@@ -1096,11 +1097,19 @@ function createVideoThumb(videoEl, url){
     videoEl.muted = true;
     videoEl.loop = true;
     videoEl.playsInline = true;
-  } catch (e) {}
+  } catch (e) {
+    console.log('Error setting video attributes:', e);
+  }
   videoEl.appendChild(source);
+  
+  videoEl.addEventListener('error', function(e) {
+    console.log('Video load error:', e, 'URL:', url);
+  });
+  
   videoEl.addEventListener('loadeddata', function(){
-    try { videoEl.currentTime = 0.1; } catch(e) {}
-    try { videoEl.play(); } catch(e) {}
+    console.log('Video loaded successfully:', url);
+    try { videoEl.currentTime = 0.1; } catch(e) { console.log('Error setting currentTime:', e); }
+    try { videoEl.play(); } catch(e) { console.log('Error playing video:', e); }
   }, { once: true });
 }
 
