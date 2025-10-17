@@ -305,6 +305,7 @@
     //document.addEventListener("DOMContentLoaded", function(){
 
     var user_email = "";
+    var folderHistory = [];
      console.log("main Log.....");
      const currentFolderName = document.getElementById('currentFolderName');
      var folderName = "";
@@ -488,11 +489,11 @@
       
             folderDiv.addEventListener("click", function(){
               inFolder = true;
-             fetchallFiles(folder.folder_name,maxlength);
-             folderName = `${folder.name}`;
-             localStorage.setItem("currentFolderName",folderName);
-             currentFolderName.textContent = `${folder.folder_name}`;
-           //  window.location.href = `folderContents.html?folder=${folder.folder_name}`;
+              try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
+              fetchallFiles(folder.folder_name,maxlength);
+              folderName = `${folder.name}`;
+              localStorage.setItem("currentFolderName",folderName);
+              currentFolderName.textContent = `${folder.folder_name}`;
             });
       
 
@@ -734,6 +735,7 @@ function fetchsubFolders(folderName, maxlength) {
 
                   // Add click listener to fetch files of this folder
                   folderDivs.addEventListener("click", function() {
+                      try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
                       fetchsubFolders(file.folder_name, maxlength);
                       localStorage.setItem("currentFolderName", file.folder_name);
                       const parent = currentFolderName.textContent + file.folder_name;
@@ -815,9 +817,21 @@ function fetchsubFolders(folderName, maxlength) {
       foldercontainer.style.display = 'none';
 
       document.getElementById('backButton').addEventListener('click', function(){
-        location.reload();
-        fileListContainer.style.display = 'none';
-        foldercontainer.style.display = 'block';
+        const prev = folderHistory.pop();
+        if (prev !== undefined) {
+          if (prev && prev.trim() !== '') {
+            currentFolderName.textContent = prev;
+            fetchsubFolders(prev, maxlength);
+          } else {
+            fileList_Container.innerHTML = '';
+            fileList_Container.style.display = 'none';
+            foldercontainer.style.display = 'block';
+          }
+        } else {
+          fileList_Container.innerHTML = '';
+          fileList_Container.style.display = 'none';
+          foldercontainer.style.display = 'block';
+        }
        })
   })
   .catch((error) => {
@@ -986,10 +1000,22 @@ function fetchsubFolders(folderName, maxlength) {
        fileListContainer.style.display = 'block'
        foldercontainer.style.display = 'none';
     
-       document.getElementById('backButton').addEventListener('click', function(){
-        location.reload();
-        fileListContainer.style.display = 'none';
-        foldercontainer.style.display = 'block';
+      document.getElementById('backButton').addEventListener('click', function(){
+        const prev = folderHistory.pop();
+        if (prev !== undefined) {
+          if (prev && prev.trim() !== '') {
+            currentFolderName.textContent = prev;
+            fetchsubFolders(prev, maxlength);
+          } else {
+            fileListContainer.innerHTML = '';
+            fileListContainer.style.display = 'none';
+            foldercontainer.style.display = 'block';
+          }
+        } else {
+          fileListContainer.innerHTML = '';
+          fileListContainer.style.display = 'none';
+          foldercontainer.style.display = 'block';
+        }
        })
     
       })

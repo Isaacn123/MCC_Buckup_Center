@@ -32,7 +32,7 @@
               </div>
             </div>
             <div class="col-lg-6 py-6">
-              <a href="/dashboard" class="btn btn-secondary">back</a>
+              <a href="#" id="backBtn" class="btn btn-secondary">back</a>
               <div class="row h-100 align-items-center justify-content-center">
                 <div class="mb-3 w-100 position-relative text-center mt-4">
                     <hr class="text-body-secondary text-opacity-25">
@@ -83,6 +83,38 @@
     </main>
 
     <script>
+
+      // Capture a same-origin referrer to support reliable back navigation
+      (function(){
+        try{
+          if(document.referrer){
+            const ref = new URL(document.referrer);
+            if(ref.origin === window.location.origin){
+              sessionStorage.setItem('lastFolderUrl', document.referrer);
+            }
+          }
+        }catch(e){}
+      })();
+
+      // Back button behavior: prefer history, then stored referrer, then dashboard
+      document.addEventListener('DOMContentLoaded', function(){
+        const backBtn = document.getElementById('backBtn');
+        if(backBtn){
+          backBtn.addEventListener('click', function(e){
+            e.preventDefault();
+            if(window.history.length > 1){
+              window.history.back();
+              return;
+            }
+            const last = sessionStorage.getItem('lastFolderUrl');
+            if(last){
+              window.location.href = last;
+              return;
+            }
+            window.location.href = '/dashboard';
+          });
+        }
+      });
 
       function getQueryParams(params){
         const urlParam = new URLSearchParams(window.location.search);
@@ -143,15 +175,15 @@
            //xhr.open('POST','https://mcc.backup.miracle44radio.com/upload',true);
            xhr.open('POST','/upload_multiple',true);
 
-               xhr.upload.onprogress = function(event) {
+            xhr.upload.onprogress = function(event) {
 
-                   if(event.lengthComputable){
-                       const percentComplete = (event.loaded / event.total) * 100;
-                       progressBar.style.width = percentComplete + '%';
-                       progressBar.setAttribute('aria-valuenow', percentComplete);
-                       status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
+                if(event.lengthComputable){
+                  const percentComplete = (event.loaded / event.total) * 100;
+                  progressBar.style.width = percentComplete + '%';
+                  progressBar.setAttribute('aria-valuenow', percentComplete);
+                  status.textContent = `${Math.round(percentComplete)}%: Please wait.uploading in progress...`;
 
-                       console.log("Upload ", Math.round(percentComplete) + "% complete.");
+                  console.log("Upload ", Math.round(percentComplete) + "% complete.");
                    }
                };
 
@@ -162,8 +194,10 @@
                        progressBar.classList.add("bg-info")
 
                    } else {
-                       console.log(`Error upload:${xhr.status}`)
+
+                       console.log(`Error upload:${xhr.status}`)  
                        status.textContent = `Upload failed: ${xhr.statusText}`;
+  
                    }
         };
 
