@@ -17,6 +17,61 @@ SessionLocal = _database.SessionLocal
 def _create_database():
     return _database.Base.metadata.create_all(bind=_database.engine)
 
+
+def ensure_db_schema():
+    """
+    Lightweight SQLite 'migration' to add new columns if missing.
+    Safe to run on every startup.
+    """
+    engine = _database.engine
+    with engine.connect() as conn:
+        # Ensure tables exist first
+        _database.Base.metadata.create_all(bind=engine)
+        try:
+            cols = conn.execute(_sql.text("PRAGMA table_info(users)")).fetchall()
+            existing = {c[1] for c in cols}  # name is index 1
+            alters = []
+            if "role" not in existing:
+                alters.append("ALTER TABLE users ADD COLUMN role VARCHAR DEFAULT 'user'")
+            if "allowed_prefix" not in existing:
+                alters.append("ALTER TABLE users ADD COLUMN allowed_prefix VARCHAR")
+            if "is_active" not in existing:
+                alters.append("ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1")
+            for stmt in alters:
+                conn.execute(_sql.text(stmt))
+            if alters:
+                conn.commit()
+        except Exception:
+            # If PRAGMA/ALTER fails (non-sqlite), skip quietly
+            pass
+
+
+def require_admin(user_dict: dict):
+    if not user_dict:
+        abort(401, description="Unauthorized")
+    if not user_dict.get("is_active", True):
+        abort(403, description="User is disabled")
+    if user_dict.get("role") != "admin":
+        abort(403, description="Admin required")
+
+
+def enforce_prefix_access(user_dict: dict, target_prefix: str):
+    """
+    Enforce that non-admin users can only operate within allowed_prefix.
+    If allowed_prefix is None/empty => deny by default (safer).
+    """
+    if not user_dict:
+        abort(401, description="Unauthorized")
+    if not user_dict.get("is_active", True):
+        abort(403, description="User is disabled")
+    if user_dict.get("role") == "admin":
+        return
+    allowed = (user_dict.get("allowed_prefix") or "").strip()
+    if not allowed:
+        abort(403, description="No folder access assigned")
+    if not target_prefix.startswith(allowed):
+        abort(403, description="Folder access denied")
+
 @contextmanager
 def get_db():
     db = SessionLocal()

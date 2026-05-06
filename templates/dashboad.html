@@ -194,7 +194,6 @@
   background: #0b1220;
 }
 .media-thumb{
-  width: 90px;
   height: 100px;
   border-radius: 10px;
   background: rgba(15,23,42,.12);
@@ -359,6 +358,9 @@
                               <li id="tabProfile" class="nav-item">
                                 <a class="nav-link" href="#" onclick="switchTab('tabProfile'); return false;"><i class="fa fa-user fa-lg icon"></i> My Profile</a>
                               </li>
+                              <li id="tabUsers" class="nav-item d-none">
+                                <a class="nav-link" href="#" onclick="switchTab('tabUsers'); return false;"><i class="fa fa-users fa-lg icon"></i> Users</a>
+                              </li>
                                 
                               </li>
                             </ul>
@@ -378,6 +380,10 @@
                           <strong><span id="currentFolderName"></span></strong>
                         </span>
                         <div class="breadcrumb-wrap" id="breadcrumb"></div>
+                        <select id="pageSizeSelect" class="form-select form-select-sm" style="width: auto;" title="Items per page">
+                          <option value="25" selected>25</option>
+                          <option value="50">50</option>
+                        </select>
                         <button type="button" id="addFolderBtn" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                           <i class="fa fa-plus" aria-hidden="true"></i> New Folder
                         </button>
@@ -449,52 +455,151 @@
             </div>
 
             <div class="row">
-                 <div class="col-lg-8 py-6 mb-5">
-                    <div class="row h-100 align-items-center justify-content-center">
-                        <!-- left part -->
-                    <div id="tabHelpContent" class="tab-content">
-                        <h3>Help Content</h3>
-                        <p>This is the help section.</p>
-                    </div>
-                
-                      <div id="tabDashboardContent" class="tab-content"></div>
-                
-                      <div id="fileListContainer" class="mt-3" style="display: none;">
-                       <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
-                        <h2>Files</h2>
-                      </div>
-                      <div id="loadingSpinner" class="text-center my-3 d-none">
-                        <div class="spinner-border" role="status" aria-label="Loading">
-                          <span class="visually-hidden">Loading...</span>
-                        </div>
-                      </div>
-                
-                      <div id="tabProfileContent" class="tab-content">
-                        <h3>My Profile Content</h3>
-                        {% include "partial.html" %}
-                      </div>
-                    <!-- end of left section -->
-                    </div>
-                 </div>
-                 <div class="col-lg-4 py-6 mb-5">
-                    <div class="row h-100 align-items-center justify-content-center">
-                    <!-- Right part  -->
-                    <div class="input-select-wrap text-center">
-                        <div class="fileUpload">
-                          <!-- <a href="/uploadfiles" id="addFiles"> -->
-                            <a href="/mult_uploads" id="addFiles">
+              <div class="col-12 py-3 mb-3">
+                <div class="row h-100 align-items-center justify-content-center">
+                  <div id="tabHelpContent" class="tab-content">
+                    <h3>Help Content</h3>
+                    <p>This is the help section.</p>
+                  </div>
 
-                            <span>+</span>
-                            <p>Add your files</p>
-                          </a>
-                        </div>
-                      </div>
-                    </div>         
-                 </div>
+                  <div id="tabDashboardContent" class="tab-content"></div>
+
+                  <div id="fileListContainer" class="mt-3" style="display: none;">
+                    <button id="backButton" class="btn btn-primary mb-3">Back to Folders</button>
+                    <h2>Files</h2>
+                  </div>
+                  <div id="loadingSpinner" class="text-center my-3 d-none">
+                    <div class="spinner-border" role="status" aria-label="Loading">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+
+                  <div id="tabProfileContent" class="tab-content">
+                    <h3>My Profile Content</h3>
+                    {% include "partial.html" %}
+                  </div>
+                  <div id="tabUsersContent" class="tab-content">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <h3 class="mb-0">Users</h3>
+                      <button id="openCreateUser" class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i> Add user
+                      </button>
+                    </div>
+                    <div class="small text-muted mt-1">Admins can add users and restrict which folder they can browse/upload to.</div>
+                    <div id="usersError" class="mt-2"></div>
+                    <div class="table-responsive mt-3">
+                      <table class="table table-sm align-middle">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Allowed folder prefix</th>
+                            <th>Status</th>
+                            <th style="width: 180px;">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
         </header>
         </div>
     </section>
+</div>
+
+<!-- Create user modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create user</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-12">
+            <label class="form-label small">Name</label>
+            <input id="newUserName" class="form-control form-control-sm" type="text" />
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Email</label>
+            <input id="newUserEmail" class="form-control form-control-sm" type="email" />
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Temporary password</label>
+            <input id="newUserPassword" class="form-control form-control-sm" type="text" />
+          </div>
+          <div class="col-6">
+            <label class="form-label small">Role</label>
+            <select id="newUserRole" class="form-select form-select-sm">
+              <option value="user" selected>User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label small">Active</label>
+            <select id="newUserActive" class="form-select form-select-sm">
+              <option value="true" selected>Active</option>
+              <option value="false">Disabled</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Allowed folder prefix (e.g. <code>Anointing Services/</code>)</label>
+            <input id="newUserPrefix" class="form-control form-control-sm" type="text" placeholder="Leave empty to block access" />
+          </div>
+        </div>
+        <div id="createUserStatus" class="small mt-2"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="createUserBtn" class="btn btn-primary btn-sm">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit user</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input id="editUserId" type="hidden" />
+        <div class="row g-2">
+          <div class="col-12">
+            <label class="form-label small">Allowed folder prefix</label>
+            <input id="editUserPrefix" class="form-control form-control-sm" type="text" />
+          </div>
+          <div class="col-6">
+            <label class="form-label small">Role</label>
+            <select id="editUserRole" class="form-select form-select-sm">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label small">Active</label>
+            <select id="editUserActive" class="form-select form-select-sm">
+              <option value="true">Active</option>
+              <option value="false">Disabled</option>
+            </select>
+          </div>
+        </div>
+        <div id="editUserStatus" class="small mt-2"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="saveUserBtn" class="btn btn-primary btn-sm">Save</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -536,6 +641,9 @@
         const contentId = `${tabId}Content`;
         const clickedContent = document.getElementById(contentId);
         clickedContent.classList.add('active')
+    if (tabId === 'tabUsers'){
+      try{ loadUsers(); }catch(e){ console.error(e); }
+    }
       //}
     };
     
@@ -545,6 +653,7 @@
       let inFolder = false;
       const defaultTab = "tabDashboard"
       const token = "{{ token }}";
+      window.__AUTH_TOKEN__ = token;
       const profile_name = document.getElementById("name-profile");
       const user_profileEmail = document.getElementById("user_profile_email");
       const user_profileName = document.getElementById("user_profile_name");
@@ -553,26 +662,7 @@
 
       const signoutBtn = document.getElementById('logoutId');
 
-      const addingfiles = document.getElementById("addFiles");
-      const CurrentFolder = document.getElementById("currentFolderName");
-      const currentFolderCs = localStorage.getItem('currentFolderName');
-      const uploadLinkElement = addingfiles.querySelector('a');
-
-      
-      console.log("CURENT2:",CurrentFolder.textContent);
-
-      addingfiles.addEventListener('click', function(){
-
-            var currentFolder = `${CurrentFolder.textContent}`;
-
-            const uploadLink = `/mult_uploads?folder=${encodeURIComponent(currentFolder)}`;
-
-            addingfiles.setAttribute('href',uploadLink);
-
-            console.log("CURENT2:",CurrentFolder.textContent);
-            
-
-      });             
+      // Old right-column upload button removed (upload is now in-dashboard).
 
 
 
@@ -620,6 +710,12 @@
             user_profile_name.innerText =  `${resp.name}`;
             user_profileEmail.innerText =  `${resp.email}`;
             user_email = `${resp.email}`;
+            // show Users tab only for admins
+            try{
+              if (resp.role === 'admin'){
+                document.getElementById('tabUsers')?.classList.remove('d-none');
+              }
+            }catch(e){}
             const dateOn = `${resp.date_created}`
             const dateObject = new Date(dateOn);
             //date_created.innerText= `${dateObject.toLocaleString()}`;
@@ -869,7 +965,7 @@ function removeTrailingSlash(folderName) {
 }
 
 // Pagination state for folder listings
-const PAGE_SIZE = 50; // change to 20 if you want smaller pages
+let PAGE_SIZE = 25; // default items per folder open
 let pagingState = {
   folder: "",
   mode: "", // 'fetchallFiles' | 'fetchsubFolders'
@@ -1526,6 +1622,145 @@ try{
 
 // initial state
 try{ updateUploadTrayVisibility(); }catch(e){}
+
+// Page size selector (25 default, allow 50)
+try{
+  const sel = document.getElementById('pageSizeSelect');
+  if (sel){
+    sel.value = String(PAGE_SIZE);
+    sel.addEventListener('change', () => {
+      const v = parseInt(sel.value, 10);
+      PAGE_SIZE = Number.isFinite(v) && v > 0 ? v : 25;
+      // reload current view from start
+      pagingState.nextStart = null;
+      pagingState.hasMore = false;
+      const cur = getCurrentFolder();
+      if (cur){
+        fetchsubFolders(cur, 40, false, null);
+      } else {
+        get_all_folders();
+      }
+    });
+  }
+}catch(e){ console.error(e); }
+
+// Admin Users UI
+async function apiJson(path, method = 'GET', body = null){
+  const token = window.__AUTH_TOKEN__ || "";
+  const headers = { "Accept": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (body !== null) headers["Content-Type"] = "application/json";
+  const res = await fetch(path, { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
+  if (res.status === 200) return await res.json();
+  const txt = await res.text();
+  throw new Error(`${res.status}: ${txt || res.statusText}`);
+}
+
+function renderUsersTable(users){
+  const tbody = document.getElementById('usersTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!users || !users.length){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="6" class="text-muted">No users found.</td>`;
+    tbody.appendChild(tr);
+    return;
+  }
+  users.forEach((u) => {
+    const tr = document.createElement('tr');
+    const status = u.is_active ? 'Active' : 'Disabled';
+    tr.innerHTML = `
+      <td>${u.name || ''}</td>
+      <td>${u.email || ''}</td>
+      <td><span class="badge text-bg-${u.role === 'admin' ? 'primary' : 'secondary'}">${u.role || 'user'}</span></td>
+      <td><code>${u.allowed_prefix || ''}</code></td>
+      <td>${status}</td>
+      <td>
+        <button class="btn btn-outline-primary btn-sm me-1" data-action="edit">Edit</button>
+        <button class="btn btn-outline-${u.is_active ? 'warning' : 'success'} btn-sm" data-action="toggle">${u.is_active ? 'Disable' : 'Enable'}</button>
+      </td>
+    `;
+    tr.querySelector('[data-action="edit"]').addEventListener('click', () => openEditUserModal(u));
+    tr.querySelector('[data-action="toggle"]').addEventListener('click', () => toggleUserActive(u));
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadUsers(){
+  const err = document.getElementById('usersError');
+  if (err) err.innerHTML = '';
+  try{
+    const users = await apiJson('/api/admin/users');
+    renderUsersTable(users);
+  }catch(e){
+    if (err) err.innerHTML = `<div class="alert alert-warning">${String(e.message || e)}</div>`;
+  }
+}
+
+function openEditUserModal(u){
+  document.getElementById('editUserId').value = u.id;
+  document.getElementById('editUserPrefix').value = u.allowed_prefix || '';
+  document.getElementById('editUserRole').value = u.role || 'user';
+  document.getElementById('editUserActive').value = String(!!u.is_active);
+  document.getElementById('editUserStatus').textContent = '';
+  const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+  modal.show();
+}
+
+async function toggleUserActive(u){
+  const err = document.getElementById('usersError');
+  if (err) err.innerHTML = '';
+  try{
+    await apiJson('/api/admin/users/update', 'POST', { user_id: u.id, is_active: !u.is_active });
+    await loadUsers();
+  }catch(e){
+    if (err) err.innerHTML = `<div class="alert alert-warning">${String(e.message || e)}</div>`;
+  }
+}
+
+try{
+  document.getElementById('createUserBtn')?.addEventListener('click', async () => {
+    const status = document.getElementById('createUserStatus');
+    status.textContent = '';
+    try{
+      const body = {
+        name: (document.getElementById('newUserName').value || '').trim(),
+        email: (document.getElementById('newUserEmail').value || '').trim(),
+        password: (document.getElementById('newUserPassword').value || '').trim(),
+        role: document.getElementById('newUserRole').value,
+        allowed_prefix: (document.getElementById('newUserPrefix').value || '').trim() || null,
+        is_active: document.getElementById('newUserActive').value === 'true'
+      };
+      if (!body.name || !body.email || !body.password){
+        status.textContent = 'Name, email and password are required.';
+        return;
+      }
+      await apiJson('/api/admin/users', 'POST', body);
+      status.textContent = 'User created.';
+      await loadUsers();
+    }catch(e){
+      status.textContent = String(e.message || e);
+    }
+  });
+
+  document.getElementById('saveUserBtn')?.addEventListener('click', async () => {
+    const status = document.getElementById('editUserStatus');
+    status.textContent = '';
+    try{
+      const body = {
+        user_id: parseInt(document.getElementById('editUserId').value, 10),
+        role: document.getElementById('editUserRole').value,
+        allowed_prefix: (document.getElementById('editUserPrefix').value || '').trim() || null,
+        is_active: document.getElementById('editUserActive').value === 'true'
+      };
+      await apiJson('/api/admin/users/update', 'POST', body);
+      status.textContent = 'Saved.';
+      await loadUsers();
+    }catch(e){
+      status.textContent = String(e.message || e);
+    }
+  });
+}catch(e){ console.error(e); }
 
 
 

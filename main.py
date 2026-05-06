@@ -32,6 +32,12 @@ app.config.from_object(Config)
 app.config['MAX_CONTENT_LENGTH'] = getattr(Config, "MAX_CONTENT_LENGTH", None)
 mail = Mail(app)
 
+# Ensure DB schema is up to date (adds admin/permissions columns)
+try:
+    _service.ensure_db_schema()
+except Exception as e:
+    print("DB schema ensure failed:", e)
+
 
 # Generate or load secret key
 def generate_secret_key():
@@ -140,12 +146,66 @@ class GetUser(Resource):
         user = _service.get_current_user()
         return jsonify(user)
 
+
+class AdminUsers(Resource):
+    def get(self):
+        me = _service.get_current_user()
+        _service.require_admin(me)
+        with _service.get_db() as db:
+            users = db.query(_model.User).all()
+            return jsonify([u.to_dict_user() for u in users])
+
+    def post(self):
+        me = _service.get_current_user()
+        _service.require_admin(me)
+        payload = request.get_json(force=True) or {}
+        user_in = _sechma.AdminCreateUser(**payload)
+        with _service.get_db() as db:
+            existing = _service.get_user_by_email(user_in.email, db)
+            if existing:
+                abort(400, description="Email already exists")
+            user_obj = _model.User(
+                email=user_in.email,
+                name=user_in.name,
+                role=user_in.role,
+                allowed_prefix=user_in.allowed_prefix,
+                is_active=user_in.is_active,
+            )
+            user_obj.set_password(user_in.password)
+            db.add(user_obj)
+            db.commit()
+            db.refresh(user_obj)
+            return jsonify(user_obj.to_dict_user())
+
+
+class AdminUpdateUser(Resource):
+    def post(self):
+        me = _service.get_current_user()
+        _service.require_admin(me)
+        payload = request.get_json(force=True) or {}
+        update = _sechma.AdminUpdateUserAccess(**payload)
+        with _service.get_db() as db:
+            user = db.query(_model.User).filter(_model.User.id == update.user_id).first()
+            if not user:
+                abort(404, description="User not found")
+            if update.role is not None:
+                user.role = update.role
+            if update.allowed_prefix is not None:
+                user.allowed_prefix = update.allowed_prefix
+            if update.is_active is not None:
+                user.is_active = update.is_active
+            db.commit()
+            db.refresh(user)
+            return jsonify(user.to_dict_user())
+
 class UploadMultipleFiles(Resource):
     # @api.expect(folder_name)
     def post(self):
         try:
             uploaded_files = request.files.getlist('filefield')
             folder_name = request.form.get('folder_name', '').strip()
+            me = _service.get_current_user()
+            _service.enforce_prefix_access(me, folder_name or "")
             
             # Enhanced processing for large batches
             return self._process_large_batch(uploaded_files, folder_name)
@@ -273,6 +333,8 @@ class UploadFiles(Resource):
             # print(f"File to be : {request.folder_name}")
             file = request.files['file']
             folder_name = request.form.get('folder_name', '').strip()
+            me = _service.get_current_user()
+            _service.enforce_prefix_access(me, folder_name or "")
 
             # checking if the folder exists 
 
@@ -381,6 +443,9 @@ class CreateB2BucketFolder(Resource):
             folder_name = data.get('folder_name')
             create_folder =  data.get('parent_folder')
             placeholder_file = ''
+            me = _service.get_current_user()
+            target_prefix = (create_folder or "") + (folder_name or "")
+            _service.enforce_prefix_access(me, target_prefix)
 
             if not folder_name:
                 return {"message": "folder_name is required"}
@@ -465,6 +530,8 @@ class GETALLFILES(Resource):
             data = request.json
             print(data)
             folder_name = data.get('folder_name','').strip()
+            me = _service.get_current_user()
+            _service.enforce_prefix_access(me, folder_name or "")
             limit = int(data.get('limit', 200))
             start_file_name = (data.get('start_file_name') or '').strip() or None
             # print(f"FOLDER: {folder_name}")
@@ -545,6 +612,8 @@ class DeleteFiles(Resource):
             failed = []
             for p in paths:
                 try:
+                    me = _service.get_current_user()
+                    _service.enforce_prefix_access(me, p or "")
                     info = bucket.get_file_info_by_name(file_name=p)
                     bucket.delete_file_version(file_id=info["fileId"], file_name=p)
                     deleted.append(p)
@@ -571,6 +640,9 @@ class RenameFile(Resource):
 
             old_info = bucket.get_file_info_by_name(file_name=old_path)
             file_id = old_info["fileId"]
+            me = _service.get_current_user()
+            _service.enforce_prefix_access(me, old_path)
+            _service.enforce_prefix_access(me, new_path)
             # Copy to new name then delete old
             bucket.copy_file(file_id=file_id, new_file_name=new_path)
             bucket.delete_file_version(file_id=file_id, file_name=old_path)
@@ -681,6 +753,8 @@ api.add_resource(GETALLFILES,'/list_all_files')
 api.add_resource(CreateUser, '/api/signup')
 api.add_resource(GenerateToken, '/api/token')
 api.add_resource(GetUser, '/api/user/me')
+api.add_resource(AdminUsers, '/api/admin/users')
+api.add_resource(AdminUpdateUser, '/api/admin/users/update')
 api.add_resource(UploadFiles,'/upload')
 api.add_resource(UploadMultipleFiles,'/upload_multiple')
 api.add_resource(FORGOTPASSWORD, '/forgot_password')

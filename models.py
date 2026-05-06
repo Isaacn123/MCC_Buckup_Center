@@ -13,6 +13,9 @@ class User(_database.Base):
     email = _sql.Column(_sql.String,unique=True,index=True)
     name = _sql.Column(_sql.String)
     hashed_password = _sql.Column(_sql.String)
+    role = _sql.Column(_sql.String, default="user")  # "admin" | "user"
+    allowed_prefix = _sql.Column(_sql.String, nullable=True)  # e.g. "Anointing Services/"
+    is_active = _sql.Column(_sql.Boolean, default=True)
     date_created = _sql.Column(_sql.DateTime,default=_dt.utcnow)
     uploads = _orm.relationship("Upload",back_populates="owner")
 
@@ -29,6 +32,9 @@ class User(_database.Base):
             "name":self.name,
             "email":self.email,
             "hashed_password":self.hashed_password,
+            "role": self.role,
+            "allowed_prefix": self.allowed_prefix,
+            "is_active": self.is_active,
             "date_created":self.date_created.isoformat() if self.date_created else None,
         }
     
