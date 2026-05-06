@@ -14,6 +14,9 @@ from b2sdk.v1 import B2Api
 JWT_SECRET = ""
 SessionLocal = _database.SessionLocal
 
+# Main admin account (bootstrap + enforced on each app start if row exists)
+PRIMARY_ADMIN_EMAIL = "nsambai72@gmail.com"
+
 def _create_database():
     return _database.Base.metadata.create_all(bind=_database.engine)
 
@@ -41,6 +44,34 @@ def ensure_db_schema():
                 conn.execute(_sql.text(stmt))
             if alters:
                 conn.commit()
+
+            # Bootstrap admins: primary email is always admin when that user exists.
+            try:
+                conn.execute(
+                    _sql.text(
+                        "UPDATE users SET role = 'admin', is_active = 1 "
+                        "WHERE LOWER(email) = LOWER(:e)"
+                    ),
+                    {"e": PRIMARY_ADMIN_EMAIL},
+                )
+                conn.commit()
+            except Exception:
+                pass
+
+            try:
+                admin_count = conn.execute(
+                    _sql.text("SELECT COUNT(1) FROM users WHERE role = 'admin'")
+                ).fetchone()[0]
+                if not admin_count:
+                    conn.execute(
+                        _sql.text(
+                            "UPDATE users SET role = 'admin', is_active = 1 "
+                            "WHERE id = (SELECT id FROM users ORDER BY date_created ASC LIMIT 1)"
+                        )
+                    )
+                    conn.commit()
+            except Exception:
+                pass
         except Exception:
             # If PRAGMA/ALTER fails (non-sqlite), skip quietly
             pass
