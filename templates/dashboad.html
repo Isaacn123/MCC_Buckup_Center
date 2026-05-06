@@ -1017,6 +1017,18 @@ function _renderListError(containerEl, message){
   containerEl.appendChild(alert);
 }
 
+function fetchJsonWithTimeout(url, options, timeoutMs = 25000){
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  const opts = Object.assign({}, options || {}, { signal: controller.signal });
+  return fetch(url, opts).then((response) => {
+    if (response.status === 200) return response.json();
+    return response.text().then((t) => {
+      throw new Error(`Failed to fetch data (${response.status}): ${t || response.statusText}`);
+    });
+  }).finally(() => clearTimeout(id));
+}
+
 function fetchsubFolders(folderName, maxlength, append = false, startFileName = null) {
   const foldercontainer = document.getElementById("tabDashboardContent");
   const fileList_Container = document.getElementById('fileListContainer');
@@ -1030,20 +1042,11 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
     foldercontainer.style.display = 'none';
   }catch(e){}
 
-  fetch('/list_all_files', {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName })
-  })
-  .then((response) => {
-      if (response.status === 200) return response.json();
-      return response.text().then((t) => {
-        throw new Error(`Failed to fetch data (${response.status}): ${t || response.statusText}`);
-      });
-  })
-  .then((data) => {
+  fetchJsonWithTimeout('/list_all_files', {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName })
+  }, 25000).then((data) => {
       if(spinner){ spinner.classList.add('d-none'); }
       const normalized = _normalizeFilesResponse(data);
       if (!append){
@@ -1113,8 +1116,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
           foldercontainer.style.display = 'block';
         }
        })
-  })
-  .catch((error) => {
+  }).catch((error) => {
       console.error("Error fetching file list:", error);
       if(spinner){ spinner.classList.add('d-none'); }
       // Show error in UI
@@ -1140,20 +1142,11 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
       const spinner = document.getElementById('loadingSpinner');
       if(spinner){ spinner.classList.remove('d-none'); }
     
-      fetch('/list_all_files',{
+      fetchJsonWithTimeout('/list_all_files', {
         method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
+        headers:{ "Content-Type":"application/json" },
         body:JSON.stringify({folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName})
-      })
-      .then((response) =>{
-        if (response.status == 200) return response.json();
-        return response.text().then((t) => {
-          throw new Error(`Failed to fetch data (${response.status}): ${t || response.statusText}`);
-        });
-      })
-      .then((data) => {
+      }, 25000).then((data) => {
        if(spinner){ spinner.classList.add('d-none'); }
     
         console.log(data);
@@ -1237,8 +1230,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
         }
        })
     
-      })
-      .catch((error) => {
+      }).catch((error) => {
         console.error("Error fetching file list:", error);
         if(spinner){ spinner.classList.add('d-none'); }
         const fileListContainer = document.getElementById('fileListContainer');
