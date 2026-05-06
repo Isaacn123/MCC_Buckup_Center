@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 import datetime as _dt
 
 class _BaseUser(BaseModel):
@@ -14,9 +15,9 @@ class UserCreate(_BaseUser):
 class User(_BaseUser):
     id:int
     date_created:_dt.datetime
-    role: str | None = None
-    allowed_prefix: str | None = None
-    is_active: bool | None = None
+    role: Optional[str] = None
+    allowed_prefix: Optional[str] = None
+    is_active: Optional[bool] = None
 
     class Config:
         from_attributes=True
@@ -27,15 +28,15 @@ class AdminCreateUser(BaseModel):
     name: str
     password: str
     role: str = "user"
-    allowed_prefix: str | None = None
+    allowed_prefix: Optional[str] = None
     is_active: bool = True
 
 
 class AdminUpdateUserAccess(BaseModel):
     user_id: int
-    role: str | None = None
-    allowed_prefix: str | None = None
-    is_active: bool | None = None
+    role: Optional[str] = None
+    allowed_prefix: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class _BaseUploads(BaseModel):
     name:str
