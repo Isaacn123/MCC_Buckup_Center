@@ -335,7 +335,8 @@ class GETALLFOLDERSANDFILES(Resource):
                        "url":path_url_name,
                        "content_type":file_version.content_type,
                        "date": file_version.upload_timestamp,
-                       "folder_name":folder_name
+                       "folder_name":folder_name,
+                       "size": getattr(file_version, "size", None)
                   })
               
             #   if 'is_folder' in file_version and file_version['is_folder']:
@@ -510,7 +511,9 @@ class GETALLFILES(Resource):
                         "url":path_url_name,
                         "date": file_version.upload_timestamp,
                         "content_type":file_version.content_type,
-                        "folder_name":folder_name
+                        "folder_name":folder_name,
+                        "path": file_version.file_name,
+                        "size": getattr(file_version, "size", None)
 
                     })
 
@@ -518,6 +521,58 @@ class GETALLFILES(Resource):
 
         except Exception as e:
             return jsonify({"error": str(e)})
+
+
+class DeleteFiles(Resource):
+    def post(self):
+        """
+        Delete one or more files by full B2 path (file_name).
+        Body: { "paths": ["a/b/c.mp4", ...] }
+        """
+        try:
+            data = request.get_json(force=True) or {}
+            paths = data.get("paths") or []
+            if isinstance(paths, str):
+                paths = [paths]
+            if not isinstance(paths, list) or not paths:
+                return jsonify({"error": "paths is required"}), 400
+
+            deleted = []
+            failed = []
+            for p in paths:
+                try:
+                    info = bucket.get_file_info_by_name(file_name=p)
+                    bucket.delete_file_version(file_id=info["fileId"], file_name=p)
+                    deleted.append(p)
+                except Exception as e:
+                    failed.append({"path": p, "error": str(e)})
+
+            return jsonify({"deleted": deleted, "failed": failed})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+
+class RenameFile(Resource):
+    def post(self):
+        """
+        B2 has no true rename; we copy then delete.
+        Body: { "old_path": "...", "new_path": "..." }
+        """
+        try:
+            data = request.get_json(force=True) or {}
+            old_path = (data.get("old_path") or "").strip()
+            new_path = (data.get("new_path") or "").strip()
+            if not old_path or not new_path:
+                return jsonify({"error": "old_path and new_path are required"}), 400
+
+            old_info = bucket.get_file_info_by_name(file_name=old_path)
+            file_id = old_info["fileId"]
+            # Copy to new name then delete old
+            bucket.copy_file(file_id=file_id, new_file_name=new_path)
+            bucket.delete_file_version(file_id=file_id, file_name=old_path)
+            return jsonify({"message": "renamed", "old_path": old_path, "new_path": new_path})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
 # @app.route('/forgotpassword', method=["POST"])
 # def forgotpassword():
@@ -628,6 +683,8 @@ api.add_resource(FORGOTPASSWORD, '/forgot_password')
 
 # Changing the Fetch method:
 api.add_resource(GETALLFOLDERSANDFILES, '/list_folder_and_files')
+api.add_resource(DeleteFiles, '/api/files/delete')
+api.add_resource(RenameFile, '/api/files/rename')
 
 # api.add_resource(MainPage,'/login')
 

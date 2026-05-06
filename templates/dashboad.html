@@ -262,6 +262,49 @@
   border-radius: 999px;
 }
 
+/* Breadcrumb */
+.breadcrumb-wrap{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+.crumb{
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(16,24,40,.10);
+  background: rgba(255,255,255,.65);
+}
+.crumb:hover{
+  border-color: rgba(59,130,246,.35);
+}
+.crumb-sep{
+  opacity: .55;
+}
+
+/* Upload tray */
+.upload-tray{
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px dashed rgba(16,24,40,.18);
+  background: rgba(255,255,255,.6);
+}
+.drop-zone{
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(59,130,246,.06);
+  border: 1px dashed rgba(59,130,246,.30);
+  text-align: center;
+}
+.drop-zone.dragover{
+  background: rgba(59,130,246,.12);
+  border-color: rgba(59,130,246,.55);
+}
+
     </style>
 </head>
 <body class="page-bg">
@@ -334,12 +377,34 @@
                           <span>Current</span>
                           <strong><span id="currentFolderName"></span></strong>
                         </span>
+                        <div class="breadcrumb-wrap" id="breadcrumb"></div>
                         <button type="button" id="addFolderBtn" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                           <i class="fa fa-plus" aria-hidden="true"></i> New Folder
                         </button>
                       </div>
                       <div class="drive-search">
                         <input id="searchbar" class="form-control form-control-sm" type="search" placeholder="Search folders/files..." />
+                      </div>
+                    </div>
+
+                    <div class="upload-tray" id="uploadTray">
+                      <div class="row g-2 align-items-center">
+                        <div class="col-12 col-md-7">
+                          <div class="drop-zone" id="dropZone">
+                            <div class="fw-semibold">Drop files here to upload</div>
+                            <div class="small opacity-75">Uploads to the current folder</div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                          <div class="d-flex gap-2">
+                            <input id="uploadPicker" class="form-control form-control-sm" type="file" multiple />
+                            <button id="uploadBtn" class="btn btn-success btn-sm" type="button">Upload</button>
+                          </div>
+                          <div class="progress mt-2" style="height: 8px;">
+                            <div id="uploadProgress" class="progress-bar" style="width:0%"></div>
+                          </div>
+                          <div id="uploadStatus" class="small mt-1"></div>
+                        </div>
                       </div>
                     </div>
                   
@@ -579,9 +644,10 @@
     
         const deepFolder = getQueryParam('folder');
         if (deepFolder && deepFolder.trim() !== ''){
-          currentFolderName.textContent = deepFolder.endsWith('/') ? deepFolder : (deepFolder + '/');
+          setCurrentFolder(deepFolder);
           fetchsubFolders(deepFolder, 40);
         } else {
+          setCurrentFolder('');
           get_all_folders();
         }
     });
@@ -637,7 +703,7 @@
               fetchallFiles(folder.folder_name,maxlength);
               folderName = `${folder.name}`;
               localStorage.setItem("currentFolderName",folderName);
-              currentFolderName.textContent = `${folder.folder_name}`;
+              setCurrentFolder(`${folder.folder_name}`);
             });
             
       
@@ -929,6 +995,22 @@ function _appendFilesToGrid(gridEl, dataFiles, maxlength){
   initLazyMedia();
 }
 
+function _normalizeFilesResponse(data){
+  if (!data || typeof data !== 'object') return { files: [], error: 'Empty response' };
+  if (Array.isArray(data.files)) return { files: data.files, error: null };
+  // Some error responses may return {error: "..."} or {message: "..."}
+  const err = data.error || data.message || 'Invalid response (missing files)';
+  return { files: [], error: err };
+}
+
+function _renderListError(containerEl, message){
+  if (!containerEl) return;
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-warning my-2';
+  alert.textContent = message || 'Failed to load files.';
+  containerEl.appendChild(alert);
+}
+
 function fetchsubFolders(folderName, maxlength, append = false, startFileName = null) {
   const foldercontainer = document.getElementById("tabDashboardContent");
   const fileList_Container = document.getElementById('fileListContainer');
@@ -953,6 +1035,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
   })
   .then((data) => {
       if(spinner){ spinner.classList.add('d-none'); }
+      const normalized = _normalizeFilesResponse(data);
       if (!append){
         filelists = document.createElement('div');
         filelists.className = 'row w-100';
@@ -968,7 +1051,13 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
         }
       }
 
-      if (data.files.length > 0) {
+      if (normalized.error){
+        pagingState.loading = false;
+        pagingState.hasMore = false;
+        if (!append){
+          _renderListError(fileList_Container, normalized.error);
+        }
+      } else if (normalized.files.length > 0) {
           // set paging state for this folder
           pagingState.folder = folderName;
           pagingState.mode = 'fetchsubFolders';
@@ -977,7 +1066,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
           pagingState.hasMore = !!data.has_more;
           pagingState.loading = false;
 
-          _appendFilesToGrid(filelists, data.files, maxlength);
+          _appendFilesToGrid(filelists, normalized.files, maxlength);
 
           // Append filelists to fileListContainer
          // fileList_Container.appendChild(filelists);
@@ -1044,9 +1133,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
        if(spinner){ spinner.classList.add('d-none'); }
     
         console.log(data);
-        var files_ = []
-         
-          files_ = [data.files];
+        const normalized = _normalizeFilesResponse(data);
     
         const foldercontainer = document.getElementById("tabDashboardContent");
         const fileListContainer = document.getElementById('fileListContainer');
@@ -1067,7 +1154,13 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
           }
         }
     
-        if(data.files.length > 0){
+        if (normalized.error){
+          pagingState.loading = false;
+          pagingState.hasMore = false;
+          if (!append){
+            _renderListError(fileListContainer, normalized.error);
+          }
+        } else if(normalized.files.length > 0){
           // update paging state
           pagingState.folder = folderName;
           pagingState.mode = 'fetchallFiles';
@@ -1076,7 +1169,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
           pagingState.hasMore = !!data.has_more;
           pagingState.loading = false;
 
-          _appendFilesToGrid(filelist, data.files, maxlength);
+          _appendFilesToGrid(filelist, normalized.files, maxlength);
         } else {
           
          //fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
@@ -1239,6 +1332,138 @@ try{
         const match = !q || name.includes(q);
         card.style.display = match ? '' : 'none';
       });
+    });
+  }
+}catch(e){ console.error(e); }
+
+// Breadcrumb + current folder state
+function normalizeFolderPath(path){
+  if (!path) return "";
+  let p = String(path);
+  // if user passed bucket prefix fragments, keep as-is but normalize slashes
+  p = p.replace(/\\/g, '/');
+  // ensure trailing slash means "folder"
+  if (p !== "" && !p.endsWith('/')) p += '/';
+  return p;
+}
+
+function setCurrentFolder(path){
+  const p = normalizeFolderPath(path);
+  try { currentFolderName.textContent = p; } catch(e) {}
+  try { localStorage.setItem('currentFolderName', p); } catch(e) {}
+  renderBreadcrumb(p);
+}
+
+function getCurrentFolder(){
+  const fromDom = (document.getElementById('currentFolderName')?.textContent || '').trim();
+  const fromStorage = (localStorage.getItem('currentFolderName') || '').trim();
+  return normalizeFolderPath(fromDom || fromStorage || "");
+}
+
+function renderBreadcrumb(folderPath){
+  const wrap = document.getElementById('breadcrumb');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const home = document.createElement('span');
+  home.className = 'crumb';
+  home.textContent = 'Home';
+  home.addEventListener('click', () => {
+    folderHistory = [];
+    setCurrentFolder('');
+    get_all_folders();
+  });
+  wrap.appendChild(home);
+
+  const p = (folderPath || '').replace(/\\/g,'/').replace(/^\/+/,'');
+  if (!p) return;
+  const parts = p.split('/').filter(Boolean);
+  let accum = '';
+  parts.forEach((part, idx) => {
+    const sep = document.createElement('span');
+    sep.className = 'crumb-sep';
+    sep.textContent = '›';
+    wrap.appendChild(sep);
+
+    accum += part + '/';
+    const c = document.createElement('span');
+    c.className = 'crumb';
+    c.textContent = part;
+    c.title = accum;
+    c.addEventListener('click', () => {
+      // navigate to this folder level
+      setCurrentFolder(accum);
+      fetchsubFolders(accum, 40, false, null);
+    });
+    wrap.appendChild(c);
+  });
+}
+
+// Upload from dashboard (drag/drop + progress)
+function uploadFilesToCurrentFolder(files){
+  const statusEl = document.getElementById('uploadStatus');
+  const progressEl = document.getElementById('uploadProgress');
+  const btn = document.getElementById('uploadBtn');
+  if (!files || !files.length) return;
+
+  const folder = getCurrentFolder(); // includes trailing /
+  const form = new FormData();
+  // use existing backend endpoint for multiple
+  for (const f of files){
+    form.append('filefield', f);
+  }
+  form.append('folder_name', folder);
+
+  try { btn && (btn.disabled = true); } catch(e){}
+  if (statusEl) statusEl.textContent = `Uploading ${files.length} file(s)...`;
+  if (progressEl){ progressEl.style.width = '0%'; progressEl.classList.remove('bg-danger'); progressEl.classList.add('bg-success'); }
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', `${window.location.origin}/upload_multiple`, true);
+  xhr.upload.onprogress = function(evt){
+    if (!evt.lengthComputable) return;
+    const pct = Math.round((evt.loaded / evt.total) * 100);
+    if (progressEl) progressEl.style.width = `${pct}%`;
+    if (statusEl) statusEl.textContent = `Uploading... ${pct}%`;
+  };
+  xhr.onload = function(){
+    try { btn && (btn.disabled = false); } catch(e){}
+    if (xhr.status === 200){
+      if (statusEl) statusEl.textContent = 'Upload complete.';
+      // refresh current view
+      const cur = getCurrentFolder();
+      if (cur){
+        fetchsubFolders(cur, 40, false, null);
+      } else {
+        get_all_folders();
+      }
+    } else {
+      if (progressEl){ progressEl.classList.remove('bg-success'); progressEl.classList.add('bg-danger'); }
+      if (statusEl) statusEl.textContent = `Upload failed (${xhr.status}).`;
+    }
+  };
+  xhr.onerror = function(){
+    try { btn && (btn.disabled = false); } catch(e){}
+    if (progressEl){ progressEl.classList.remove('bg-success'); progressEl.classList.add('bg-danger'); }
+    if (statusEl) statusEl.textContent = 'Upload failed (network error).';
+  };
+  xhr.send(form);
+}
+
+try{
+  const picker = document.getElementById('uploadPicker');
+  const btn = document.getElementById('uploadBtn');
+  const drop = document.getElementById('dropZone');
+  if (btn && picker){
+    btn.addEventListener('click', () => uploadFilesToCurrentFolder(Array.from(picker.files || [])));
+  }
+  if (drop){
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('dragover'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      drop.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer?.files || []);
+      uploadFilesToCurrentFolder(files);
     });
   }
 }catch(e){ console.error(e); }
