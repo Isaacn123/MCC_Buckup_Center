@@ -474,13 +474,9 @@ class GETALLFILES(Resource):
             folder_prefix = folder_name if folder_name.endswith('/') else (folder_name + '/')
             download_auth = bucket.get_download_authorization(file_name_prefix=folder_prefix, valid_duration_in_seconds=3600)
 
-            # Try to paginate if b2sdk supports start_file_name; otherwise list and emulate paging.
-            supports_start = True
-            try:
-                file_versions = bucket.ls(folder_to_list=folder_name, latest_only=True, start_file_name=start_file_name)
-            except TypeError:
-                supports_start = False
-                file_versions = bucket.ls(folder_to_list=folder_name, latest_only=True)
+            # List and emulate paging client-side.
+            # Some b2sdk versions don't support `start_file_name` on Bucket.ls().
+            file_versions = bucket.ls(folder_to_list=folder_name, latest_only=True)
 
             # files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
             file_results = []
@@ -488,7 +484,7 @@ class GETALLFILES(Resource):
             next_start = None
             count = 0
             has_more = False
-            skipping = (not supports_start) and bool(start_file_name)
+            skipping = bool(start_file_name)
             for file_version,folder_name in file_versions:
                 # If SDK can't start from a filename, skip until we pass it
                 if skipping:
