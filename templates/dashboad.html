@@ -1352,6 +1352,7 @@ function setCurrentFolder(path){
   try { currentFolderName.textContent = p; } catch(e) {}
   try { localStorage.setItem('currentFolderName', p); } catch(e) {}
   renderBreadcrumb(p);
+  updateUploadTrayVisibility();
 }
 
 function getCurrentFolder(){
@@ -1398,6 +1399,19 @@ function renderBreadcrumb(folderPath){
   });
 }
 
+function updateUploadTrayVisibility(){
+  const tray = document.getElementById('uploadTray');
+  const statusEl = document.getElementById('uploadStatus');
+  if (!tray) return;
+  const folder = getCurrentFolder();
+  // Only allow uploads when user is inside a folder (keeps content organized)
+  const inFolder = !!folder;
+  tray.style.display = inFolder ? '' : 'none';
+  if (!inFolder && statusEl){
+    statusEl.textContent = '';
+  }
+}
+
 // Upload from dashboard (drag/drop + progress)
 function uploadFilesToCurrentFolder(files){
   const statusEl = document.getElementById('uploadStatus');
@@ -1406,6 +1420,10 @@ function uploadFilesToCurrentFolder(files){
   if (!files || !files.length) return;
 
   const folder = getCurrentFolder(); // includes trailing /
+  if (!folder){
+    alert('Open a folder first, then upload into it.');
+    return;
+  }
   const form = new FormData();
   // use existing backend endpoint for multiple
   for (const f of files){
@@ -1467,6 +1485,9 @@ try{
     });
   }
 }catch(e){ console.error(e); }
+
+// initial state
+try{ updateUploadTrayVisibility(); }catch(e){}
 
 
 
