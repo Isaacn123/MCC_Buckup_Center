@@ -1007,7 +1007,13 @@ function _renderListError(containerEl, message){
   if (!containerEl) return;
   const alert = document.createElement('div');
   alert.className = 'alert alert-warning my-2';
-  alert.textContent = message || 'Failed to load files.';
+  const msg = message || 'Failed to load files.';
+  alert.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+      <div>${msg}</div>
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="retryListBtn">Retry</button>
+    </div>
+  `;
   containerEl.appendChild(alert);
 }
 
@@ -1027,11 +1033,10 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
       body: JSON.stringify({ folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName })
   })
   .then((response) => {
-      if (response.status === 200) {
-          return response.json();
-      } else {
-          throw new Error('Failed to fetch data');
-      }
+      if (response.status === 200) return response.json();
+      return response.text().then((t) => {
+        throw new Error(`Failed to fetch data (${response.status}): ${t || response.statusText}`);
+      });
   })
   .then((data) => {
       if(spinner){ spinner.classList.add('d-none'); }
@@ -1107,7 +1112,19 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
   .catch((error) => {
       console.error("Error fetching file list:", error);
       if(spinner){ spinner.classList.add('d-none'); }
-      // Handle error, e.g., display error message
+      // Show error in UI
+      const fileList_Container = document.getElementById('fileListContainer');
+      if (fileList_Container){
+        if (!append){
+          fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+        }
+        _renderListError(fileList_Container, String(error?.message || error));
+        const retry = fileList_Container.querySelector('#retryListBtn');
+        if (retry){
+          retry.addEventListener('click', () => fetchsubFolders(folderName, maxlength, false, null), { once: true });
+        }
+        fileList_Container.style.display = 'block';
+      }
   });
 }
 
@@ -1125,9 +1142,10 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
         body:JSON.stringify({folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName})
       })
       .then((response) =>{
-        if (response.status == 200){
-          return response.json();
-        }
+        if (response.status == 200) return response.json();
+        return response.text().then((t) => {
+          throw new Error(`Failed to fetch data (${response.status}): ${t || response.statusText}`);
+        });
       })
       .then((data) => {
        if(spinner){ spinner.classList.add('d-none'); }
@@ -1209,7 +1227,22 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
        })
     
       })
-      .catch((error) => { console.error("Error fetching file list:", error); if(spinner){ spinner.classList.add('d-none'); }});
+      .catch((error) => {
+        console.error("Error fetching file list:", error);
+        if(spinner){ spinner.classList.add('d-none'); }
+        const fileListContainer = document.getElementById('fileListContainer');
+        if (fileListContainer){
+          if (!append){
+            fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+          }
+          _renderListError(fileListContainer, String(error?.message || error));
+          const retry = fileListContainer.querySelector('#retryListBtn');
+          if (retry){
+            retry.addEventListener('click', () => fetchallFiles(folderName, maxlength, false, null), { once: true });
+          }
+          fileListContainer.style.display = 'block';
+        }
+      });
     }
 
    // Change password functionalitry
