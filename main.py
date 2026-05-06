@@ -435,16 +435,26 @@ class GETALLBUCKET2FOLDERS(Resource):
 
             return jsonify({"error:": str(e)})
 
-def get_presigned_url(bucket_name,file_name):
-
-    # download_url = b2_api.get_download_url_for_file_name(file_name=file_name,bucket_name=bucket_name)
-    # download_url = b2_api.get_download_url_for_file_name(bucket_name=bucket_name,file_name=file_name)
-    download_url = bucket.get_download_authorization(file_name_prefix=file_name,valid_duration_in_seconds=3600)
-
+def _build_b2_download_url(bucket_name: str, file_name: str, authorization_token: str) -> str:
     base_url = 'https://f005.backblazeb2.com/file'
-    presigned_url = f"{base_url}/{bucket_name}/{file_name}?Authorization={download_url}"  
-    
-    return presigned_url
+    return f"{base_url}/{bucket_name}/{file_name}?Authorization={authorization_token}"
+
+
+def get_presigned_url(bucket_name, file_name):
+    """
+    Backward-compatible per-file authorization (slower for large folders).
+    Prefer creating one authorization token per folder prefix and reuse it.
+    """
+    download_url = bucket.get_download_authorization(file_name_prefix=file_name, valid_duration_in_seconds=3600)
+    return _build_b2_download_url(bucket_name=bucket_name, file_name=file_name, authorization_token=download_url)
+
+
+def get_presigned_url_with_prefix_auth(bucket_name: str, file_name: str, prefix: str) -> str:
+    """
+    Faster: one auth token valid for a whole folder/prefix.
+    """
+    download_url = bucket.get_download_authorization(file_name_prefix=prefix, valid_duration_in_seconds=3600)
+    return _build_b2_download_url(bucket_name=bucket_name, file_name=file_name, authorization_token=download_url)
 
 class GETALLFILES(Resource):
     @api.expect(folder_name)
@@ -454,16 +464,34 @@ class GETALLFILES(Resource):
             data = request.json
             print(data)
             folder_name = data.get('folder_name','').strip()
+            limit = int(data.get('limit', 200))
+            start_file_name = (data.get('start_file_name') or '').strip() or None
             # print(f"FOLDER: {folder_name}")
             if not folder_name:
                 return jsonify({"error": "Folder name is required"})
-            file_versions = bucket.ls(folder_to_list=folder_name,latest_only=True)
+            # Reuse a single download authorization for the whole folder prefix
+            folder_prefix = folder_name if folder_name.endswith('/') else (folder_name + '/')
+            download_auth = bucket.get_download_authorization(file_name_prefix=folder_prefix, valid_duration_in_seconds=3600)
+
+            # Try to paginate if b2sdk supports start_file_name; otherwise just list and cut off.
+            try:
+                file_versions = bucket.ls(folder_to_list=folder_name, latest_only=True, start_file_name=start_file_name)
+            except TypeError:
+                file_versions = bucket.ls(folder_to_list=folder_name, latest_only=True)
 
             # files = [file_version.file_name for file_version, _ in file_versions if not file_version.file_name.endswith('/')]
             file_results = []
             common_prefix = get_common_prefix(folder_name)
+            next_start = None
+            count = 0
+            has_more = False
             for file_version,folder_name in file_versions:
-                path_url_name = get_presigned_url(bucket_name,file_version.file_name)
+                next_start = file_version.file_name
+                count += 1
+                if count > limit:
+                    has_more = True
+                    break
+                path_url_name = _build_b2_download_url(bucket_name=bucket_name, file_name=file_version.file_name, authorization_token=download_auth)
 
                 if folder_name is not None and folder_name.endswith('/'):
                     
@@ -486,7 +514,7 @@ class GETALLFILES(Resource):
 
                     })
 
-            return jsonify({"files":file_results})
+            return jsonify({"files":file_results, "has_more": has_more, "next_start_file_name": next_start})
 
         except Exception as e:
             return jsonify({"error": str(e)})

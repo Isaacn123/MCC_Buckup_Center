@@ -193,12 +193,45 @@
   border-radius: 10px;
   background: #0b1220;
 }
+.media-thumb{
+  width: 90px;
+  height: 100px;
+  border-radius: 10px;
+  background: rgba(15,23,42,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.media-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.media-thumb .fa{
+  font-size: 28px;
+  opacity: .8;
+}
 .top-droppable.folder .folder-title{
   margin: 8px 0 0;
   line-height: 1.2;
   color: inherit;
   font-weight: 600;
   font-size: 12px;
+  /* prevent long names overflowing cards */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* show max 2 lines */
+}
+
+/* Ensure nested <small> doesn't break truncation */
+.top-droppable.folder .folder-title small{
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 /* Toolbar */
@@ -769,10 +802,137 @@ function removeTrailingSlash(folderName) {
   return folderName.replace(/\/$/, '');
 }
 
-function fetchsubFolders(folderName, maxlength) {
+// Pagination state for folder listings
+const PAGE_SIZE = 50; // change to 20 if you want smaller pages
+let pagingState = {
+  folder: "",
+  mode: "", // 'fetchallFiles' | 'fetchsubFolders'
+  maxlength: 40,
+  nextStart: null,
+  hasMore: false,
+  loading: false
+};
+
+function ensureLoadMoreButton(containerEl){
+  if (!containerEl) return null;
+  let btn = containerEl.querySelector('#loadMoreBtn');
+  if (!btn){
+    const wrap = document.createElement('div');
+    wrap.className = 'd-flex justify-content-center my-3';
+    btn = document.createElement('button');
+    btn.id = 'loadMoreBtn';
+    btn.type = 'button';
+    btn.className = 'btn btn-outline-primary btn-sm';
+    btn.textContent = 'Load more';
+    btn.addEventListener('click', function(){
+      loadMorePage();
+    });
+    wrap.appendChild(btn);
+    containerEl.appendChild(wrap);
+  }
+  return btn;
+}
+
+function updateLoadMoreVisibility(containerEl){
+  const btn = containerEl ? containerEl.querySelector('#loadMoreBtn') : null;
+  if (!btn) return;
+  btn.disabled = !!pagingState.loading;
+  btn.style.display = pagingState.hasMore ? '' : 'none';
+}
+
+function loadMorePage(){
+  if (pagingState.loading) return;
+  if (!pagingState.hasMore) return;
+  if (!pagingState.folder) return;
+  pagingState.loading = true;
+  try{
+    const containerEl = document.getElementById('fileListContainer');
+    if (containerEl) updateLoadMoreVisibility(containerEl);
+  }catch(e){}
+  if (pagingState.mode === 'fetchsubFolders'){
+    fetchsubFolders(pagingState.folder, pagingState.maxlength, true, pagingState.nextStart);
+  } else if (pagingState.mode === 'fetchallFiles'){
+    fetchallFiles(pagingState.folder, pagingState.maxlength, true, pagingState.nextStart);
+  }
+}
+
+function _appendFilesToGrid(gridEl, dataFiles, maxlength){
+  if (!gridEl) return;
+  const frag = document.createDocumentFragment();
+  dataFiles.forEach((file, index) => {
+    if (file.type === "folder") {
+      const folderDiv = document.createElement('div');
+      folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+      folderDiv.dataset.tooltip = '0 file';
+      folderDiv.id = `folder_${Date.now()}_${index}`;
+      const foldername = stringfy(maxlength, file.folder_name || "");
+      folderDiv.innerHTML = `
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <i class="fa fa-check" aria-hidden="true"></i>
+        <p class="folder-title"><small>${foldername}</small></p>
+      `;
+      folderDiv.addEventListener("click", function() {
+        try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
+        // navigate deeper
+        fetchsubFolders(file.folder_name, maxlength, false, null);
+        localStorage.setItem("currentFolderName", file.folder_name);
+        const parent = (currentFolderName.textContent || "") + file.folder_name;
+        currentFolderName.textContent = parent;
+      });
+      frag.appendChild(folderDiv);
+    } else {
+      const fileDiv = document.createElement('div');
+      fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
+      fileDiv.dataset.tooltip = '0 file';
+      fileDiv.id = `file_${Date.now()}_${index}`;
+      const filename = stringfy(maxlength, file.name || "");
+      let url = (file.url || "").replace(/ /g, '+').replace(/,/g, '%2C');
+      if (file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type === "image/webp") {
+        fileDiv.innerHTML = `
+          <div class="media-thumb">
+            <img class="lazy-media" data-src="${url}" alt="Image Thumbnail" loading="lazy" />
+          </div>
+          <i class="fa fa-check" aria-hidden="true"></i>
+          <p class="folder-title"><small>${filename}</small></p>
+        `;
+        fileDiv.addEventListener('click', function(){
+          openPreview(url, 'image', `${filename}`);
+        });
+      } else if(file.content_type === "video/mp4"){
+        fileDiv.innerHTML = `
+          <div class="media-thumb" aria-label="Video">
+            <i class="fa fa-file-video-o" aria-hidden="true"></i>
+          </div>
+          <i class="fa fa-check" aria-hidden="true"></i>
+          <p class="folder-title"><small>${filename}</small></p>
+        `;
+        fileDiv.addEventListener('click', function(){
+          openPreview(url, 'video', `${filename}`);
+        });
+      } else if(file.content_type === "application/pdf") {
+        fileDiv.innerHTML = `
+          <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+          <i class="fa fa-check" aria-hidden="true"></i>
+          <p class="folder-title"><small>${filename}</small></p>
+        `;
+      } else {
+        fileDiv.innerHTML = `
+          <i class="fa fa-file" aria-hidden="true"></i>
+          <i class="fa fa-check" aria-hidden="true"></i>
+          <p class="folder-title"><small>${filename}</small></p>
+        `;
+      }
+      frag.appendChild(fileDiv);
+    }
+  });
+  gridEl.appendChild(frag);
+  initLazyMedia();
+}
+
+function fetchsubFolders(folderName, maxlength, append = false, startFileName = null) {
   const foldercontainer = document.getElementById("tabDashboardContent");
   const fileList_Container = document.getElementById('fileListContainer');
-  const filelists = document.createElement('div');
+  let filelists = null;
   let parent = "";
   const spinner = document.getElementById('loadingSpinner');
   if(spinner){ spinner.classList.remove('d-none'); }
@@ -782,7 +942,7 @@ function fetchsubFolders(folderName, maxlength) {
       headers: {
           "Content-Type": "application/json"
       },
-      body: JSON.stringify({ folder_name: folderName })
+      body: JSON.stringify({ folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName })
   })
   .then((response) => {
       if (response.status === 200) {
@@ -793,91 +953,31 @@ function fetchsubFolders(folderName, maxlength) {
   })
   .then((data) => {
       if(spinner){ spinner.classList.add('d-none'); }
-      filelists.className = 'row w-100';
-      fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+      if (!append){
+        filelists = document.createElement('div');
+        filelists.className = 'row w-100';
+        fileList_Container.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+        fileList_Container.appendChild(filelists);
+        ensureLoadMoreButton(fileList_Container);
+      } else {
+        filelists = fileList_Container.querySelector('.row.w-100');
+        if (!filelists){
+          filelists = document.createElement('div');
+          filelists.className = 'row w-100';
+          fileList_Container.appendChild(filelists);
+        }
+      }
 
       if (data.files.length > 0) {
-          data.files.forEach((file, index) => {
-              if (file.type === "folder") {
-                  const folderDivs = document.createElement('div');
-                  folderDivs.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-                  folderDivs.dataset.tooltip = '0 file';
-                  folderDivs.id = `folder${index + 1}`;
+          // set paging state for this folder
+          pagingState.folder = folderName;
+          pagingState.mode = 'fetchsubFolders';
+          pagingState.maxlength = maxlength;
+          pagingState.nextStart = data.next_start_file_name || null;
+          pagingState.hasMore = !!data.has_more;
+          pagingState.loading = false;
 
-                  const foldername = stringfy(maxlength, file.folder_name); // Assuming stringfy function is defined
-
-                  folderDivs.innerHTML = `
-                      <i class=\"fa fa-folder\" aria-hidden=\"true\"></i>
-                      <i class=\"fa fa-check\" aria-hidden=\"true\"></i>
-                      <p class=\"folder-title\"><small>${foldername}</small></p>
-                  `;
-
-                  // Add click listener to fetch files of this folder
-                  folderDivs.addEventListener("click", function() {
-                      try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
-                      fetchsubFolders(file.folder_name, maxlength);
-                      localStorage.setItem("currentFolderName", file.folder_name);
-                      const parent = currentFolderName.textContent + file.folder_name;
-                      console.log("PARENT-2:::", parent);
-                      currentFolderName.textContent = parent;
-                  });
-                  
-
-                  filelists.appendChild(folderDivs);
-              } else {
-                  const fileDivs = document.createElement('div');
-                  fileDivs.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-                  fileDivs.dataset.tooltip = '0 file';
-                  fileDivs.id = `file${index + 1}`;
-
-                  const filename = stringfy(maxlength, file.name); // Assuming stringfy function is defined
-                  const formatedURL = formatUrl(file.url); // Assuming formatUrl function is defined
-                  let url = file.url.replace(/ /g, '+').replace(/,/g, '%2C');
-
-                  if (file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type  === "image/webp") {
-                  
-                      
-                      fileDivs.innerHTML = `
-                          <img src="${url}" alt="Image Thumbnail" width="90">
-                          <i class="fa fa-check" aria-hidden="true"></i>
-                          <p class="folder-title"><small>${filename}</small></p>
-                      `;
-                      fileDivs.addEventListener('click', function(){
-                        openPreview(url, 'image', `${filename}`);
-                      });
-                  } else if(file.content_type === "video/mp4"){
-                    // <source src="${file.url}" type="video/mp4">
-                    fileDivs.innerHTML = `
-                 <video id="videothumb"width="90" height="100"  muted loop>
-                       Your browser does not support the video tag.
-                   </video>
-                    <i class="fa fa-check" aria-hidden="true"></i>
-                    <p class="folder-title"><small>${filename}</small></p>
-                    `;
-     
-                    // const videoid = fileDiv.querySelector('#videothumb');
-                    const videoid = fileDivs.querySelector('#videothumb');
-                    createVideoThumb(videoid,url);
-                    fileDivs.addEventListener('click', function(){
-                      openPreview(url, 'video', `${filename}`);
-                    });
-                    
-                   }  else if(file.content_type === "application/pdf") {
-                    fileDivs.innerHTML = `
-                      <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                      <i class="fa fa-check" aria-hidden="true"></i>
-                      <p class="folder-title"><small>${filename}</small></p>
-                    `;
-                  } else {
-                      fileDivs.innerHTML = `
-                          <i class="fa fa-file" aria-hidden="true"></i>
-                          <i class="fa fa-check" aria-hidden="true"></i>
-                          <p class="folder-title"><small>${filename}</small></p>
-                      `;
-                  }
-                  filelists.appendChild(fileDivs);
-              }
-          });
+          _appendFilesToGrid(filelists, data.files, maxlength);
 
           // Append filelists to fileListContainer
          // fileList_Container.appendChild(filelists);
@@ -889,19 +989,20 @@ function fetchsubFolders(folderName, maxlength) {
         //  filelist.appendChild(noFilesItem);
         const folder = `${currentFolderName.textContent}`;
         let folderName = removeTrailingSlash(folder);
-        fetchsubFolders(folderName,maxlength)
+        fetchsubFolders(folderName, maxlength, false, null)
       }
 
-      fileList_Container.appendChild(filelists);
+      updateLoadMoreVisibility(fileList_Container);
       fileList_Container.style.display = 'block'
       foldercontainer.style.display = 'none';
+      initLazyMedia();
 
       document.getElementById('backButton').addEventListener('click', function(){
         const prev = folderHistory.pop();
         if (prev !== undefined) {
           if (prev && prev.trim() !== '') {
             currentFolderName.textContent = prev;
-            fetchsubFolders(prev, maxlength);
+            fetchsubFolders(prev, maxlength, false, null);
           } else {
             fileList_Container.innerHTML = '';
             fileList_Container.style.display = 'none';
@@ -922,7 +1023,7 @@ function fetchsubFolders(folderName, maxlength) {
 }
 
   
-    function fetchallFiles(folderName, maxlength){
+    function fetchallFiles(folderName, maxlength, append = false, startFileName = null){
       console.log(`Sending folder name: ${folderName}`);
       const spinner = document.getElementById('loadingSpinner');
       if(spinner){ spinner.classList.remove('d-none'); }
@@ -932,7 +1033,7 @@ function fetchsubFolders(folderName, maxlength) {
         headers:{
           "Content-Type":"application/json"
         },
-        body:JSON.stringify({folder_name: folderName})
+        body:JSON.stringify({folder_name: folderName, limit: PAGE_SIZE, start_file_name: startFileName})
       })
       .then((response) =>{
         if (response.status == 200){
@@ -949,119 +1050,33 @@ function fetchsubFolders(folderName, maxlength) {
     
         const foldercontainer = document.getElementById("tabDashboardContent");
         const fileListContainer = document.getElementById('fileListContainer');
-        const filelist = document.createElement('div')
+        let filelist = null;
         let parent  = "";
-       // filelist.className = 'row list-group w-100';
-        filelist.className = 'row w-100';
-        fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+        if (!append){
+          filelist = document.createElement('div');
+          filelist.className = 'row w-100';
+          fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
+          fileListContainer.appendChild(filelist);
+          ensureLoadMoreButton(fileListContainer);
+        } else {
+          filelist = fileListContainer.querySelector('.row.w-100');
+          if (!filelist){
+            filelist = document.createElement('div');
+            filelist.className = 'row w-100';
+            fileListContainer.appendChild(filelist);
+          }
+        }
     
         if(data.files.length > 0){
-           data.files.forEach((file,index) => {
+          // update paging state
+          pagingState.folder = folderName;
+          pagingState.mode = 'fetchallFiles';
+          pagingState.maxlength = maxlength;
+          pagingState.nextStart = data.next_start_file_name || null;
+          pagingState.hasMore = !!data.has_more;
+          pagingState.loading = false;
 
-
-
-            if(file.type === "folder"){
-
-              const folderDiv = document.createElement('Div');
-              folderDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-              folderDiv.dataset.tooltip = '0 file';
-              folderDiv.id =`folder${index + 1}`;
-            
-              //const folderName = getNameWithoutParent(item.folder_name, 'Local Crusades/');
-
-              const inputString = `${file.folder_name}`;
-              const foldername = stringfy(maxlength,inputString);
-          
-              folderDiv.innerHTML = `
-              <i class="fa fa-folder" aria-hidden="true"></i>
-              <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${foldername}</small></p>
-              `;
-              console.log("PARENT:",`${currentFolderName.textContent}`);
-
-          
-
-            // start the Onlick Function
-             folderDiv.addEventListener("click", function(){
-              try { folderHistory.push(currentFolderName.textContent || ""); } catch(e) {}
-              fetchallFiles(file.folder_name);
-              folderName = `${file.folder_name}`;
-              localStorage.setItem("currentFolderName",`${file.folder_name}`);
-              const sep = currentFolderName.textContent.endsWith('/') || !currentFolderName.textContent ? '' : '/';
-              parent = `${currentFolderName.textContent}${sep}${file.folder_name}`;
-              console.log("PARENT-2:::",parent);
-              currentFolderName.textContent = parent.endsWith('/') ? parent : parent + '/';
-             });
-
-              //end of the Click Function
-        
-  
-              //foldercontainer.appendChild(folderDiv);
-              filelist.appendChild(folderDiv);
-             
-            }  else {
-              const fileDiv = document.createElement('div');
-              fileDiv.className = 'top-droppable folder tooltiper tooltiper-up mb-4';
-              fileDiv.dataset.tooltip = '0 file';
-              fileDiv.id =`file${index + 1}`;
-              const inputString = `${file.name}`;
-              const filename = stringfy(maxlength,inputString);
-
-              const formatedURL = formatUrl(`${file.url}`)
-              let url = `${file.url}`;
-                  url = url.replace(/ /g, '+');
-                  url = url.replace(/,/g, '%2C');
-
-
-              if(file.content_type === "image/jpeg" || file.content_type === "image/png" || file.content_type === "image/webp"){
-
-                fileDiv.innerHTML = `
-                 <img src="${url}" alt="Image Thumbnail" width="90">
-                <i class="fa fa-check" aria-hidden="true"></i>
-                <p class="folder-title"><small>${filename}</small></p>
-                `;
-                fileDiv.addEventListener('click', function(){
-                  openPreview(url, 'image', `${filename}`);
-                });
-  
-              } else if(file.content_type === "video/mp4"){
-               // <source src="${file.url}" type="video/mp4">
-                fileDiv.innerHTML = `
-            <video id="videothumb"width="90" height="100"  muted loop>
-                  Your browser does not support the video tag.
-              </video>
-               <i class="fa fa-check" aria-hidden="true"></i>
-               <p class="folder-title"><small>${filename}</small></p>
-               `;
-
-               
-               const videoid = fileDiv.querySelector('#videothumb');
-               createVideoThumb(videoid,url);
-               fileDiv.addEventListener('click', function(){
-                 openPreview(url, 'video', `${filename}`);
-               });
-               
-              } else if (file.content_type === "application/pdf") {
-                fileDiv.innerHTML = `
-                  <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                  <p class="folder-title"><small>${filename}</small></p>
-                `;
-              } else{
-  
-                  fileDiv.innerHTML = `
-              <i class="fa fa-file" aria-hidden="true"></i>
-              <i class="fa fa-check" aria-hidden="true"></i>
-              <p class="folder-title"><small>${filename}</small></p>
-              `;
-              }
-              
-
-              filelist.appendChild(fileDiv);
-            }
-         
-
-          });
+          _appendFilesToGrid(filelist, data.files, maxlength);
         } else {
           
          //fetchsubFolders(parent,maxlength,foldercontainer,fileListContainer,filelist)
@@ -1076,9 +1091,11 @@ function fetchsubFolders(folderName, maxlength) {
         console.log("REMOVED:",folderName);
         }
        // if ()
-       fileListContainer.appendChild(filelist);
        fileListContainer.style.display = 'block'
        foldercontainer.style.display = 'none';
+       initLazyMedia();
+       ensureLoadMoreButton(fileListContainer);
+       updateLoadMoreVisibility(fileListContainer);
     
       document.getElementById('backButton').addEventListener('click', function(){
         const prev = folderHistory.pop();
@@ -1177,11 +1194,38 @@ function createVideoThumb(videoEl, url){
   
   videoEl.addEventListener('loadeddata', function(){
     console.log('Video loaded successfully:', url);
-    try { videoEl.currentTime = 0.1; } catch(e) { console.log('Error setting currentTime:', e); }
-    try { videoEl.play(); } catch(e) { console.log('Error playing video:', e); }
+    // Avoid autoplay in grids (perf). Keep function for backward compatibility.
   }, { once: true });
 }
 
+// Lazy-load media thumbnails (images)
+let _lazyObserver = null;
+function initLazyMedia(){
+  const imgs = document.querySelectorAll('img.lazy-media[data-src]');
+  if (!imgs.length) return;
+  if (!_lazyObserver && 'IntersectionObserver' in window){
+    _lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target;
+        const src = img.getAttribute('data-src');
+        if (src){
+          img.src = src;
+          img.removeAttribute('data-src');
+        }
+        _lazyObserver.unobserve(img);
+      });
+    }, { rootMargin: '200px 0px' });
+  }
+  imgs.forEach((img) => {
+    if (_lazyObserver) _lazyObserver.observe(img);
+    else {
+      // fallback: load immediately
+      img.src = img.getAttribute('data-src');
+      img.removeAttribute('data-src');
+    }
+  });
+}
 // Fast client-side search (filters current grid items)
 try{
   const sb = document.getElementById('searchbar');
