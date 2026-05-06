@@ -12,6 +12,11 @@ class Config:
     JWT_SECRET = os.getenv('JWT_SECRET')
     RESET_TOKEN_EXPIRATION = 1  # Token expiration time in hours
 
+    # Upload sizing (Flask will reject bigger requests with 413)
+    # Set env `MAX_UPLOAD_MB` (e.g. 2048 for 2GB).
+    MAX_UPLOAD_MB = int(os.getenv('MAX_UPLOAD_MB') or "2048")
+    MAX_CONTENT_LENGTH = MAX_UPLOAD_MB * 1024 * 1024
+
     # Flask-Mail configuration
     MAIL_SERVER = 'pro.turbo-smtp.com'
     MAIL_PORT = 587

@@ -28,6 +28,8 @@ bucket = b2_api.get_bucket_by_name(bucket_name=bucket_name)
 
 # Initializing my config settings
 app.config.from_object(Config)
+# Enforce max request body size (videos, large files)
+app.config['MAX_CONTENT_LENGTH'] = getattr(Config, "MAX_CONTENT_LENGTH", None)
 mail = Mail(app)
 
 
@@ -270,38 +272,35 @@ class UploadFiles(Resource):
         try:
             # print(f"File to be : {request.folder_name}")
             file = request.files['file']
-            file_Content = file.read()
-            file_stream = io.BytesIO(file_Content)
-          
-           
-
             folder_name = request.form.get('folder_name', '').strip()
 
             # checking if the folder exists 
 
-            if folder_name :
-                file_name = f"{folder_name}{file.filename}"
-          
-
-
-            # print(f"fold: {request.files['folder_name']}")
-            print(f"Folder: {folder_name}")
-            
+            file_name = file.filename
             if folder_name:
-                 file_name = f"{folder_name}{file.filename}"
-                # file_name = folder_name + file.filename
-            # folder_name = request.form.get('folder_name','')
-            # if folder_name:
-            #     folder_name = folder_name.rstrip('/') + '/'
-            
-            # file_path = folder_name + file.filename
+                file_name = f"{folder_name}{file.filename}"
+
+            print(f"Folder: {folder_name}")
             print(f"PATH: {file_name}")
 
-            bucket.upload_bytes(
-                data_bytes=file_stream.getvalue(),
-                # file_name=file.filename
-                file_name=file_name
-            )
+            # Stream upload to avoid loading large videos into RAM
+            # Prefer b2sdk stream upload; fallback to bytes if needed.
+            upload_stream = getattr(bucket, "upload_unbound_stream", None)
+            if callable(upload_stream):
+                # request.content_length is the whole multipart request; file.stream may be spooled to disk.
+                # B2 accepts unbound streams without knowing size ahead of time.
+                bucket.upload_unbound_stream(
+                    file.file,  # werkzeug FileStorage underlying stream
+                    file_name=file_name,
+                    content_type=file.mimetype or None
+                )
+            else:
+                # Fallback (older b2sdk): this may be memory heavy for large files
+                file_content = file.read()
+                bucket.upload_bytes(
+                    data_bytes=file_content,
+                    file_name=file_name
+                )
 
             # return jsonify({"message": f"File {file.filename} uploaded successfully"})
             # logger.info(f"Uploading file {file_name} to bucket {bucket_name}")

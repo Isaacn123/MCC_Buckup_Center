@@ -52,7 +52,7 @@
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="myDropdownMenu"></ul>
                       </div>
                         <label for="formFileLg" class="form-label">Select File</label>
-                        <input class="form-control form-control-lg" id="formFileLg" type="file">
+                        <input class="form-control form-control-lg" id="formFileLg" type="file" name="file" accept="video/*,image/*,application/pdf">
                     </div>
                     <!-- <div class="mb-0"><input class="form-control bg-light" type="password" placeholder="Password"></div> -->
                     <div class="mb-3 d-grid"><button class="btn btn-dark mt-3" type="submit" name="submit">Upload</button></div>
@@ -135,7 +135,8 @@
             //  document.getElementById('message').innerText = data.message;
            
             const xhr = new XMLHttpRequest();
-            xhr.open('POST','https://mcc.backup.miracle44radio.com/upload',true);
+            // Use current origin (works in dev + prod)
+            xhr.open('POST', `${window.location.origin}/upload`, true);
 
                 xhr.upload.onprogress = function(event) {
 
@@ -151,9 +152,10 @@
 
                 xhr.onload = function(){
                     if(xhr.status === 200) {
-                        status.textContent = "File Uploaded successfully"
+                        status.textContent = "File uploaded successfully"
                         fileInput.value =""
-                        progressBar.classList.add("bg-info")
+                        progressBar.classList.remove("bg-success");
+                        progressBar.classList.add("bg-info");
 
                     } else {
                         console.log(`Error upload:${xhr.status}`)
@@ -194,11 +196,11 @@
         });
 document.addEventListener('DOMContentLoaded', function() {
      const p_info = document.getElementById("info");
-     const currentFolder = getQueryParams('folder');
+     let currentFolder = getQueryParams('folder') || "";
 
       const prefix = 'Current Folder: ';
-     if (currentFolder.startsWith(prefix)) {
-      currentFolder = currentFolder.substring(prefix.length);
+     if (currentFolder && currentFolder.startsWith(prefix)) {
+       currentFolder = currentFolder.substring(prefix.length);
      }
 
      console.log("FOLDCURT:",currentFolder);
@@ -209,35 +211,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById("dropdownMenuButton1").addEventListener('click', function(){
       const ItemList = document.getElementById("myDropdownMenu");
-      const itemElement = document.createElement('li');
-      const a_list = document.createElement("a");
-      const buttonDropdown = document.getElementById("dropdownMenuButton1")
+      const buttonDropdown = document.getElementById("dropdownMenuButton1");
+      ItemList.innerHTML = '';
      // const itemElement = document.createElement('li');
      // const a_list = document.createElement("a");
      // const buttonDropdown = document.getElementById("dropdownMenuButton1")
 
     
        if(currentFolder && currentFolder.trim() !== ""){
-           
-        const list = [currentFolder]
-   
-
+          const itemElement = document.createElement('li');
+          const a_list = document.createElement("a");
           a_list.className = "dropdown-item";
           a_list.href = "#";
           a_list.textContent = currentFolder;
 
-          itemElement.appendChild(a_list); // Append the anchor to the list item
-          ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
+          itemElement.appendChild(a_list);
+          ItemList.appendChild(itemElement);
   
-          a_list.addEventListener("click",function(){
+          a_list.addEventListener("click",function(e){
+            e.preventDefault();
+            ItemList.querySelectorAll('.dropdown-item.active').forEach(el => el.classList.remove('active'));
             a_list.classList.add('active');
-            buttonDropdown.textContent = currentFolder
+            buttonDropdown.textContent = currentFolder;
           });
           
           console.log("HO:",currentFolder);
          
 
-        }else{
+        } else {
           fetch("/get_all_buckets", {
             method:"GET", 
             headers:{
@@ -258,19 +259,21 @@ document.getElementById("dropdownMenuButton1").addEventListener('click', functio
 
         dataresponse.forEach((bucketName,index) => {
 
-     
-
+          const itemElement = document.createElement('li');
+          const a_list = document.createElement("a");
           a_list.className = "dropdown-item";
           a_list.href = "#";
           a_list.textContent = bucketName;
 
-          itemElement.appendChild(a_list); // Append the anchor to the list item
-          ItemList.appendChild(itemElement); // Append the list item to the dropdown menu
+          itemElement.appendChild(a_list);
+          ItemList.appendChild(itemElement);
   
-          a_list.addEventListener("click",function(){
+          a_list.addEventListener("click",function(e){
+            e.preventDefault();
+            ItemList.querySelectorAll('.dropdown-item.active').forEach(el => el.classList.remove('active'));
             a_list.classList.add('active');
-            buttonDropdown.textContent = bucketName
-          })
+            buttonDropdown.textContent = bucketName;
+          });
           console.log("HHL:",bucketName);
          });
       }else{
@@ -281,7 +284,7 @@ document.getElementById("dropdownMenuButton1").addEventListener('click', functio
         noItemsText.textContent = "No buckets found";
 
         noItemsElement.appendChild(noItemsText);
-        dropdownMenu.appendChild(noItemsElement);
+        ItemList.appendChild(noItemsElement);
 
 
 
