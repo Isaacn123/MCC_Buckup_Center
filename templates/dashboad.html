@@ -1024,6 +1024,11 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
   let parent = "";
   const spinner = document.getElementById('loadingSpinner');
   if(spinner){ spinner.classList.remove('d-none'); }
+  // Switch view immediately so errors/empty states are visible
+  try{
+    fileList_Container.style.display = 'block';
+    foldercontainer.style.display = 'none';
+  }catch(e){}
 
   fetch('/list_all_files', {
       method: "POST",
@@ -1124,6 +1129,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
           retry.addEventListener('click', () => fetchsubFolders(folderName, maxlength, false, null), { once: true });
         }
         fileList_Container.style.display = 'block';
+        try{ foldercontainer.style.display = 'none'; }catch(e){}
       }
   });
 }
@@ -1155,6 +1161,11 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
     
         const foldercontainer = document.getElementById("tabDashboardContent");
         const fileListContainer = document.getElementById('fileListContainer');
+        // Switch view immediately so errors/empty states are visible
+        try{
+          fileListContainer.style.display = 'block';
+          foldercontainer.style.display = 'none';
+        }catch(e){}
         let filelist = null;
         let parent  = "";
         if (!append){
@@ -1231,6 +1242,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
         console.error("Error fetching file list:", error);
         if(spinner){ spinner.classList.add('d-none'); }
         const fileListContainer = document.getElementById('fileListContainer');
+        const foldercontainer = document.getElementById("tabDashboardContent");
         if (fileListContainer){
           if (!append){
             fileListContainer.innerHTML = '<button id="backButton" class="btn btn-danger mb-2 small" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Back to Folders</button><h2>Files</h2>';
@@ -1241,6 +1253,7 @@ function fetchsubFolders(folderName, maxlength, append = false, startFileName = 
             retry.addEventListener('click', () => fetchallFiles(folderName, maxlength, false, null), { once: true });
           }
           fileListContainer.style.display = 'block';
+          try{ foldercontainer.style.display = 'none'; }catch(e){}
         }
       });
     }
