@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 import datetime as _dt
 
 class _BaseUser(BaseModel):
@@ -17,6 +17,7 @@ class User(_BaseUser):
     date_created:_dt.datetime
     role: Optional[str] = None
     allowed_prefix: Optional[str] = None
+    allowed_prefixes: Optional[List[str]] = None
     is_active: Optional[bool] = None
 
     class Config:
@@ -29,6 +30,7 @@ class AdminCreateUser(BaseModel):
     password: str
     role: str = "user"
     allowed_prefix: Optional[str] = None
+    allowed_prefixes: Optional[List[str]] = None
     is_active: bool = True
 
 
@@ -36,6 +38,8 @@ class AdminUpdateUserAccess(BaseModel):
     user_id: int
     role: Optional[str] = None
     allowed_prefix: Optional[str] = None
+    allowed_prefixes: Optional[List[str]] = None
+    revoke_prefix: Optional[str] = None
     is_active: Optional[bool] = None
 
 class _BaseUploads(BaseModel):

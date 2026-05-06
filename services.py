@@ -40,10 +40,31 @@ def ensure_db_schema():
                 alters.append("ALTER TABLE users ADD COLUMN allowed_prefix VARCHAR")
             if "is_active" not in existing:
                 alters.append("ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT 1")
+            if "allowed_prefixes" not in existing:
+                alters.append("ALTER TABLE users ADD COLUMN allowed_prefixes TEXT")
             for stmt in alters:
                 conn.execute(_sql.text(stmt))
             if alters:
                 conn.commit()
+
+            # Migrate legacy single allowed_prefix -> JSON list
+            try:
+                import json as _json
+                db = SessionLocal()
+                for u in db.query(_models.User).all():
+                    has_new = getattr(u, "allowed_prefixes", None)
+                    if has_new and str(has_new).strip():
+                        continue
+                    if u.allowed_prefix:
+                        n = (u.allowed_prefix or "").strip().replace("\\", "/")
+                        if n and not n.endswith("/"):
+                            n += "/"
+                        if n:
+                            u.allowed_prefixes = _json.dumps([n])
+                db.commit()
+                db.close()
+            except Exception as e:
+                print("migrate allowed_prefixes:", e)
 
             # Bootstrap admins: primary email is always admin when that user exists.
             try:
@@ -86,10 +107,55 @@ def require_admin(user_dict: dict):
         abort(403, description="Admin required")
 
 
+def normalize_folder_prefix(p: str) -> str:
+    p = (p or "").strip().replace("\\", "/")
+    if not p:
+        return ""
+    return p if p.endswith("/") else p + "/"
+
+
+def allowed_prefixes_from_user_dict(user_dict: dict):
+    """Resolve list of allowed folder prefixes from API/session user dict."""
+    if not user_dict:
+        return []
+    ap = user_dict.get("allowed_prefixes")
+    if isinstance(ap, list):
+        out = [normalize_folder_prefix(x) for x in ap if x]
+        return [x for x in out if x]
+    if isinstance(ap, str) and ap.strip().startswith("["):
+        try:
+            import json
+            data = json.loads(ap)
+            if isinstance(data, list):
+                out = [normalize_folder_prefix(x) for x in data if x]
+                return [x for x in out if x]
+        except Exception:
+            pass
+    legacy = user_dict.get("allowed_prefix") or ""
+    if legacy:
+        n = normalize_folder_prefix(legacy)
+        return [n] if n else []
+    return []
+
+
+def user_public_dict(user):
+    """Safe user object for /api/user/me (no password hash)."""
+    prefs = user.get_allowed_prefixes_list()
+    return {
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "date_created": user.date_created.isoformat() if user.date_created else None,
+        "role": user.role,
+        "is_active": user.is_active,
+        "allowed_prefix": user.allowed_prefix,
+        "allowed_prefixes": prefs,
+    }
+
+
 def enforce_prefix_access(user_dict: dict, target_prefix: str):
     """
-    Enforce that non-admin users can only operate within allowed_prefix.
-    If allowed_prefix is None/empty => deny by default (safer).
+    Non-admin users may only access paths under one of their allowed_prefixes.
     """
     if not user_dict:
         abort(401, description="Unauthorized")
@@ -97,10 +163,11 @@ def enforce_prefix_access(user_dict: dict, target_prefix: str):
         abort(403, description="User is disabled")
     if user_dict.get("role") == "admin":
         return
-    allowed = (user_dict.get("allowed_prefix") or "").strip()
-    if not allowed:
+    prefs = allowed_prefixes_from_user_dict(user_dict)
+    if not prefs:
         abort(403, description="No folder access assigned")
-    if not target_prefix.startswith(allowed):
+    t = normalize_folder_prefix(target_prefix)
+    if not any(t.startswith(p) for p in prefs):
         abort(403, description="Folder access denied")
 
 @contextmanager
@@ -165,8 +232,7 @@ def get_current_user():
     except Exception:
         abort(401, description="Invalid email or password")
     
-    user_schema = _schema.User.from_orm(user)
-    return user_schema.dict()
+    return user_public_dict(user)
 
 
 def authenticate_user(email:str,password:str,db:_orm.Session):

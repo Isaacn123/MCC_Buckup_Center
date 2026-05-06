@@ -168,10 +168,13 @@ class AdminUsers(Resource):
                 email=user_in.email,
                 name=user_in.name,
                 role=user_in.role,
-                allowed_prefix=user_in.allowed_prefix,
                 is_active=user_in.is_active,
             )
             user_obj.set_password(user_in.password)
+            prefs = user_in.allowed_prefixes
+            if prefs is None and user_in.allowed_prefix:
+                prefs = [user_in.allowed_prefix]
+            user_obj.set_allowed_prefixes_list(prefs or [])
             db.add(user_obj)
             db.commit()
             db.refresh(user_obj)
@@ -190,10 +193,17 @@ class AdminUpdateUser(Resource):
                 abort(404, description="User not found")
             if update.role is not None:
                 user.role = update.role
-            if update.allowed_prefix is not None:
-                user.allowed_prefix = update.allowed_prefix
             if update.is_active is not None:
                 user.is_active = update.is_active
+            if update.revoke_prefix is not None:
+                cur = user.get_allowed_prefixes_list()
+                rp = _service.normalize_folder_prefix(update.revoke_prefix)
+                cur = [p for p in cur if p != rp]
+                user.set_allowed_prefixes_list(cur)
+            elif update.allowed_prefixes is not None:
+                user.set_allowed_prefixes_list(update.allowed_prefixes)
+            elif update.allowed_prefix is not None:
+                user.set_allowed_prefixes_list([update.allowed_prefix] if update.allowed_prefix else [])
             db.commit()
             db.refresh(user)
             return jsonify(user.to_dict_user())

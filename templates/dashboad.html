@@ -162,7 +162,6 @@
   background: inherit;
   border: 1px solid rgba(16,24,40,.10);
   border-radius: 14px;
-  padding: 10px 10px;
   box-shadow: 0 2px 12px rgba(16,24,40,.05);
   transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   cursor: pointer;
@@ -176,17 +175,11 @@
   box-shadow: 0 10px 26px rgba(16,24,40,.10);
   border-color: rgba(59,130,246,.35);
 }
-.top-droppable.folder i.fa-folder{
-  /* don't override existing theme color */
+.folder i.fa-folder,
+.folder i.fa-file,
+.folder i.fa-file-pdf-o {
   color: inherit;
-  font-size: 28px;
-  margin-bottom: 4px;
-}
-.top-droppable.folder i.fa-file,
-.top-droppable.folder i.fa-file-pdf-o{
-  color: inherit;
-  font-size: 28px;
-  margin-bottom: 4px;
+  height: 60px !important;
 }
 .top-droppable.folder img,
 .top-droppable.folder video{
@@ -494,7 +487,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th>Allowed folder prefix</th>
+                            <th>Allowed folders</th>
                             <th>Status</th>
                             <th style="width: 180px;">Actions</th>
                           </tr>
@@ -548,8 +541,13 @@
             </select>
           </div>
           <div class="col-12">
-            <label class="form-label small">Allowed folder prefix (e.g. <code>Anointing Services/</code>)</label>
-            <input id="newUserPrefix" class="form-control form-control-sm" type="text" placeholder="Leave empty to block access" />
+            <label class="form-label small">Allowed folders (one or more)</label>
+            <div id="newUserPrefixChips" class="d-flex flex-wrap gap-1 mb-2 border rounded p-2 bg-light" style="min-height: 2rem;"></div>
+            <div class="input-group input-group-sm">
+              <input id="newUserPrefixInput" class="form-control" type="text" list="folderPrefixDatalist" placeholder="Type or pick, then Add" autocomplete="off" />
+              <button class="btn btn-outline-secondary" type="button" id="newUserPrefixAdd">Add</button>
+            </div>
+            <div class="form-text small">Add each folder prefix (e.g. <code>Anointing Services/</code>). Remove with ×. Suggestions come from your bucket.</div>
           </div>
         </div>
         <div id="createUserStatus" class="small mt-2"></div>
@@ -574,8 +572,13 @@
         <input id="editUserId" type="hidden" />
         <div class="row g-2">
           <div class="col-12">
-            <label class="form-label small">Allowed folder prefix</label>
-            <input id="editUserPrefix" class="form-control form-control-sm" type="text" />
+            <label class="form-label small">Allowed folders</label>
+            <div id="editUserPrefixChips" class="d-flex flex-wrap gap-1 mb-2 border rounded p-2 bg-light" style="min-height: 2rem;"></div>
+            <div class="input-group input-group-sm">
+              <input id="editUserPrefixInput" class="form-control" type="text" list="folderPrefixDatalist" placeholder="Type or pick, then Add" autocomplete="off" />
+              <button class="btn btn-outline-secondary" type="button" id="editUserPrefixAdd">Add</button>
+            </div>
+            <div class="form-text small">× revokes that folder immediately. Use <strong>Add</strong> + <strong>Save</strong> to assign new folders.</div>
           </div>
           <div class="col-6">
             <label class="form-label small">Role</label>
@@ -601,6 +604,8 @@
     </div>
   </div>
 </div>
+
+<datalist id="folderPrefixDatalist"></datalist>
 
 <script>
     //document.addEventListener("DOMContentLoaded", function(){
@@ -1666,6 +1671,35 @@ async function apiJson(path, method = 'GET', body = null){
   throw new Error(`${res.status}: ${txt || res.statusText}`);
 }
 
+/** Fill HTML5 datalist for allowed-prefix fields from bucket folder list */
+async function refreshFolderPrefixDatalist(){
+  const dl = document.getElementById('folderPrefixDatalist');
+  if (!dl) return;
+  try{
+    const token = window.__AUTH_TOKEN__ || '';
+    const headers = { Accept: 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch('/get_all_buckets', { method: 'GET', headers });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!Array.isArray(data)) return;
+    dl.innerHTML = '';
+    const seen = new Set();
+    data.forEach((raw) => {
+      let v = raw == null ? '' : String(raw).trim();
+      if (!v) return;
+      if (!v.endsWith('/')) v += '/';
+      if (seen.has(v)) return;
+      seen.add(v);
+      const opt = document.createElement('option');
+      opt.value = v;
+      dl.appendChild(opt);
+    });
+  }catch(e){
+    console.error('refreshFolderPrefixDatalist', e);
+  }
+}
+
 function renderUsersTable(users){
   const tbody = document.getElementById('usersTableBody');
   if (!tbody) return;
@@ -1676,14 +1710,26 @@ function renderUsersTable(users){
     tbody.appendChild(tr);
     return;
   }
+  function escAttr(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  }
   users.forEach((u) => {
     const tr = document.createElement('tr');
     const status = u.is_active ? 'Active' : 'Disabled';
+    let folderCell = '';
+    const prefs = Array.isArray(u.allowed_prefixes) && u.allowed_prefixes.length
+      ? u.allowed_prefixes
+      : (u.allowed_prefix ? [u.allowed_prefix] : []);
+    if (prefs.length){
+      folderCell = prefs.map(p => `<span class="badge text-bg-light text-dark border me-1 mb-1">${escAttr(p)}</span>`).join(' ');
+    } else {
+      folderCell = '<span class="text-muted small">—</span>';
+    }
     tr.innerHTML = `
-      <td>${u.name || ''}</td>
-      <td>${u.email || ''}</td>
-      <td><span class="badge text-bg-${u.role === 'admin' ? 'primary' : 'secondary'}">${u.role || 'user'}</span></td>
-      <td><code>${u.allowed_prefix || ''}</code></td>
+      <td>${escAttr(u.name || '')}</td>
+      <td>${escAttr(u.email || '')}</td>
+      <td><span class="badge text-bg-${u.role === 'admin' ? 'primary' : 'secondary'}">${escAttr(u.role || 'user')}</span></td>
+      <td>${folderCell}</td>
       <td>${status}</td>
       <td>
         <button class="btn btn-outline-primary btn-sm me-1" data-action="edit">Edit</button>
@@ -1700,6 +1746,7 @@ async function loadUsers(){
   const err = document.getElementById('usersError');
   if (err) err.innerHTML = '';
   try{
+    await refreshFolderPrefixDatalist();
     const users = await apiJson('/api/admin/users');
     renderUsersTable(users);
   }catch(e){
@@ -1707,9 +1754,74 @@ async function loadUsers(){
   }
 }
 
+function normalizeFolderPrefixInput(v){
+  let s = (v || '').trim().replace(/\\/g, '/');
+  if (!s) return null;
+  return s.endsWith('/') ? s : s + '/';
+}
+window.__newUserPrefixes = [];
+window.__editUserPrefixes = [];
+function renderNewPrefixChips(){
+  const container = document.getElementById('newUserPrefixChips');
+  if (!container) return;
+  container.innerHTML = '';
+  (window.__newUserPrefixes || []).forEach((p, idx) => {
+    const wrap = document.createElement('span');
+    wrap.className = 'badge bg-secondary d-inline-flex align-items-center gap-1 me-1 mb-1';
+    wrap.appendChild(document.createTextNode(p));
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'btn-close btn-close-white';
+    x.style.cssText = 'font-size:0.55rem;width:0.65rem;height:0.65rem;padding:0;opacity:0.85;';
+    x.setAttribute('aria-label', 'Remove');
+    x.addEventListener('click', () => { window.__newUserPrefixes.splice(idx, 1); renderNewPrefixChips(); });
+    wrap.appendChild(x);
+    container.appendChild(wrap);
+  });
+}
+function renderEditPrefixChips(){
+  const container = document.getElementById('editUserPrefixChips');
+  if (!container) return;
+  container.innerHTML = '';
+  (window.__editUserPrefixes || []).forEach((p, idx) => {
+    const wrap = document.createElement('span');
+    wrap.className = 'badge bg-secondary d-inline-flex align-items-center gap-1 me-1 mb-1';
+    wrap.appendChild(document.createTextNode(p));
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'btn-close btn-close-white';
+    x.style.cssText = 'font-size:0.55rem;width:0.65rem;height:0.65rem;padding:0;opacity:0.85;';
+    x.setAttribute('aria-label', 'Revoke');
+    x.addEventListener('click', () => { revokeEditFolderPrefix(idx); });
+    wrap.appendChild(x);
+    container.appendChild(wrap);
+  });
+}
+async function revokeEditFolderPrefix(idx){
+  const status = document.getElementById('editUserStatus');
+  const uid = parseInt(document.getElementById('editUserId').value, 10);
+  const prefs = window.__editUserPrefixes || [];
+  const p = prefs[idx];
+  if (!uid || p == null) return;
+  if (status) status.textContent = '';
+  try{
+    await apiJson('/api/admin/users/update', 'POST', { user_id: uid, revoke_prefix: p });
+    prefs.splice(idx, 1);
+    renderEditPrefixChips();
+    await loadUsers();
+    if (status) status.textContent = 'Revoked: ' + p;
+  }catch(e){
+    if (status) status.textContent = String(e.message || e);
+  }
+}
 function openEditUserModal(u){
   document.getElementById('editUserId').value = u.id;
-  document.getElementById('editUserPrefix').value = u.allowed_prefix || '';
+  window.__editUserPrefixes = Array.isArray(u.allowed_prefixes) && u.allowed_prefixes.length
+    ? [...u.allowed_prefixes]
+    : (u.allowed_prefix ? [u.allowed_prefix] : []);
+  renderEditPrefixChips();
+  const inp = document.getElementById('editUserPrefixInput');
+  if (inp) inp.value = '';
   document.getElementById('editUserRole').value = u.role || 'user';
   document.getElementById('editUserActive').value = String(!!u.is_active);
   document.getElementById('editUserStatus').textContent = '';
@@ -1729,6 +1841,35 @@ async function toggleUserActive(u){
 }
 
 try{
+  function addNewPrefixFromInput(){
+    const inp = document.getElementById('newUserPrefixInput');
+    const n = normalizeFolderPrefixInput(inp && inp.value);
+    if (!n) return;
+    const arr = window.__newUserPrefixes || [];
+    if (arr.indexOf(n) === -1) arr.push(n);
+    window.__newUserPrefixes = arr;
+    if (inp) inp.value = '';
+    renderNewPrefixChips();
+  }
+  function addEditPrefixFromInput(){
+    const inp = document.getElementById('editUserPrefixInput');
+    const n = normalizeFolderPrefixInput(inp && inp.value);
+    if (!n) return;
+    const arr = window.__editUserPrefixes || [];
+    if (arr.indexOf(n) === -1) arr.push(n);
+    window.__editUserPrefixes = arr;
+    if (inp) inp.value = '';
+    renderEditPrefixChips();
+  }
+  document.getElementById('newUserPrefixAdd')?.addEventListener('click', addNewPrefixFromInput);
+  document.getElementById('newUserPrefixInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); addNewPrefixFromInput(); }
+  });
+  document.getElementById('editUserPrefixAdd')?.addEventListener('click', addEditPrefixFromInput);
+  document.getElementById('editUserPrefixInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); addEditPrefixFromInput(); }
+  });
+
   document.getElementById('createUserBtn')?.addEventListener('click', async () => {
     const status = document.getElementById('createUserStatus');
     status.textContent = '';
@@ -1738,7 +1879,7 @@ try{
         email: (document.getElementById('newUserEmail').value || '').trim(),
         password: (document.getElementById('newUserPassword').value || '').trim(),
         role: document.getElementById('newUserRole').value,
-        allowed_prefix: (document.getElementById('newUserPrefix').value || '').trim() || null,
+        allowed_prefixes: window.__newUserPrefixes && window.__newUserPrefixes.length ? [...window.__newUserPrefixes] : [],
         is_active: document.getElementById('newUserActive').value === 'true'
       };
       if (!body.name || !body.email || !body.password){
@@ -1747,6 +1888,8 @@ try{
       }
       await apiJson('/api/admin/users', 'POST', body);
       status.textContent = 'User created.';
+      window.__newUserPrefixes = [];
+      renderNewPrefixChips();
       await loadUsers();
     }catch(e){
       status.textContent = String(e.message || e);
@@ -1760,7 +1903,7 @@ try{
       const body = {
         user_id: parseInt(document.getElementById('editUserId').value, 10),
         role: document.getElementById('editUserRole').value,
-        allowed_prefix: (document.getElementById('editUserPrefix').value || '').trim() || null,
+        allowed_prefixes: window.__editUserPrefixes && window.__editUserPrefixes.length ? [...window.__editUserPrefixes] : [],
         is_active: document.getElementById('editUserActive').value === 'true'
       };
       await apiJson('/api/admin/users/update', 'POST', body);
@@ -1769,6 +1912,17 @@ try{
     }catch(e){
       status.textContent = String(e.message || e);
     }
+  });
+
+  document.getElementById('createUserModal')?.addEventListener('shown.bs.modal', function(){
+    refreshFolderPrefixDatalist();
+    window.__newUserPrefixes = [];
+    renderNewPrefixChips();
+    const ni = document.getElementById('newUserPrefixInput');
+    if (ni) ni.value = '';
+  });
+  document.getElementById('editUserModal')?.addEventListener('shown.bs.modal', function(){
+    refreshFolderPrefixDatalist();
   });
 }catch(e){ console.error(e); }
 
